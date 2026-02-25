@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+    <!-- Primary Meta -->
+    <title>Olexion — Advanced CSS Gradient Generator with Noise & Export</title>
+    <meta name="description" content="Create advanced CSS gradients with noise, grain textures and filters. Export to CSS, PNG, JPG or SVG instantly. Free online tool for developers and designers." />
+    <meta name="author" content="Olexion" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="application-name" content="Olexion" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no" />
+  
+    <!-- Canonical -->
+    <link rel="canonical" href="https://olexion.com/" />
+    <link rel="alternate" hreflang="en" href="https://olexion.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://olexion.com/" />
+  
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://olexion.com/" />
+    <meta property="og:title" content="Olexion — Advanced CSS Gradient Generator" />
+    <meta property="og:description" content="Generate beautiful gradients with noise and export to CSS or image formats instantly." />
+    <meta property="og:image" content="https://olexion.com/og-image.webp" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Olexion gradient generator preview interface" />
+    <meta property="og:site_name" content="Olexion" />
+    <meta property="og:locale" content="en_US" />
+  
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Olexion — Advanced CSS Gradient Generator" />
+    <meta name="twitter:description" content="Free online gradient tool with noise & export options." />
+    <meta name="twitter:image" content="https://olexion.com/og-image.webp" />
+    <meta name="twitter:image:alt" content="Olexion gradient generator preview interface" />
+    <meta name="twitter:site" content="@OlexionHQ" />
+    <meta name="twitter:creator" content="@OlexionHQ" />
+  
+    <!-- Theme / PWA -->
+    <meta name="theme-color" content="#1c1c1c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Olexion" />
+  
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="./LOGO.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./logo-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./logo-180.png">
+  
+    <!-- Manifest -->
+    <link rel="manifest" href="/site.webmanifest" />
+  
+    <!-- Performance -->
+    <link rel="preload" href="./LOGO.svg" as="image" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+  
+    <!-- ================= Structured Data ================= -->
+  
+    <!-- WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Olexion",
+      "alternateName": "Olexion Gradient Generator",
+      "url": "https://olexion.com/",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript. Works on Chrome, Edge, Firefox, Safari.",
+      "description": "Advanced online CSS gradient generator with noise, grain textures and export options.",
+      "image": "https://olexion.com/og-image.webp",
+      "screenshot": "https://olexion.com/screenshot.jpg",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+  
+    <!-- Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Olexion",
+      "url": "https://olexion.com/",
+      "logo": "https://olexion.com/LOGO.svg",
+      "sameAs": [
+        "https://twitter.com/OlexionHQ"
+      ]
+    }
+    </script>
+  
+  </head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="./editor.html" class="header-brand">
+        <img class="header-logo" src="./LOGO.svg" alt="Olexion Logo" width="48" height="48" />
+        <h3 class="header-name">Olexion</h3>
+      </a>
+    </div>
+
+    <nav class="header-nav">
+      <ul class="nav-list">
+        <li><a class="nav-link" href="#presets">Presets</a></li>
+        <li><a class="nav-link" href="./guide.html">Guide</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-right">
+      <div class="theme-select">
+        <select id="themeSelect" aria-label="Theme selector">
+          <option value="auto">Auto</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="deep-dark">Deep Dark</option>
+          <option value="midnight">Midnight</option>
+        </select>
+      </div>
+    </div>
+  </header>
+  <!-- Hero Section -->
+  <section class="hero-section" aria-label="Welcome to Olexion">
+    <div class="hero-content">
+      <div class="hero-header">
+        <h2 class="hero-title">Olexion</h2>
+        <p class="hero-subtitle">Design modern gradients with full control, noise & export-ready output.</p>
+        <img class="hero-logo floating" src="./LOGO.svg" alt="hero logo" aria-hidden="true"/>
+      </div>
+      <ul class="features-list">
+        <li class="feature-item" data-reveal>
+          <div class="feature-icon">
+            <svg fill="#000000" height="24" width="24" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 461.941 461.941" xml:space="preserve">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <g>
+                  <path
+                    d="M94.42,143.113c8.82-8.82,23.171-8.82,31.993,0c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c11.828,11.828,27.554,18.342,44.28,18.342 c16.728,0,32.453-6.514,44.281-18.342c7.811-7.811,7.81-20.474-0.001-28.284c-7.811-7.811-20.474-7.811-28.284,0 c-4.272,4.273-9.953,6.626-15.996,6.626s-11.724-2.354-15.996-6.625c-11.827-11.828-27.554-18.342-44.28-18.343 c-0.002,0,0,0-0.001,0c-16.726,0-32.453,6.515-44.281,18.342c-8.82,8.821-23.174,8.819-31.992,0.001 c-11.827-11.828-27.554-18.342-44.28-18.343c-0.002,0,0,0-0.001,0c-16.726,0-32.453,6.515-44.281,18.342 c-8.82,8.821-23.174,8.82-31.992,0c-24.417-24.417-64.146-24.417-88.562,0c-8.82,8.82-23.172,8.82-31.994,0 c-7.811-7.811-20.474-7.811-28.284,0s-7.81,20.474,0.001,28.284C30.274,167.529,70.002,167.529,94.42,143.113z">
+                  </path>
+                  <path
+                    d="M427.799,216.829c-4.272,4.273-9.953,6.626-15.996,6.626s-11.724-2.354-15.996-6.625 c-11.827-11.828-27.554-18.342-44.28-18.343c-0.002,0,0,0-0.001,0c-16.726,0-32.453,6.515-44.281,18.342 c-8.82,8.821-23.174,8.819-31.992,0.001c-11.827-11.828-27.554-18.342-44.28-18.343c-0.002,0,0,0-0.001,0 c-16.726,0-32.453,6.515-44.281,18.342c-8.82,8.821-23.174,8.82-31.992,0c-24.417-24.417-64.146-24.417-88.562,0 c-8.82,8.82-23.172,8.82-31.994,0c-7.811-7.811-20.474-7.811-28.284,0s-7.81,20.474,0.001,28.284 c24.416,24.416,64.144,24.416,88.562,0c8.82-8.82,23.171-8.82,31.993,0c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c11.828,11.828,27.554,18.342,44.28,18.342 c16.728,0,32.453-6.514,44.281-18.342c7.811-7.811,7.81-20.474-0.001-28.284C448.272,209.018,435.609,209.018,427.799,216.829z">
+                  </path>
+                  <path
+                    d="M427.799,318.829c-4.272,4.273-9.953,6.626-15.996,6.626s-11.724-2.354-15.996-6.625 c-11.827-11.828-27.554-18.342-44.28-18.343c-0.002,0,0,0-0.001,0c-16.726,0-32.453,6.515-44.281,18.342 c-8.82,8.821-23.174,8.819-31.992,0.001c-11.827-11.828-27.554-18.342-44.28-18.343c-0.002,0,0,0-0.001,0 c-16.726,0-32.453,6.515-44.281,18.342c-8.82,8.82-23.174,8.821-31.992,0c-24.417-24.417-64.146-24.417-88.562,0 c-8.82,8.82-23.172,8.82-31.994,0c-7.811-7.811-20.474-7.811-28.284,0s-7.81,20.474,0.001,28.284 c24.416,24.416,64.144,24.416,88.562,0c8.82-8.82,23.171-8.82,31.993,0c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c24.416,24.416,64.145,24.416,88.561,0 c4.273-4.273,9.954-6.626,15.997-6.626s11.724,2.354,15.997,6.626c11.828,11.828,27.554,18.342,44.28,18.342 c16.728,0,32.453-6.514,44.281-18.342c7.811-7.811,7.81-20.474-0.001-28.284C448.272,311.018,435.609,311.018,427.799,318.829z">
+                  </path>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h3>Noise & Grain</h3>
+            <p>Add depth and texture to flat gradients</p>
+          </div>
+        </li>
+        <li class="feature-item" data-reveal>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M7 8L3 11.6923L7 16M17 8L21 11.6923L17 16M14 4L10 20" stroke="#000000" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h3>CSS Output</h3>
+            <p>Responsive css code</p>
+          </div>
+        </li>
+        <li class="feature-item" data-reveal>
+          <div class="feature-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M5.625 15C5.625 14.5858 5.28921 14.25 4.875 14.25C4.46079 14.25 4.125 14.5858 4.125 15H5.625ZM4.875 16H4.125H4.875ZM19.275 15C19.275 14.5858 18.9392 14.25 18.525 14.25C18.1108 14.25 17.775 14.5858 17.775 15H19.275ZM11.1086 15.5387C10.8539 15.8653 10.9121 16.3366 11.2387 16.5914C11.5653 16.8461 12.0366 16.7879 12.2914 16.4613L11.1086 15.5387ZM16.1914 11.4613C16.4461 11.1347 16.3879 10.6634 16.0613 10.4086C15.7347 10.1539 15.2634 10.2121 15.0086 10.5387L16.1914 11.4613ZM11.1086 16.4613C11.3634 16.7879 11.8347 16.8461 12.1613 16.5914C12.4879 16.3366 12.5461 15.8653 12.2914 15.5387L11.1086 16.4613ZM8.39138 10.5387C8.13662 10.2121 7.66533 10.1539 7.33873 10.4086C7.01212 10.6634 6.95387 11.1347 7.20862 11.4613L8.39138 10.5387ZM10.95 16C10.95 16.4142 11.2858 16.75 11.7 16.75C12.1142 16.75 12.45 16.4142 12.45 16H10.95ZM12.45 5C12.45 4.58579 12.1142 4.25 11.7 4.25C11.2858 4.25 10.95 4.58579 10.95 5H12.45ZM4.125 15V16H5.625V15H4.125ZM4.125 16C4.125 18.0531 5.75257 19.75 7.8 19.75V18.25C6.61657 18.25 5.625 17.2607 5.625 16H4.125ZM7.8 19.75H15.6V18.25H7.8V19.75ZM15.6 19.75C17.6474 19.75 19.275 18.0531 19.275 16H17.775C17.775 17.2607 16.7834 18.25 15.6 18.25V19.75ZM19.275 16V15H17.775V16H19.275ZM12.2914 16.4613L16.1914 11.4613L15.0086 10.5387L11.1086 15.5387L12.2914 16.4613ZM12.2914 15.5387L8.39138 10.5387L7.20862 11.4613L11.1086 16.4613L12.2914 15.5387ZM12.45 16V5H10.95V16H12.45Z"
+                  fill="#000000"></path>
+              </g>
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h3>Image Export</h3>
+            <p>Export as PNG, JPG, WEBP, or SVG</p>
+          </div>
+        </li>
+        <li class="feature-item" data-reveal>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z"
+                  fill="#000000"></path>
+              </g>
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h3>Filters</h3>
+            <p>Adjust contrast, Hue, and visual balance</p>
+          </div>
+        </li>
+      </ul>
+      <p class="hero-tagline">Build your creativity, gradient by gradient</p>
+    </div>
+    <a href="./editor.html" class="btn-enter-editor">
+      <span>Enter the Olexion</span>
+      <svg class="icon-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <defs>
+          <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00d4ff" />
+            <stop offset="100%" stop-color="#00ff88" />
+          </linearGradient>
+        </defs>
+        <path d="M5 12h14M12 5l7 7-7 7" stroke="url(#arrowGradient)" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </a>
+  </section>
+  <!-- Main Content -->
+  <main class="main" id="main-content">
+    <!-- Presets Section -->
+    <section class="section presets-section" id="presets">
+      <header class="section-header">
+        <h2 class="section-title">
+          <span class="title-decoration"></span>
+          Preset Gallery
+          <span class="title-decoration"></span>
+        </h2>
+        <p class="section-description">Click any gradient to open it in the editor</p>
+      </header>
+      <div class="filters" id="filters"></div>
+      <div class="presets-grid" id="presetsGrid" role="list">
+        <div class="loading" role="status" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Loading presets...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tutorial Section -->
+    <!-- <section class="section tutorial-section">
+      <header class="section-header">
+        <h2 class="section-title">
+          <span class="title-decoration"></span>
+          Quick Tutorial
+          <span class="title-decoration"></span>
+        </h2>
+      </header>
+
+      <div class="tutorial-content">
+        <div class="video-wrapper">
+          <video autoplay loop muted playsinline poster="./tutorial-poster.jpg">
+            <source src="./20260106_232048.mp4" type="video/mp4">
+            <p>Your browser doesn't support HTML5 video.</p>
+          </video>
+        </div>
+
+        <a class="btn-guide" href="./guide.html">
+          <span>Continue to full guide</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div> -->
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-noise" aria-hidden="true"></div>
+
+    <div class="container">
+      <div class="footer-content">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <div class="footer-logo-wrapper">
+            <img class="footer-logo" src="./LOGO.svg" alt="footer logo" width="60" height="60">
+            <span class="footer-brand-name">Olexion</span>
+          </div>
+          <p class="footer-description">
+            Professional gradient generator for designers and developers. 
+            Create stunning color combinations, add noise effects, export images, and get ready-to-use CSS code — completely free.
+          </p>
+        </div>
+        <!-- Links -->
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <div class="footer-column">
+            <h4>Navigation</h4>
+            <ul>
+              <li><a href="./editor.html">Create Gradient</a></li>
+              <li><a href="#presets">Presets</a></li>
+              <li><a href="./guide.html">User Guide</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h4>Support</h4>
+            <ul>
+              <li><a href="./guide.html#FAQ">FAQ</a></li>
+              <li><a
+                  href="mailto:support@olexion.com?subject=Bug Report - Olexion&body=Please describe the issue:%0A%0A%0ABrowser:%0ADevice:%0A">
+                  Report a Bug
+                </a></li>
+              <li><a href="mailto:info@olexion.com">Contact Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h4>Connect</h4>
+            <div class="social-links">
+              <a href="https://github.com/mahanfazli/Olexion" aria-label="GitHub" class="social-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              </a>
+              <a href="https://twitter.com/OlexionHQ" target="_blank" rel="noopener" aria-label="Twitter"
+                class="social-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+              <!-- <a href="#" aria-label="Instagram" class="social-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </a> -->
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-message">
+          <p><strong>#FreeIran</strong> 🦁☀️</p>
+        </div>
+        <p class="footer-copyright">
+          Crafted with <span class="heart">❤️</span> for Designers | © 2026
+        </p>
+        <p class="footer-version">v1.0.0</p>
+      </div>
+    </div>
+  </footer>
+  <!-- SVG Filters -->
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="noiseFilter" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch" result="noise" />
+      <feColorMatrix type="saturate" values="0" in="noise" result="bwNoise" />
+      <feBlend in="SourceGraphic" in2="bwNoise" mode="color-burn" />
+    </filter>
+  </svg>
+  <script src="./js/script.js"></script>
+  <script src="./js/index.js"></script>
+</body>
+
+</html>

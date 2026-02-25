@@ -1,0 +1,1820 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "sunset",
+      "name": "Sunset",
+      "category": "warm",
+      "tags": ["warm", "sun"],
+      "thumbnail": "./thumbnails/sunset.png",
+      "data": {
+        "bgColor": "#1a0a1e",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Sky",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 180,
+            "blendMode": "multiply",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#2d1b69",
+                "opacity": 100
+              },
+              {
+                "pos": 50,
+                "color": "#ff6b6b",
+                "opacity": 80
+              },
+              {
+                "pos": 100,
+                "color": "#ffd93d",
+                "opacity": 60
+              }
+            ],
+            "id": "8l2yzf"
+          },
+          {
+            "name": "Sun",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.9,
+            "color": "#ff6b35",
+            "size": 280,
+            "feather": 29,
+            "opacity": 100,
+            "blendMode": "screen",
+            "id": "xnau7m"
+          },
+          {
+            "name": "Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.8,
+            "color": "#ff9f1c",
+            "size": 400,
+            "feather": 90,
+            "opacity": 90,
+            "blendMode": "screen",
+            "id": "4jthlc"
+          }
+        ],
+        "filterState": {
+          "enabled": true,
+          "brightness": 100,
+          "contrast": 100,
+          "saturate": 100,
+          "hue": 0,
+          "blur": 0,
+          "grayscale": 0,
+          "sepia": 0,
+          "invert": 0
+        },
+        "noiseState": {
+          "enabled": false,
+          "opacity": 0,
+          "frequency": 0.65,
+          "blend": "overlay"
+        }
+      }
+    },
+    {
+      "id": "ocean",
+      "name": "Ocean Deep",
+      "category": "cool",
+      "tags": ["cool", "blue", "calm"],
+      "thumbnail": "./thumbnails/ocean.png",
+      "data": {
+        "bgColor": "#001220",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Light",
+            "type": "radial",
+            "visible": true,
+            "x": 0.9274286508224929,
+            "y": 0.24786140636914936,
+            "color": "#00d4ff",
+            "size": 350,
+            "feather": 100,
+            "opacity": 50,
+            "blendMode": "screen",
+            "id": "d7n83k"
+          },
+          {
+            "name": "Light Copy",
+            "type": "radial",
+            "visible": true,
+            "x": 0.3785968292618815,
+            "y": 0.0118997654316229,
+            "color": "#00d4ff",
+            "size": 250,
+            "feather": 100,
+            "opacity": 30,
+            "blendMode": "screen",
+            "id": "k2xukf"
+          },
+          {
+            "name": "Deep",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 145,
+            "blendMode": "normal",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#001830",
+                "opacity": 100
+              },
+              {
+                "pos": 100,
+                "color": "#006994",
+                "opacity": 100
+              }
+            ],
+            "id": "yb58k2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "category": "nature",
+      "tags": ["nature", "colorful"],
+      "thumbnail": "./thumbnails/aurora.png",
+      "data": {
+        "bgColor": "#0a0a1a",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Aurora",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#00ff87", "opacity": 60 },
+              { "pos": 25, "color": "#60efff", "opacity": 50 },
+              { "pos": 50, "color": "#ff00ea", "opacity": 40 },
+              { "pos": 75, "color": "#60efff", "opacity": 50 },
+              { "pos": 100, "color": "#00ff87", "opacity": 60 }
+            ]
+          },
+          {
+            "name": "Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.3,
+            "y": 0.4,
+            "color": "#00ff87",
+            "size": 300,
+            "feather": 85,
+            "opacity": 50,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "galaxy",
+      "name": "Galaxy",
+      "category": "space",
+      "tags": ["space", "purple"],
+      "thumbnail": "./thumbnails/Galaxy.png",
+      "data": {
+        "bgColor": "#0a0015",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Nebula",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 45,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#667eea",
+                "opacity": 70
+              },
+              {
+                "pos": 33,
+                "color": "#764ba2",
+                "opacity": 60
+              },
+              {
+                "pos": 66,
+                "color": "#f093fb",
+                "opacity": 50
+              },
+              {
+                "pos": 100,
+                "color": "#667eea",
+                "opacity": 70
+              }
+            ],
+            "id": "n8jz0i"
+          },
+          {
+            "name": "Star",
+            "type": "radial",
+            "visible": true,
+            "x": 0,
+            "y": 0,
+            "color": "#ffffff",
+            "size": 455,
+            "feather": 100,
+            "opacity": 60,
+            "blendMode": "screen",
+            "id": "izbkts"
+          },
+          {
+            "name": "Star Copy",
+            "type": "radial",
+            "visible": true,
+            "x": 1,
+            "y": 0.7358711594544408,
+            "color": "#ffffff",
+            "size": 298,
+            "feather": 100,
+            "opacity": 30,
+            "blendMode": "screen",
+            "id": "45m3qr"
+          }
+        ]
+      }
+    },
+    {
+      "id": "neon",
+      "name": "Neon",
+      "category": "cyber",
+      "tags": ["cyber", "bright", "popular"],
+      "thumbnail": "./thumbnails/gradient.png",
+      "data": {
+        "bgColor": "#0a0a14",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "id": "7dyp9h",
+            "name": "Pink Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.43404019673665367,
+            "y": 1,
+            "color": "#ff2d88",
+            "size": 282,
+            "feather": 93,
+            "opacity": 29,
+            "angle": 119,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#ff3366",
+                "opacity": 100
+              },
+              {
+                "pos": 100,
+                "color": "#00ff88",
+                "opacity": 100
+              }
+            ]
+          },
+          {
+            "id": "2myt0f",
+            "name": "Rainbow",
+            "type": "conic",
+            "visible": true,
+            "x": 0.38621743962196825,
+            "y": 0.8836376136108907,
+            "color": "#7c3aed",
+            "size": 177.76839925293592,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 6,
+            "startAngle": 212,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 46,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 48,
+                "color": "#ffffff",
+                "opacity": 40
+              },
+              {
+                "pos": 40,
+                "color": "#ff0000",
+                "opacity": 0
+              },
+              {
+                "pos": 52,
+                "color": "#f9f9f9",
+                "opacity": 40
+              },
+              {
+                "pos": 54,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 60,
+                "color": "#ff0000",
+                "opacity": 0
+              }
+            ]
+          },
+          {
+            "id": "mfm9lw",
+            "name": "Rainbow Copy",
+            "type": "conic",
+            "visible": true,
+            "x": 0.45346546035460905,
+            "y": 0.4682510525815897,
+            "color": "#7c3aed",
+            "size": 177.76839925293592,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 6,
+            "startAngle": 77,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 46,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 48,
+                "color": "#ffffff",
+                "opacity": 40
+              },
+              {
+                "pos": 30,
+                "color": "#ff0000",
+                "opacity": 0
+              },
+              {
+                "pos": 52,
+                "color": "#f9f9f9",
+                "opacity": 40
+              },
+              {
+                "pos": 54,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 69,
+                "color": "#ff0000",
+                "opacity": 0
+              }
+            ]
+          },
+          {
+            "id": "1ouu1n",
+            "name": "Rainbow Copy",
+            "type": "conic",
+            "visible": true,
+            "x": 0.07243303934733072,
+            "y": 0.1141964062350154,
+            "color": "#7c3aed",
+            "size": 177.76839925293592,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 6,
+            "startAngle": 296,
+            "blendMode": "difference",
+            "stops": [
+              {
+                "pos": 46,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 48,
+                "color": "#ffffff",
+                "opacity": 40
+              },
+              {
+                "pos": 10,
+                "color": "#ff0000",
+                "opacity": 0
+              },
+              {
+                "pos": 52,
+                "color": "#f9f9f9",
+                "opacity": 40
+              },
+              {
+                "pos": 54,
+                "color": "#ff2d88",
+                "opacity": 29
+              },
+              {
+                "pos": 60,
+                "color": "#ff0000",
+                "opacity": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "mesh",
+      "name": "Mesh",
+      "category": "modern",
+      "tags": ["modern", "colorful"],
+      "thumbnail": "./thumbnails/mesh.webp",
+      "data": {
+        "bgColor": "#fef9ef",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Blob 1",
+            "type": "radial",
+            "visible": true,
+            "x": 0.1,
+            "y": 0.1,
+            "color": "#ff9a9e",
+            "size": 400,
+            "feather": 90,
+            "opacity": 70,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Blob 2",
+            "type": "radial",
+            "visible": true,
+            "x": 0.9,
+            "y": 0.2,
+            "color": "#a18cd1",
+            "size": 350,
+            "feather": 90,
+            "opacity": 60,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Blob 3",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.8,
+            "color": "#fbc2eb",
+            "size": 450,
+            "feather": 90,
+            "opacity": 65,
+            "blendMode": "normal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "solar-flare",
+      "name": "Solar Flare",
+      "category": "warm",
+      "tags": ["space", "sun", "warm"],
+      "thumbnail": "./thumbnails/solar-flare.webp",
+      "data": {
+        "bgColor": "#000000",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Sun Core",
+            "type": "radial",
+            "visible": true,
+            "x": 0.6,
+            "y": 0.4,
+            "color": "#ffffff",
+            "size": 150,
+            "feather": 20,
+            "opacity": 100,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Corona",
+            "type": "radial",
+            "visible": true,
+            "x": 0.6,
+            "y": 0.4,
+            "color": "#ffaa00",
+            "size": 400,
+            "feather": 70,
+            "opacity": 80,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Solar Wind",
+            "type": "conic",
+            "visible": true,
+            "x": 0.6,
+            "y": 0.4,
+            "startAngle": 30,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff6600", "opacity": 50 },
+              { "pos": 33, "color": "#ffaa00", "opacity": 40 },
+              { "pos": 66, "color": "#ff6600", "opacity": 50 },
+              { "pos": 100, "color": "#ff6600", "opacity": 50 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "liquid-Mercury",
+      "name": "Liquid Mercury",
+      "category": "modern",
+      "tags": ["modern", "metallic", "chrome"],
+      "thumbnail": "./thumbnails/liquid-Mercury.webp",
+      "data": {
+        "bgColor": "#1a1a2e",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Chrome Wave",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 45,
+            "blendMode": "normal",
+            "stops": [
+              { "pos": 0, "color": "#2c3e50", "opacity": 100 },
+              { "pos": 20, "color": "#bdc3c7", "opacity": 100 },
+              { "pos": 40, "color": "#7f8c8d", "opacity": 100 },
+              { "pos": 60, "color": "#ecf0f1", "opacity": 100 },
+              { "pos": 80, "color": "#95a5a6", "opacity": 100 },
+              { "pos": 100, "color": "#2c3e50", "opacity": 100 }
+            ]
+          },
+          {
+            "name": "Reflection",
+            "type": "radial",
+            "visible": true,
+            "x": 0.3,
+            "y": 0.3,
+            "color": "#ffffff",
+            "size": 300,
+            "feather": 80,
+            "opacity": 40,
+            "blendMode": "overlay"
+          }
+        ],
+        "filterState": {
+          "enabled": true,
+          "brightness": 110,
+          "contrast": 120,
+          "saturate": 80
+        }
+      }
+    },
+    {
+      "id": "phoenix-rising",
+      "name": "Phoenix Rising",
+      "category": "fantasy",
+      "tags": ["fantasy", "fire", "mythical"],
+      "thumbnail": "./thumbnails/phoenix-rising.webp",
+      "data": {
+        "bgColor": "#0a0005",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Wings",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.6,
+            "startAngle": 270,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff0000", "opacity": 100 },
+              { "pos": 15, "color": "#ff6600", "opacity": 90 },
+              { "pos": 30, "color": "#ffcc00", "opacity": 80 },
+              { "pos": 50, "color": "#ffffff", "opacity": 70 },
+              { "pos": 70, "color": "#ffcc00", "opacity": 80 },
+              { "pos": 85, "color": "#ff6600", "opacity": 90 },
+              { "pos": 100, "color": "#ff0000", "opacity": 100 }
+            ]
+          },
+          {
+            "name": "Core",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#ffffff",
+            "size": 150,
+            "feather": 50,
+            "opacity": 100,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Flames",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.7,
+            "color": "#ff3300",
+            "size": 400,
+            "feather": 80,
+            "opacity": 70,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Ember Trail",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 180,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ffcc00", "opacity": 60 },
+              { "pos": 50, "color": "#ff6600", "opacity": 40 },
+              { "pos": 100, "color": "#990000", "opacity": 20 }
+            ]
+          }
+        ]
+      }
+    }, 
+    {
+      "id": "fire-ice",
+      "name": "Fire & Ice",
+      "category": "fantasy",
+      "tags": ["contrast", "dual", "elements"],
+      "thumbnail": "./thumbnails/fire-ice.webp",
+      "data": {
+        "bgColor": "#1a1a2e",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Fire Side",
+            "type": "linear",
+            "visible": true,
+            "x": 0.25,
+            "y": 0.5,
+            "angle": 90,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff0000", "opacity": 100 },
+              { "pos": 30, "color": "#ff6600", "opacity": 90 },
+              { "pos": 50, "color": "#ffcc00", "opacity": 80 },
+              { "pos": 50, "color": "#000000", "opacity": 0 }
+            ]
+          },
+          {
+            "name": "Ice Side",
+            "type": "linear",
+            "visible": true,
+            "x": 0.75,
+            "y": 0.5,
+            "angle": 270,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#0066ff", "opacity": 100 },
+              { "pos": 30, "color": "#00ccff", "opacity": 90 },
+              { "pos": 50, "color": "#ffffff", "opacity": 80 },
+              { "pos": 50, "color": "#000000", "opacity": 0 }
+            ]
+          },
+          {
+            "name": "Clash Zone",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#ffffff",
+            "size": 200,
+            "feather": 80,
+            "opacity": 50,
+            "blendMode": "overlay"
+          },
+          {
+            "name": "Steam",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 90,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff6600", "opacity": 40 },
+              { "pos": 25, "color": "#ffffff", "opacity": 50 },
+              { "pos": 50, "color": "#00ccff", "opacity": 40 },
+              { "pos": 75, "color": "#ffffff", "opacity": 50 },
+              { "pos": 100, "color": "#ff6600", "opacity": 40 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "shadow-realm",
+      "name": "Shadow Realm",
+      "category": "dark",
+      "tags": ["dark", "horror", "void"],
+      "thumbnail": "./thumbnails/shadow-realm.webp",
+      "data": {
+        "bgColor": "#000000",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Void Eye",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#1a0033",
+            "size": 300,
+            "feather": 60,
+            "opacity": 100,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Dark Tendrils",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#330066", "opacity": 40 },
+              { "pos": 8, "color": "#000000", "opacity": 0 },
+              { "pos": 16, "color": "#330066", "opacity": 35 },
+              { "pos": 24, "color": "#000000", "opacity": 0 },
+              { "pos": 32, "color": "#330066", "opacity": 40 },
+              { "pos": 40, "color": "#000000", "opacity": 0 },
+              { "pos": 48, "color": "#330066", "opacity": 35 },
+              { "pos": 56, "color": "#000000", "opacity": 0 },
+              { "pos": 64, "color": "#330066", "opacity": 40 },
+              { "pos": 72, "color": "#000000", "opacity": 0 },
+              { "pos": 80, "color": "#330066", "opacity": 35 },
+              { "pos": 88, "color": "#000000", "opacity": 0 },
+              { "pos": 100, "color": "#330066", "opacity": 40 }
+            ]
+          },
+          {
+            "name": "Eerie Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#6600cc",
+            "size": 450,
+            "feather": 95,
+            "opacity": 30,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "supernova",
+      "name": "Supernova Explosion",
+      "category": "space",
+      "tags": ["space", "explosion", "cosmic"],
+      "thumbnail": "./thumbnails/supernova.webp",
+      "data": {
+        "bgColor": "#000005",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Core",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#ffffff",
+            "size": 80,
+            "feather": 20,
+            "opacity": 100,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Inner Shock",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#00ccff",
+            "size": 200,
+            "feather": 50,
+            "opacity": 90,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Outer Shock",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#ff6600",
+            "size": 400,
+            "feather": 70,
+            "opacity": 70,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Debris Field",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff3300", "opacity": 50 },
+              { "pos": 10, "color": "#ffcc00", "opacity": 40 },
+              { "pos": 20, "color": "#ff3300", "opacity": 50 },
+              { "pos": 30, "color": "#00ccff", "opacity": 40 },
+              { "pos": 40, "color": "#ff3300", "opacity": 50 },
+              { "pos": 50, "color": "#ffcc00", "opacity": 40 },
+              { "pos": 60, "color": "#ff3300", "opacity": 50 },
+              { "pos": 70, "color": "#00ccff", "opacity": 40 },
+              { "pos": 80, "color": "#ff3300", "opacity": 50 },
+              { "pos": 90, "color": "#ffcc00", "opacity": 40 },
+              { "pos": 100, "color": "#ff3300", "opacity": 50 }
+            ]
+          },
+          {
+            "name": "Outer Nebula",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#9900ff",
+            "size": 600,
+            "feather": 95,
+            "opacity": 40,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "radioactive",
+      "name": "Radioactive Glow",
+      "category": "cyber",
+      "tags": ["cyber", "toxic", "warning"],
+      "thumbnail": "./thumbnails/radioactive.webp",
+      "data": {
+        "bgColor": "#0a0a00",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Core",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#ccff00",
+            "size": 200,
+            "feather": 40,
+            "opacity": 100,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Warning Symbol",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ccff00", "opacity": 80 },
+              { "pos": 10, "color": "#000000", "opacity": 0 },
+              { "pos": 23, "color": "#000000", "opacity": 0 },
+              { "pos": 33, "color": "#ccff00", "opacity": 80 },
+              { "pos": 43, "color": "#000000", "opacity": 0 },
+              { "pos": 56, "color": "#000000", "opacity": 0 },
+              { "pos": 66, "color": "#ccff00", "opacity": 80 },
+              { "pos": 76, "color": "#000000", "opacity": 0 },
+              { "pos": 90, "color": "#000000", "opacity": 0 },
+              { "pos": 100, "color": "#ccff00", "opacity": 80 }
+            ]
+          },
+          {
+            "name": "Radiation Field",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#66cc00",
+            "size": 450,
+            "feather": 90,
+            "opacity": 50,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dreamscape",
+      "name": "Lucid Dreams",
+      "category": "abstract",
+      "tags": ["abstract", "dreamy", "surreal"],
+      "thumbnail": "./thumbnails/dreamscape.webp",
+      "data": {
+        "bgColor": "#1a0a2e",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Dream Cloud 1",
+            "type": "radial",
+            "visible": true,
+            "x": 0.2,
+            "y": 0.3,
+            "color": "#ff99cc",
+            "size": 350,
+            "feather": 95,
+            "opacity": 50,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Dream Cloud 2",
+            "type": "radial",
+            "visible": true,
+            "x": 0.8,
+            "y": 0.5,
+            "color": "#99ccff",
+            "size": 300,
+            "feather": 95,
+            "opacity": 45,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Dream Cloud 3",
+            "type": "radial",
+            "visible": true,
+            "x": 0.4,
+            "y": 0.7,
+            "color": "#cc99ff",
+            "size": 400,
+            "feather": 95,
+            "opacity": 40,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Ethereal Swirl",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 45,
+            "blendMode": "overlay",
+            "stops": [
+              { "pos": 0, "color": "#ff99cc", "opacity": 30 },
+              { "pos": 25, "color": "#99ccff", "opacity": 25 },
+              { "pos": 50, "color": "#cc99ff", "opacity": 30 },
+              { "pos": 75, "color": "#99ffcc", "opacity": 25 },
+              { "pos": 100, "color": "#ff99cc", "opacity": 30 }
+            ]
+          }
+        ],
+        "filterState": {
+          "enabled": true,
+          "brightness": 105,
+          "contrast": 95,
+          "saturate": 110
+        }
+      }
+    },
+    {
+      "id": "northern-frost",
+      "name": "Arctic Frost",
+      "category": "cool",
+      "tags": ["cool", "ice", "winter"],
+      "thumbnail": "./thumbnails/northern-frost.webp",
+      "data": {
+        "bgColor": "#0a1a2a",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Frost Pattern",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ffffff", "opacity": 60 },
+              { "pos": 8, "color": "#b3e0ff", "opacity": 40 },
+              { "pos": 16, "color": "#ffffff", "opacity": 60 },
+              { "pos": 24, "color": "#66c2ff", "opacity": 40 },
+              { "pos": 32, "color": "#ffffff", "opacity": 60 },
+              { "pos": 40, "color": "#b3e0ff", "opacity": 40 },
+              { "pos": 48, "color": "#ffffff", "opacity": 60 },
+              { "pos": 56, "color": "#66c2ff", "opacity": 40 },
+              { "pos": 64, "color": "#ffffff", "opacity": 60 },
+              { "pos": 72, "color": "#b3e0ff", "opacity": 40 },
+              { "pos": 80, "color": "#ffffff", "opacity": 60 },
+              { "pos": 88, "color": "#66c2ff", "opacity": 40 },
+              { "pos": 100, "color": "#ffffff", "opacity": 60 }
+            ]
+          },
+          {
+            "name": "Ice Core",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#e6f7ff",
+            "size": 300,
+            "feather": 70,
+            "opacity": 60,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Cold Atmosphere",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 180,
+            "blendMode": "overlay",
+            "stops": [
+              { "pos": 0, "color": "#003366", "opacity": 50 },
+              { "pos": 100, "color": "#001a33", "opacity": 70 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "mystic-portal",
+      "name": "Dimension Rift",
+      "category": "fantasy",
+      "tags": ["fantasy", "portal", "magic"],
+      "thumbnail": "./thumbnails/mystic-portal.webp",
+      "data": {
+        "bgColor": "#05000a",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Portal Ring",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#9933ff", "opacity": 100 },
+              { "pos": 25, "color": "#00ccff", "opacity": 80 },
+              { "pos": 50, "color": "#ff33cc", "opacity": 100 },
+              { "pos": 75, "color": "#00ccff", "opacity": 80 },
+              { "pos": 100, "color": "#9933ff", "opacity": 100 }
+            ]
+          },
+          {
+            "name": "Void Center",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#000000",
+            "size": 150,
+            "feather": 40,
+            "opacity": 100,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Energy Ripple",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#cc00ff",
+            "size": 350,
+            "feather": 70,
+            "opacity": 60,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Outer Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#6600cc",
+            "size": 500,
+            "feather": 90,
+            "opacity": 50,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "candy-pop",
+      "name": "Sugar Rush",
+      "category": "fun",
+      "tags": ["fun", "colorful", "sweet"],
+      "thumbnail": "./thumbnails/candy-pop.webp",
+      "data": {
+        "bgColor": "#fff0f5",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Bubblegum",
+            "type": "radial",
+            "visible": true,
+            "x": 0.2,
+            "y": 0.3,
+            "color": "#ff66b2",
+            "size": 300,
+            "feather": 85,
+            "opacity": 70,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Lemon Drop",
+            "type": "radial",
+            "visible": true,
+            "x": 0.8,
+            "y": 0.4,
+            "color": "#ffff66",
+            "size": 250,
+            "feather": 85,
+            "opacity": 60,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Blue Raspberry",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.8,
+            "color": "#66ccff",
+            "size": 280,
+            "feather": 85,
+            "opacity": 55,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Grape",
+            "type": "radial",
+            "visible": true,
+            "x": 0.3,
+            "y": 0.6,
+            "color": "#cc66ff",
+            "size": 200,
+            "feather": 90,
+            "opacity": 50,
+            "blendMode": "normal"
+          },
+          {
+            "name": "Mint",
+            "type": "radial",
+            "visible": true,
+            "x": 0.7,
+            "y": 0.2,
+            "color": "#66ffcc",
+            "size": 220,
+            "feather": 90,
+            "opacity": 45,
+            "blendMode": "normal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "Synth-Nights",
+      "name": "Synth Nights",
+      "category": "retro",
+      "tags": ["retro", "synth"],
+      "thumbnail": "./thumbnails/Synth-Nights.webp",
+      "data": {
+        "bgColor": "#0a0014",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Synth Wave 1",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.3,
+            "angle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff00ff", "opacity": 80 },
+              { "pos": 50, "color": "#000000", "opacity": 0 },
+              { "pos": 100, "color": "#00ffff", "opacity": 80 }
+            ]
+          },
+          {
+            "name": "Synth Wave 2",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#00ffff", "opacity": 70 },
+              { "pos": 50, "color": "#000000", "opacity": 0 },
+              { "pos": 100, "color": "#ff00ff", "opacity": 70 }
+            ]
+          },
+          {
+            "name": "Synth Wave 3",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.7,
+            "angle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff00ff", "opacity": 60 },
+              { "pos": 50, "color": "#000000", "opacity": 0 },
+              { "pos": 100, "color": "#00ffff", "opacity": 60 }
+            ]
+          },
+          {
+            "name": "Background Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "color": "#6600cc",
+            "size": 500,
+            "feather": 90,
+            "opacity": 40,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "golden-sunset",
+      "name": "Midas Touch",
+      "category": "warm",
+      "tags": ["warm", "gold", "luxury"],
+      "thumbnail": "./thumbnails/golden-sunset.webp",
+      "data": {
+        "bgColor": "#1a1000",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Golden Sky",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 135,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ffd700", "opacity": 80 },
+              { "pos": 25, "color": "#ff9900", "opacity": 70 },
+              { "pos": 50, "color": "#ffcc00", "opacity": 80 },
+              { "pos": 75, "color": "#ff6600", "opacity": 70 },
+              { "pos": 100, "color": "#ffd700", "opacity": 80 }
+            ]
+          },
+          {
+            "name": "Sun Orb",
+            "type": "radial",
+            "visible": true,
+            "x": 0.7,
+            "y": 0.3,
+            "color": "#ffffff",
+            "size": 200,
+            "feather": 60,
+            "opacity": 80,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Warm Haze",
+            "type": "radial",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.8,
+            "color": "#ff3300",
+            "size": 500,
+            "feather": 90,
+            "opacity": 40,
+            "blendMode": "screen"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rainbow",
+      "name": "Rainbow",
+      "category": "colorful",
+      "tags": ["colorful", "fun", "bright"],
+      "thumbnail": "./thumbnails/Rainbow.webp",
+      "data": {
+        "bgColor": "#1a1a2e",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Rainbow",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#ff0000", "opacity": 100 },
+              { "pos": 17, "color": "#ff8000", "opacity": 100 },
+              { "pos": 33, "color": "#ffff00", "opacity": 100 },
+              { "pos": 50, "color": "#00ff00", "opacity": 100 },
+              { "pos": 67, "color": "#0080ff", "opacity": 100 },
+              { "pos": 83, "color": "#8000ff", "opacity": 100 },
+              { "pos": 100, "color": "#ff0000", "opacity": 100 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "Spectrum-Drift",
+      "name": "Spectrum Drift",
+      "category": "modern",
+      "tags": ["minimal", "modern", "popular"],
+      "thumbnail": "./thumbnails/Spectrum-Drift.webp",
+      "data": {
+        "bgColor": "#000",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "id": "sn6iy4",
+            "name": "Spectrum Arc",
+            "type": "conic",
+            "visible": true,
+            "x": 0.49981815017580056,
+            "y": 0.5111037859099669,
+            "color": "#00ff88",
+            "size": 165.00655885551063,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 152,
+            "startAngle": 343,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 13,
+                "color": "#ff0066",
+                "opacity": 35
+              },
+              {
+                "pos": 27,
+                "color": "#ffb703",
+                "opacity": 43
+              },
+              {
+                "pos": 98,
+                "color": "#ffb703",
+                "opacity": 70
+              },
+              {
+                "pos": 99,
+                "color": "#ffb703",
+                "opacity": 51
+              }
+            ]
+          },
+          {
+            "id": "4b9mqy",
+            "name": "Stream",
+            "type": "linear",
+            "visible": true,
+            "x": 0.48733587494446484,
+            "y": 0.5176026788500883,
+            "color": "#ff6600",
+            "size": 107.8124423545514,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 45,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#ffb703",
+                "opacity": 69
+              },
+              {
+                "pos": 33,
+                "color": "#ff0066",
+                "opacity": 75
+              },
+              {
+                "pos": 67,
+                "color": "#ff0066",
+                "opacity": 63
+              },
+              {
+                "pos": 100,
+                "color": "#ff0066",
+                "opacity": 64
+              }
+            ]
+          },
+          {
+            "id": "1cimx3",
+            "name": "Spiral",
+            "type": "conic",
+            "visible": true,
+            "x": 0.15545919287234553,
+            "y": 0.48002715993946765,
+            "color": "#00ffcc",
+            "size": 121.91123234639281,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 38,
+            "startAngle": 118,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 11,
+                "color": "#ff0066",
+                "opacity": 65
+              },
+              {
+                "pos": 24,
+                "color": "#7c3aed",
+                "opacity": 32
+              },
+              {
+                "pos": 45,
+                "color": "#ffb703",
+                "opacity": 61
+              },
+              {
+                "pos": 97,
+                "color": "#ffb703",
+                "opacity": 67
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "universal",
+      "name": "Universal Blend",
+      "category": "minimal",
+      "tags": ["minimal", "bright"],
+      "thumbnail": "./thumbnails/universal.webp",
+      "data": {
+        "bgColor": "#646464",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Radial Glow",
+            "type": "radial",
+            "visible": true,
+            "x": 0.3,
+            "y": 0.3,
+            "color": "#ff4d4d",
+            "size": 400,
+            "feather": 100,
+            "opacity": 60,
+            "blendMode": "screen"
+          },
+          {
+            "name": "Conic Spectrum",
+            "type": "conic",
+            "visible": true,
+            "x": 0.7,
+            "y": 0.5,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#00ffcc", "opacity": 50 },
+              { "pos": 25, "color": "#ff00ff", "opacity": 50 },
+              { "pos": 50, "color": "#ffff00", "opacity": 50 },
+              { "pos": 75, "color": "#ff6600", "opacity": 50 },
+              { "pos": 100, "color": "#00ffcc", "opacity": 50 }
+            ]
+          },
+          {
+            "name": "Linear Accent",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 135,
+            "blendMode": "screen",
+            "stops": [
+              { "pos": 0, "color": "#6600ff", "opacity": 70 },
+              { "pos": 50, "color": "#00ff00", "opacity": 70 },
+              { "pos": 100, "color": "#ff0066", "opacity": 70 }
+            ]
+          }
+        ],
+        "filterState": {
+          "enabled": true,
+          "brightness": 100,
+          "contrast": 110,
+          "saturate": 120,
+          "hue": 0,
+          "blur": 0,
+          "grayscale": 0,
+          "sepia": 0,
+          "invert": 0
+        },
+        "noiseState": {
+          "enabled": true,
+          "opacity": 5,
+          "frequency": 0.6,
+          "blend": "overlay"
+        }
+      }
+    },
+    {
+      "id": "synthwave",
+      "name": "Synthwave",
+      "category": "retro",
+      "tags": ["cyber", "retro", "80s"],
+      "thumbnail": "./thumbnails/test.webp",
+      "data": {
+        "bgColor": "#0f0024",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "id": "xvhvo0",
+            "name": "Conic 3",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 1,
+            "color": "#00ff88",
+            "size": 128.3266725963656,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 24,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#e9ff00",
+                "opacity": 100
+              },
+              {
+                "pos": 9,
+                "color": "#ff0000",
+                "opacity": 100
+              },
+              {
+                "pos": 9,
+                "color": "#00d4ff",
+                "opacity": 0
+              }
+            ]
+          },
+          {
+            "id": "durden",
+            "name": "Conic 3 Copy",
+            "type": "conic",
+            "visible": true,
+            "x": 0.5,
+            "y": 0,
+            "color": "#00ff88",
+            "size": 128.3266725963656,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 24,
+            "startAngle": 180,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#e9ff00",
+                "opacity": 100
+              },
+              {
+                "pos": 9,
+                "color": "#ff0000",
+                "opacity": 100
+              },
+              {
+                "pos": 9,
+                "color": "#00d4ff",
+                "opacity": 0
+              }
+            ]
+          },
+          {
+            "id": "5w4a50",
+            "name": "Linear 9",
+            "type": "linear",
+            "visible": true,
+            "x": 0.7571225210203794,
+            "y": 0.678132226408033,
+            "color": "#00ff88",
+            "size": 179.79254019237285,
+            "feather": 60,
+            "opacity": 100,
+            "angle": 8,
+            "startAngle": 0,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#8f1717",
+                "opacity": 100
+              },
+              {
+                "pos": 100,
+                "color": "#d1bd3c",
+                "opacity": 100
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "electric-storm",
+      "name": "Electric Storm",
+      "category": "nature",
+      "tags": ["nature", "storm", "lightning"],
+      "thumbnail": "./thumbnails/electric-storm.webp",
+      "data": {
+        "bgColor": "#0a0a1a",
+        "bgAlpha": 100,
+        "bgEnabled": true,
+        "bgBlendMode": "normal",
+        "canvasWidth": 800,
+        "canvasHeight": 600,
+        "stops": [
+          {
+            "name": "Thunder Cloud",
+            "type": "radial",
+            "visible": true,
+            "x": 1,
+            "y": 0,
+            "color": "#333366",
+            "size": 500,
+            "feather": 70,
+            "opacity": 70,
+            "blendMode": "multiply",
+            "id": "0b3dh9"
+          },
+          {
+            "name": "Lightning",
+            "type": "linear",
+            "visible": true,
+            "x": 0.5,
+            "y": 0.5,
+            "angle": 75,
+            "blendMode": "screen",
+            "stops": [
+              {
+                "pos": 0,
+                "color": "#0066ff",
+                "opacity": 80
+              },
+              {
+                "pos": 30,
+                "color": "#ffffff",
+                "opacity": 100
+              },
+              {
+                "pos": 31,
+                "color": "#0066ff",
+                "opacity": 60
+              },
+              {
+                "pos": 60,
+                "color": "#ffffff",
+                "opacity": 90
+              },
+              {
+                "pos": 61,
+                "color": "#0066ff",
+                "opacity": 70
+              },
+              {
+                "pos": 100,
+                "color": "#003366",
+                "opacity": 50
+              }
+            ],
+            "id": "v2d80u"
+          }
+        ]
+      }
+    }
+
+  ]
+}

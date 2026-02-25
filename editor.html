@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <!-- SEO -->
+    <title>Olexion - Editor</title>
+    <meta name="description" content="Free online gradient editor with noise effects, filters, and export options. Create stunning gradients and export to CSS, PNG, JPG, WEBP, or SVG.">
+    <meta name="keywords" content="gradient generator, CSS gradient, gradient maker, noise gradient, linear gradient, radial gradient, conic gradient">
+    <meta name="author" content="Olexion">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+  
+    <!-- Canonical -->
+    <link rel="canonical" href="https://olexion.com/editor.html">
+  
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://olexion.com/editor.html">
+    <meta property="og:title" content="Olexion - Editor">
+    <meta property="og:description" content="Free online gradient editor with noise effects, filters, and export options.">
+    <meta property="og:image" content="https://olexion.com/og-image.webp">
+    <meta property="og:site_name" content="Olexion">
+  
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Olexion - CSS Gradient Editor">
+    <meta name="twitter:description" content="Create stunning gradients with noise, filters, and export to CSS or images.">
+    <meta name="twitter:image" content="https://olexion.com/og-image.webp">
+    <meta name="twitter:creator" content="@OlexionHQ">
+  
+    <!-- Theme -->
+    <meta name="theme-color" content="#1c1c1c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="./LOGO.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="./logo-180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./logo-32.png">
+  
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/editor.css">
+    <link rel="stylesheet" href="./css/style.css">
+  
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Olexion",
+      "url": "https://olexion.com/editor.html",
+      "description": "Free online gradient generator with noise effects, filters, and export options.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Linear Gradient",
+        "Radial Gradient",
+        "Conic Gradient",
+        "Noise & Grain Effects",
+        "CSS Filters",
+        "Blend Modes",
+        "PNG/JPG/WEBP/SVG Export",
+        "Responsive CSS Code"
+      ]
+    }
+    </script>
+  </head>
+<body>
+  <div id="zoomIndicator" class="zoom-indicator"></div>
+  <header>
+    <img class="logo" src="./LOGO.svg" alt="logo">
+    <h1 class="name">Olexion</h1>
+    <div style="flex: 1;"></div>
+    <div class="theme-select">
+      <select id="themeSelect">
+        <option value="auto">Auto</option>
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="deep-dark">DeepDark</option>
+        <option value="midnight">MidNight</option>
+      </select>
+    </div>
+    <div class="file">
+      <button onclick="FileManager.importJSON()">
+        <img src="./icon/import.svg" alt="import">
+        Import
+      </button>
+      <button onclick="FileManager.exportJSON()">
+        <img src="./icon/export.svg" alt="export">
+        Export
+      </button>
+    </div>
+  </header>
+  <div class="aspect-ratio-container">
+    <!-- Aspect Ratio Buttons -->
+    <div class="aspect-ratio-row">
+      <label class="Aspect-Ratio-label">Aspect Ratio</label>
+      <div class="aspect-ratio-btns" id="aspectBtns">
+        <button class="aspect-btn active" data-ratio="free" title="Free">
+          Free
+        </button>
+        <button class="aspect-btn" data-ratio="1:1" title="Square">1:1</button>
+        <button class="aspect-btn" data-ratio="4:3" title="4:3">4:3</button>
+        <button class="aspect-btn" data-ratio="16:9" title="Widescreen">16:9</button>
+        <button class="aspect-btn" data-ratio="9:16" title="Portrait">9:16</button>
+      </div>
+    </div>
+    <!-- Aspect Ratio Inputs -->
+    <div class="aspect-input-row">
+      <input type="number" id="aspectW" class="aspect-input-num" placeholder="W" min="1" max="100" title="Aspect Width">
+      <span class="aspect-separator">:</span>
+      <input type="number" id="aspectH" class="aspect-input-num" placeholder="H" min="1" max="100"
+        title="Aspect Height">
+      <button class="aspect-lock-btn" id="aspectLockBtn" title="Lock Aspect Ratio (L)">
+        <img src="./icon/unlock.svg" alt="unlock" id="aspectLockIcon">
+      </button>
+    </div>
+    <div class="resolution-presets">
+      <label class="size-label">size</label>
+      <div class="preset-btns">
+        <button class="preset-btn" data-w="1280" data-h="720">HD</button>
+        <button class="preset-btn" data-w="1920" data-h="1080">FHD</button>
+        <button class="preset-btn" data-w="2560" data-h="1440">2K</button>
+        <button class="preset-btn" data-w="3840" data-h="2160">4K</button>
+      </div>
+    </div>
+    <!-- Size Inputs -->
+    <div class="size-inputs-row">
+      <div class="size-input-group">
+        <label>W</label>
+        <input type="number" id="canvasWidth" class="num-input" min="200" max="3840" value="800">
+      </div>
+
+      <button class="size-link-btn" id="sizeLinkBtn" title="Link dimensions">
+        <img src="./icon/link.svg" alt="link resolutions">
+      </button>
+
+      <div class="size-input-group">
+        <label>H</label>
+        <input type="number" id="canvasHeight" class="num-input" min="200" max="2160" value="600">
+      </div>
+    </div>
+    <!-- Swap Button -->
+    <button class="swap-size-btn" id="swapSizeBtn" title="Swap dimensions (X)">
+      <img src="./icon/swap.svg" alt="swap width & height">
+      <span>Swap</span>
+    </button>
+  </div>
+
+  <div class="canvas-wrap">
+    <div class="tool-bar">
+      <button class="preview-btn" onclick="openFullscreenPreview()" title="Fullscreen Preview">
+        <img src="./icon/full-screen.svg" alt="fullscreen">
+        <span>Fullscreen</span>
+      </button>
+      <button id="panBtn" class="pan-btn" title="Pan Mode (Space)">
+        <img src="./icon/hand.svg" alt="pan tool">
+      </button>
+      <button id="toggleHandles" class="" title="Toggle handle visibility (H)"><img src="./icon/eye.svg"
+          alt="show handel"></button>
+      </button>
+      <!-- Undo/Redo -->
+      <div class="undo-redo-group">
+        <button class="undo-redo-btn" id="undoBtn" onclick="History.undo()" title="Undo - Ctrl+Z" disabled>
+          <img src="./icon/undo.svg" alt="undo">
+        </button>
+        <button class="undo-redo-btn" id="redoBtn" onclick="History.redo()" title="Redo - Ctrl+Y" disabled>
+          <img src="./icon/redo.svg" alt="redo">
+        </button>
+      </div>
+      <button class="animate" id="generateBtn">
+        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M21 12C21 16.9706 16.9706 21 12 21C9.69494 21 7.59227 20.1334 6 18.7083L3 16M3 12C3 7.02944 7.02944 3 12 3C14.3051 3 16.4077 3.86656 18 5.29168L21 8M3 21V16M3 16H8M21 3V8M21 8H16"
+              stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </g>
+        </svg>
+        Generate
+      </button>
+    </div>
+
+    <div class="canvas-container">
+      <div class="canvas-wrapper">
+        <div class="canvas-noise">
+          <canvas id="canvas"></canvas>
+        </div>
+        <div class="resize-w">
+          <div id="resizeWidthHandle" class="resize-width"></div>
+          <button id="btnLock" class="Handle-btn" title="Lock to Center">
+            <img src="./icon/unlock.svg" alt="unlocked">
+          </button>
+        </div>
+        <div class="resize-h">
+          <div id="resizeHeightHandle" class="resize-height"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+      <button id="zoomOut" title="Zoom Out (Ctrl -)"><img src="./icon/minus.svg" alt="Zoom Out"></button>
+      <input type="range" id="zoomSlider" class="zoom-slider" min="25" max="400" value="100">
+      <button id="zoomIn" title="Zoom In (Ctrl +)"><img src="./icon/plus.svg" alt="Zoom in"></button>
+      <span id="zoomValue" class="zoom-value">***</span>
+      <button id="zoomFit" class="zoom-btn" title="Fit (F)"><img src="./icon/fit.svg" alt="Fit"></button>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <div class="panel-content">
+      <div class="section" data-id="Noise">
+        <div class="section-header">
+          <div class="section-title">Noise / Grain</div>
+          <button id="noiseToggleBtn" class="control-btn animate" title="Toggle noise">
+            <img src="./icon/eye.svg" alt="toggle">
+          </button>
+        </div>
+        <div class="section-content noise-controls">
+          <div class="form-row">
+            <label>Strength</label>
+            <input type="number" id="noiseOpacity" class="num-input" min="0" max="100" value="0">
+          </div>
+          <div class="form-row">
+            <label>Noise</label>
+            <input type="number" id="noiseFrequency" class="num-input" min="0.01" max="0.99" step="0.01" value="0.65">
+          </div>
+          <div class="form-row">
+            <label>Blend</label>
+            <select id="noiseBlend" class="noise-blend-select">
+              <option value="normal" selected>Normal</option>
+              <option value="multiply">Multiply</option>
+              <option value="screen">Screen</option>
+              <option value="overlay">Overlay</option>
+              <option value="darken">Darken</option>
+              <option value="lighten">Lighten</option>
+              <option value="color-dodge">Color Dodge</option>
+              <option value="color-burn">Color Burn</option>
+              <option value="hard-light">Hard Light</option>
+              <option value="soft-light">Soft Light</option>
+              <option value="difference">Difference</option>
+              <option value="exclusion">Exclusion</option>
+              <option value="hue">Hue</option>
+              <option value="saturation">Saturation</option>
+              <option value="color">Color</option>
+              <option value="luminosity">Luminosity</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="section" data-id="Filters">
+        <div class="section-header">
+          <div class="section-title">Filters</div>
+          <button id="filtersResetBtn" class="control-btn animate" title="Reset filters">
+            <img src="./icon/reset.svg" alt="reset">
+          </button>
+          <button id="filtersToggleBtn" class="control-btn animate" title="Toggle filters">
+            <img src="./icon/eye.svg" alt="toggle">
+          </button>
+        </div>
+
+        <div class="section-content filter-controls">
+          <!-- Brightness -->
+          <div class="filter-row">
+            <label>Brightness</label>
+            <input type="range" id="filterBrightness" class="filter-slider" min="0" max="200" value="100">
+            <input type="number" id="filterBrightnessNum" class="num-input" min="0" max="200" value="100">
+            <span class="unit">%</span>
+          </div>
+
+          <!-- Contrast -->
+          <div class="filter-row">
+            <label>Contrast</label>
+            <input type="range" id="filterContrast" class="filter-slider" min="0" max="200" value="100">
+            <input type="number" id="filterContrastNum" class="num-input" min="0" max="200" value="100">
+            <span class="unit">%</span>
+          </div>
+
+          <!-- Saturation -->
+          <div class="filter-row">
+            <label>Saturate</label>
+            <input type="range" id="filterSaturate" class="filter-slider" min="0" max="200" value="100">
+            <input type="number" id="filterSaturateNum" class="num-input" min="0" max="200" value="100">
+            <span class="unit">%</span>
+          </div>
+
+          <!-- Hue Rotate -->
+          <div class="filter-row">
+            <label>Hue</label>
+            <input type="range" id="filterHue" class="filter-slider hue-slider" min="0" max="360" value="0">
+            <input type="number" id="filterHueNum" class="num-input" min="0" max="360" value="0">
+            <span class="unit" style="margin-right: 5px;">°</span>
+          </div>
+
+          <!-- Blur -->
+          <div class="filter-row">
+        <label>Blur</label>
+        <input type="range" id="filterBlur" class="filter-slider" min="0" max="100" value="0">
+        <input type="number" id="filterBlurNum" class="num-input" min="0" max="100" value="0">
+        <span class="unit">px</span>
+      </div>
+
+          <!-- Grayscale -->
+          <div class="filter-row">
+            <label>Grayscale</label>
+            <input type="range" id="filterGrayscale" class="filter-slider" min="0" max="100" value="0">
+            <input type="number" id="filterGrayscaleNum" class="num-input" min="0" max="100" value="0">
+            <span class="unit">%</span>
+          </div>
+
+          <!-- Sepia -->
+          <div class="filter-row">
+            <label>Sepia</label>
+            <input type="range" id="filterSepia" class="filter-slider" min="0" max="100" value="0">
+            <input type="number" id="filterSepiaNum" class="num-input" min="0" max="100" value="0">
+            <span class="unit">%</span>
+          </div>
+
+          <!-- Invert -->
+          <div class="filter-row">
+            <label>Invert</label>
+            <input type="range" id="filterInvert" class="filter-slider" min="0" max="100" value="0">
+            <input type="number" id="filterInvertNum" class="num-input" min="0" max="100" value="0">
+            <span class="unit">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="section" data-id="Background">
+        <div class="section-header">
+          <div class="section-title">Background</div>
+          <button id="bgToggleBtn" class="control-btn animate" title="Toggle background">
+            <img src="./icon/eye.svg" alt="toggle">
+          </button>
+        </div>
+
+        <div class="section-content bg-controls">
+          <!-- Color -->
+          <div class="form-row">
+            <label>Color</label>
+            <div class="color-swatch" id="bgBtn">
+              <div class="color-swatch-inner" id="bgPreview"></div>
+            </div>
+          </div>
+
+          <!-- Blend Mode -->
+          <!-- <div class="form-row">
+        <label>Blend</label>
+        <select id="bgBlendMode" class="blend-select">
+          <option value="normal" selected>Normal</option>
+          <option value="multiply">Multiply</option>
+          <option value="screen">Screen</option>
+          <option value="overlay">Overlay</option>
+          <option value="darken">Darken</option>
+          <option value="lighten">Lighten</option>
+          <option value="color-dodge">Color Dodge</option>
+          <option value="color-burn">Color Burn</option>
+          <option value="hard-light">Hard Light</option>
+          <option value="soft-light">Soft Light</option>
+          <option value="difference">Difference</option>
+          <option value="exclusion">Exclusion</option>
+          <option value="hue">Hue</option>
+          <option value="saturation">Saturation</option>
+          <option value="color">Color</option>
+          <option value="luminosity">Luminosity</option>
+        </select>
+      </div> -->
+        </div>
+      </div>
+      <div class="section" data-id="Layers">
+        <div class="section-header">
+          <div class="section-title">Layers</div>
+          <div class="gradient-btn-bar">
+            <button id="btnRadial" class="btn gradient-btn">Radial</button>
+            <button id="btnLinear" class="btn gradient-btn">Linear</button>
+            <button id="btnConic" class="btn gradient-btn">Conic</button>
+          </div>
+          <!-- <button id="btnReset" style="color:var(--danger)">Clear</button> -->
+        </div>
+        <div class="section-content" id="list"></div>
+      </div>
+      <div class="section" data-id="Properties">
+        <div class="section-header">
+          <div class="section-title">Properties</div>
+        </div>
+        <div class="section-content" id="inspector"></div>
+      </div>
+      <div class="section" data-id="Output">
+        <div class="section-header">
+          <div class="section-title">Output</div>
+          <div class="export-btns">
+            <select id="exportSelect">
+              <option value="">Export As...</option>
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+              <option value="webp">WEBP</option>
+              <option value="svg">SVG</option>
+            </select>
+          </div>
+          <div class="Format">
+            <select id="cssFormat">
+              <option value="hex">HEX</option>
+              <option value="rgba">RGBA</option>
+              <option value="hsla">HSLA</option>
+            </select>
+          </div>
+          <button id="copyBtn" class="copy-btn" onclick="copyCSS(this)">
+            <img class="copy-svg" src="./icon/copy.svg" alt="copy">
+            <span>Copy All</span>
+          </button>
+        </div>
+        <div class="section-content">
+          <!-- Gradient CSS -->
+          <div class="output-block">
+            <div class="output-header">
+              <span>Gradient</span>
+              <button class="copy-btn" onclick="copyGradientCSS(this)">
+                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+              </button>
+            </div>
+            <iframe id="cssGradient" class="css-output"></iframe>
+          </div>
+
+          <div class="output-block" id="noiseOutputBlock" style="display:none;">
+            <div class="output-header">
+              <span>Fillter Noise</span>
+              <button class="copy-btn" onclick="copyNoiseCSS(this)">
+                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+              </button>
+            </div>
+            <iframe id="cssNoise" class="css-output css-output-sm"></iframe>
+          </div>
+
+          <div class="output-block" id="svgOutputBlock" style="display:none;">
+            <div class="output-header">
+              <span>Noise SVG</span>
+              <button class="copy-btn" onclick="copySVGFilter(this)">
+                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+              </button>
+            </div>
+            <iframe id="cssSVG" class="css-output css-output-sm"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="./guide.html">Help</a>
+  </aside>
+  </div>
+
+  <div class="picker-overlay" id="pickerOverlay">
+    <div class="picker-modal">
+      <div class="picker-header">
+        <span class="picker-title">Color</span>
+        <button class="picker-close" id="pickerClose">
+          <img src="./icon/close.svg" alt="close">
+        </button>
+      </div>
+
+      <div class="sb-box" id="sbBox">
+        <div class="sb-cursor" id="sbCursor"></div>
+      </div>
+
+      <div class="slider-track hue-track" id="hueTrack">
+        <div class="slider-thumb" id="hueThumb"></div>
+      </div>
+
+      <div class="slider-track alpha-track" id="alphaTrack">
+        <div class="slider-thumb" id="alphaThumb"></div>
+      </div>
+
+      <!-- Recent Colors -->
+      <div class="recent-colors" id="recentColors">
+        <div class="recent-colors-title">Recent</div>
+        <div class="recent-colors-list" id="recentColorsList"></div>
+      </div>
+
+      <div class="picker-inputs">
+        <div class="format-btns">
+          <button class="format-btn" data-f="hex">HEX</button>
+          <button class="format-btn" data-f="rgb">RGB</button>
+          <button class="format-btn" data-f="hsl">HSL</button>
+        </div>
+        <div class="picker-fields" id="fields"></div>
+      </div>
+    </div>
+  </div>
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="noiseFilter" width="100%" height="100%" x="0%" y="0%" filterUnits="objectBoundingBox">
+      <feTurbulence id="noiseTurbulence" type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+  </svg>
+  <script src="./js/core.js"></script>
+  <script src="./js/script.js"></script>
+</body>
+
+</html>
