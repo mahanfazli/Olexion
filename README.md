@@ -1,11 +1,10 @@
 <p align="center">
-  <img src="./logo.svg" width="80" alt="Olexion Logo"/>
+  <img src="LOGO.svg" width="80" alt="Olexion Logo"/>
 </p>
 
 <h1 align="center">Olexion</h1>
 <p align="center"><strong>Advanced Gradient Designer</strong></p>
 
-> A powerful web-based gradient generator with noise, filters, blend modes, and CSS + WebP export.
 
 Olexion is a modern gradient design tool for designers and developers to create advanced backgrounds with multi-layer gradients, noise effects, filters, and **responsive CSS export**.
 
