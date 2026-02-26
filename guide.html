@@ -593,6 +593,25 @@
             <img src="./img/edge-fix.webp" alt="Fixed blur edge result">
           </div>
         </div>
+        <div class="cart">
+          <div class="cart-header">
+            <div class="cart-title">Can a gradient background be applied to text?</div>
+          </div>
+          <div class="cart-content">
+            <p>
+              Yes but CSS does not support gradients directly through the color property.
+              To create a gradient text effect, you apply a gradient as the background and use text clipping so the gradient is displayed only within the text glyphs.
+            </p>
+            <img src="./img/gradient-text.webp" alt="gradient text">
+            <pre>
+              <code>background-image: gradient();
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;</code>
+            </pre>
+            <img src="./img/gradient.webp" alt="gradient">
+          </div>
+        </div>
+
       </div>
       <a href="mailto:support@olexion.com">
         Need More Help ?

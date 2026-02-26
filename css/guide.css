@@ -410,9 +410,7 @@ code {
 }
 
 .cart-content img {
-  margin-block: .5rem;
-  width: 200px;
-  height: 200px;
+  margin: .5rem;
 }
 
 .cart.open .cart-content {
