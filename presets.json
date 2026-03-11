@@ -6,7 +6,7 @@
       "name": "Sunset",
       "category": "warm",
       "tags": ["warm", "sun"],
-      "thumbnail": "./thumbnails/sunset.png",
+      "thumbnail": "./thumbnails/sunset.webp",
       "data": {
         "bgColor": "#1a0a1e",
         "bgAlpha": 100,
@@ -93,7 +93,7 @@
       "name": "Ocean Deep",
       "category": "cool",
       "tags": ["cool", "blue", "calm"],
-      "thumbnail": "./thumbnails/ocean.png",
+      "thumbnail": "./thumbnails/ocean.webp",
       "data": {
         "bgColor": "#001220",
         "bgAlpha": 100,
@@ -158,7 +158,7 @@
       "name": "Aurora",
       "category": "nature",
       "tags": ["nature", "colorful"],
-      "thumbnail": "./thumbnails/aurora.png",
+      "thumbnail": "./thumbnails/aurora.webp",
       "data": {
         "bgColor": "#0a0a1a",
         "bgAlpha": 100,
@@ -203,7 +203,7 @@
       "name": "Galaxy",
       "category": "space",
       "tags": ["space", "purple"],
-      "thumbnail": "./thumbnails/Galaxy.png",
+      "thumbnail": "./thumbnails/Galaxy.webp",
       "data": {
         "bgColor": "#0a0015",
         "bgAlpha": 100,
@@ -278,7 +278,7 @@
       "name": "Neon",
       "category": "cyber",
       "tags": ["cyber", "bright", "popular"],
-      "thumbnail": "./thumbnails/gradient.png",
+      "thumbnail": "./thumbnails/neon.webp",
       "data": {
         "bgColor": "#0a0a14",
         "bgAlpha": 100,

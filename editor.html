@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <!-- SEO -->
-    <title>Olexion - Editor</title>
-    <meta name="description" content="Free online gradient editor with noise effects, filters, and export options. Create stunning gradients and export to CSS, PNG, JPG, WEBP, or SVG.">
-    <meta name="keywords" content="gradient generator, CSS gradient, gradient maker, noise gradient, linear gradient, radial gradient, conic gradient">
-    <meta name="author" content="Olexion">
-    <meta name="robots" content="index, follow, max-image-preview:large">
-  
-    <!-- Canonical -->
-    <link rel="canonical" href="https://olexion.com/editor.html">
-  
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://olexion.com/editor.html">
-    <meta property="og:title" content="Olexion - Editor">
-    <meta property="og:description" content="Free online gradient editor with noise effects, filters, and export options.">
-    <meta property="og:image" content="https://olexion.com/og-image.webp">
-    <meta property="og:site_name" content="Olexion">
-  
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Olexion - CSS Gradient Editor">
-    <meta name="twitter:description" content="Create stunning gradients with noise, filters, and export to CSS or images.">
-    <meta name="twitter:image" content="https://olexion.com/og-image.webp">
-    <meta name="twitter:creator" content="@OlexionHQ">
-  
-    <!-- Theme -->
-    <meta name="theme-color" content="#1c1c1c">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-  
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="./LOGO.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="./logo-180.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./logo-32.png">
-  
-    <!-- Styles -->
-    <link rel="stylesheet" href="./css/editor.css">
-    <link rel="stylesheet" href="./css/style.css">
-  
-    <!-- Structured Data -->
-    <script type="application/ld+json">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Olexion - Editor</title>
+  <meta name="description"
+    content="Free online gradient editor with noise effects, filters, and export options. Create stunning gradients and export to CSS, PNG, JPG, WEBP, or SVG.">
+  <meta name="keywords"
+    content="gradient generator, CSS gradient, gradient maker, noise gradient, linear gradient, radial gradient, conic gradient">
+  <meta name="author" content="Olexion">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://olexion.com/editor.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://olexion.com/editor.html">
+  <meta property="og:title" content="Olexion - Editor">
+  <meta property="og:description"
+    content="Free online gradient editor with noise effects, filters, and export options.">
+  <meta property="og:image" content="https://olexion.com/og-image.webp">
+  <meta property="og:site_name" content="Olexion">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Olexion - CSS Gradient Editor">
+  <meta name="twitter:description"
+    content="Create stunning gradients with noise, filters, and export to CSS or images.">
+  <meta name="twitter:image" content="https://olexion.com/og-image.webp">
+  <meta name="twitter:creator" content="@OlexionHQ">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#1c1c1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="./LOGO.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./logo-180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./logo-32.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./css/editor.css">
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -70,7 +75,8 @@
       ]
     }
     </script>
-  </head>
+</head>
+
 <body>
   <div id="zoomIndicator" class="zoom-indicator"></div>
   <header>
@@ -88,11 +94,41 @@
     </div>
     <div class="file">
       <button onclick="FileManager.importJSON()">
-        <img src="./icon/import.svg" alt="import">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M14.4697 10.4697C14.7626 10.1768 15.2374 10.1768 15.5303 10.4697C15.8232 10.7626 15.8232 11.2374 15.5303 11.5303L12.5303 14.5303C12.2374 14.8232 11.7626 14.8232 11.4697 14.5303L8.46967 11.5303C8.17678 11.2374 8.17678 10.7626 8.46967 10.4697C8.76256 10.1768 9.23744 10.1768 9.53033 10.4697L11.25 12.1893V4C11.25 3.58579 11.5858 3.25 12 3.25C12.4142 3.25 12.75 3.58579 12.75 4V12.1893L14.4697 10.4697Z"
+              fill="#ffffff" />
+            <path
+              d="M20.75 12C20.75 11.5858 20.4142 11.25 20 11.25C19.5858 11.25 19.25 11.5858 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99593 19.25 4.75 16.0041 4.75 12C4.75 11.5858 4.41421 11.25 4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 16.8325 7.16751 20.75 12 20.75C16.8325 20.75 20.75 16.8325 20.75 12Z"
+              fill="#ffffff" />
+          </g>
+
+        </svg>
         Import
       </button>
       <button onclick="FileManager.exportJSON()">
-        <img src="./icon/export.svg" alt="export">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M14.4697 7.53033C14.7626 7.82322 15.2374 7.82322 15.5303 7.53033C15.8232 7.23744 15.8232 6.76256 15.5303 6.46967L12.5303 3.46967C12.2374 3.17678 11.7626 3.17678 11.4697 3.46967L8.46967 6.46967C8.17678 6.76256 8.17678 7.23744 8.46967 7.53033C8.76256 7.82322 9.23744 7.82322 9.53033 7.53033L11.25 5.81066V14C11.25 14.4142 11.5858 14.75 12 14.75C12.4142 14.75 12.75 14.4142 12.75 14V5.81066L14.4697 7.53033Z"
+              fill="#ffffff" />
+            <path
+              d="M20.75 12C20.75 11.5858 20.4142 11.25 20 11.25C19.5858 11.25 19.25 11.5858 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99593 19.25 4.75 16.0041 4.75 12C4.75 11.5858 4.41421 11.25 4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 16.8325 7.16751 20.75 12 20.75C16.8325 20.75 20.75 16.8325 20.75 12Z"
+              fill="#ffffff" />
+          </g>
+
+        </svg>
         Export
       </button>
     </div>
@@ -118,7 +154,15 @@
       <input type="number" id="aspectH" class="aspect-input-num" placeholder="H" min="1" max="100"
         title="Aspect Height">
       <button class="aspect-lock-btn" id="aspectLockBtn" title="Lock Aspect Ratio (L)">
-        <img src="./icon/unlock.svg" alt="unlock" id="aspectLockIcon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+          
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+          
+          </svg>
       </button>
     </div>
     <div class="resolution-presets">
@@ -138,7 +182,19 @@
       </div>
 
       <button class="size-link-btn" id="sizeLinkBtn" title="Link dimensions">
-        <img src="./icon/link.svg" alt="link resolutions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M14 7H16C18.7614 7 21 9.23858 21 12C21 14.7614 18.7614 17 16 17H14M10 7H8C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10M8 12H16"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>
       </button>
 
       <div class="size-input-group">
@@ -148,7 +204,19 @@
     </div>
     <!-- Swap Button -->
     <button class="swap-size-btn" id="swapSizeBtn" title="Swap dimensions (X)">
-      <img src="./icon/swap.svg" alt="swap width & height">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+        <g id="SVGRepo_iconCarrier">
+          <path
+            d="M6 19L3 16M3 16L6 13M3 16H11C12.6569 16 14 14.6569 14 13V12M10 12V11C10 9.34315 11.3431 8 13 8H21M21 8L18 11M21 8L18 5"
+            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+      </svg>
       <span>Swap</span>
     </button>
   </div>
@@ -156,22 +224,92 @@
   <div class="canvas-wrap">
     <div class="tool-bar">
       <button class="preview-btn" onclick="openFullscreenPreview()" title="Fullscreen Preview">
-        <img src="./icon/full-screen.svg" alt="fullscreen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z"
+              fill="#ffffff" />
+            <path
+              d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z"
+              fill="#ffffff" />
+            <path
+              d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z"
+              fill="#ffffff" />
+            <path
+              d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z"
+              fill="#ffffff" />
+          </g>
+
+        </svg>
         <span>Fullscreen</span>
       </button>
       <button id="panBtn" class="pan-btn" title="Pan Mode (Space)">
-        <img src="./icon/hand.svg" alt="pan tool">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="28" height="28" viewBox="0 0 256 256" id="Flat"
+          stroke="#ffffff">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M188,40a27.82979,27.82979,0,0,0-12,2.707V36a27.99792,27.99792,0,0,0-54.64209-8.60278A27.992,27.992,0,0,0,80,52v75.41016l-6.999-12.12354a28.00028,28.00028,0,0,0-48.6709,27.69629C56.77832,211.39941,78.39355,240,128,240a88.09957,88.09957,0,0,0,88-88V68A28.03146,28.03146,0,0,0,188,40Zm12,112a72.08124,72.08124,0,0,1-72,72c-20.17871,0-34.22656-5.45459-46.97461-18.23828-12.499-12.53369-24.77246-32.78565-42.36426-69.90137q-.13916-.293-.30175-.57422a12.00011,12.00011,0,0,1,20.78515-11.99951l21.92774,37.97949a7.9997,7.9997,0,0,0,14.92773-4V52a12,12,0,0,1,24,0v68a8,8,0,0,0,16,0V36a12,12,0,0,1,24,0v84a8,8,0,0,0,16,0V68a12,12,0,0,1,24,0Z" />
+          </g>
+
+        </svg>
       </button>
-      <button id="toggleHandles" class="" title="Toggle handle visibility (H)"><img src="./icon/eye.svg"
-          alt="show handel"></button>
+      <button id="toggleHandles" class="" title="Toggle handle visibility (H)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>
       </button>
       <!-- Undo/Redo -->
       <div class="undo-redo-group">
         <button class="undo-redo-btn" id="undoBtn" onclick="History.undo()" title="Undo - Ctrl+Z" disabled>
-          <img src="./icon/undo.svg" alt="undo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
+
+            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+            <g id="SVGRepo_iconCarrier">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M7.53033 3.46967C7.82322 3.76256 7.82322 4.23744 7.53033 4.53033L5.81066 6.25H15C18.1756 6.25 20.75 8.82436 20.75 12C20.75 15.1756 18.1756 17.75 15 17.75H8.00001C7.58579 17.75 7.25001 17.4142 7.25001 17C7.25001 16.5858 7.58579 16.25 8.00001 16.25H15C17.3472 16.25 19.25 14.3472 19.25 12C19.25 9.65279 17.3472 7.75 15 7.75H5.81066L7.53033 9.46967C7.82322 9.76256 7.82322 10.2374 7.53033 10.5303C7.23744 10.8232 6.76256 10.8232 6.46967 10.5303L3.46967 7.53033C3.17678 7.23744 3.17678 6.76256 3.46967 6.46967L6.46967 3.46967C6.76256 3.17678 7.23744 3.17678 7.53033 3.46967Z"
+                fill="#ffffff" />
+            </g>
+
+          </svg>
         </button>
         <button class="undo-redo-btn" id="redoBtn" onclick="History.redo()" title="Redo - Ctrl+Y" disabled>
-          <img src="./icon/redo.svg" alt="redo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            transform="matrix(-1, 0, 0, 1, 0, 0)">
+
+            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+            <g id="SVGRepo_iconCarrier">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M7.53033 3.46967C7.82322 3.76256 7.82322 4.23744 7.53033 4.53033L5.81066 6.25H15C18.1756 6.25 20.75 8.82436 20.75 12C20.75 15.1756 18.1756 17.75 15 17.75H8.00001C7.58579 17.75 7.25001 17.4142 7.25001 17C7.25001 16.5858 7.58579 16.25 8.00001 16.25H15C17.3472 16.25 19.25 14.3472 19.25 12C19.25 9.65279 17.3472 7.75 15 7.75H5.81066L7.53033 9.46967C7.82322 9.76256 7.82322 10.2374 7.53033 10.5303C7.23744 10.8232 6.76256 10.8232 6.46967 10.5303L3.46967 7.53033C3.17678 7.23744 3.17678 6.76256 3.46967 6.46967L6.46967 3.46967C6.76256 3.17678 7.23744 3.17678 7.53033 3.46967Z"
+                fill="#ffffff" />
+            </g>
+
+          </svg>
         </button>
       </div>
       <button class="animate" id="generateBtn">
@@ -196,7 +334,15 @@
         <div class="resize-w">
           <div id="resizeWidthHandle" class="resize-width"></div>
           <button id="btnLock" class="Handle-btn" title="Lock to Center">
-            <img src="./icon/unlock.svg" alt="unlocked">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+              
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+              
+              </svg>
           </button>
         </div>
         <div class="resize-h">
@@ -207,11 +353,56 @@
 
     <!-- Zoom Controls -->
     <div class="zoom-controls">
-      <button id="zoomOut" title="Zoom Out (Ctrl -)"><img src="./icon/minus.svg" alt="Zoom Out"></button>
+      <button id="zoomOut" title="Zoom Out (Ctrl -)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path d="M6 12L18 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>
+      </button>
       <input type="range" id="zoomSlider" class="zoom-slider" min="25" max="400" value="100">
-      <button id="zoomIn" title="Zoom In (Ctrl +)"><img src="./icon/plus.svg" alt="Zoom in"></button>
+      <button id="zoomIn" title="Zoom In (Ctrl +)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path d="M6 12H18M12 6V18" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </g>
+
+        </svg>
+      </button>
       <span id="zoomValue" class="zoom-value">***</span>
-      <button id="zoomFit" class="zoom-btn" title="Fit (F)"><img src="./icon/fit.svg" alt="Fit"></button>
+      <button id="zoomFit" class="zoom-btn" title="Fit (F)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M3 18.25C3 18.6642 3.33579 19 3.75 19C4.16421 19 4.5 18.6642 4.5 18.25V5.75C4.5 5.33579 4.16421 5 3.75 5C3.33579 5 3 5.33579 3 5.75V18.25Z"
+              fill="#ffffff" />
+            <path
+              d="M19.5 18.25C19.5 18.6642 19.8358 19 20.25 19C20.6642 19 21 18.6642 21 18.25V5.75C21 5.33579 20.6642 5 20.25 5C19.8358 5 19.5 5.33579 19.5 5.75V18.25Z"
+              fill="#ffffff" />
+            <path
+              d="M14.1462 14.0535C13.9284 14.3472 13.9526 14.7638 14.2188 15.0301C14.5117 15.323 14.9866 15.323 15.2795 15.0301L17.6496 12.6627C17.858 12.537 18 12.2869 18 11.9988C18 11.7107 17.8578 11.4606 17.6493 11.335L15.2795 8.96778L15.1954 8.89517C14.9018 8.67731 14.4851 8.70152 14.2188 8.96778L14.1462 9.0519C13.9284 9.34551 13.9526 9.76218 14.2188 10.0284L15.44 11.2498H11.6562L11.6308 11.2517H8.56L9.78115 10.0304L9.86094 9.93645C10.0498 9.67306 10.0474 9.31484 9.85377 9.05386L9.78115 8.96974L9.6872 8.88995C9.42381 8.70108 9.0656 8.70347 8.80461 8.89712L8.72049 8.96974L6.35073 11.337L6.27578 11.3897C6.10886 11.5257 6 11.7487 6 12.0008C6 12.2888 6.14201 12.5389 6.35039 12.6646L8.72049 15.032L8.80461 15.1047C9.09822 15.3225 9.51488 15.2983 9.78115 15.032C10.0474 14.7658 10.0716 14.3491 9.85377 14.0555L9.78115 13.9714L8.56 12.7517H12.3437L12.3691 12.7498H15.44L14.2188 13.9694L14.1462 14.0535Z"
+              fill="#ffffff" />
+          </g>
+
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -221,7 +412,19 @@
         <div class="section-header">
           <div class="section-title">Noise / Grain</div>
           <button id="noiseToggleBtn" class="control-btn animate" title="Toggle noise">
-            <img src="./icon/eye.svg" alt="toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>
           </button>
         </div>
         <div class="section-content noise-controls">
@@ -260,10 +463,34 @@
         <div class="section-header">
           <div class="section-title">Filters</div>
           <button id="filtersResetBtn" class="control-btn animate" title="Reset filters">
-            <img src="./icon/reset.svg" alt="reset">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M21 3V8M21 8H16M21 8L18 5.29168C16.4077 3.86656 14.3051 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.2832 21 19.8675 18.008 20.777 14"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>
           </button>
           <button id="filtersToggleBtn" class="control-btn animate" title="Toggle filters">
-            <img src="./icon/eye.svg" alt="toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>
           </button>
         </div>
 
@@ -302,11 +529,11 @@
 
           <!-- Blur -->
           <div class="filter-row">
-        <label>Blur</label>
-        <input type="range" id="filterBlur" class="filter-slider" min="0" max="100" value="0">
-        <input type="number" id="filterBlurNum" class="num-input" min="0" max="100" value="0">
-        <span class="unit">px</span>
-      </div>
+            <label>Blur</label>
+            <input type="range" id="filterBlur" class="filter-slider" min="0" max="100" value="0">
+            <input type="number" id="filterBlurNum" class="num-input" min="0" max="100" value="0">
+            <span class="unit">px</span>
+          </div>
 
           <!-- Grayscale -->
           <div class="filter-row">
@@ -337,7 +564,19 @@
         <div class="section-header">
           <div class="section-title">Background</div>
           <button id="bgToggleBtn" class="control-btn animate" title="Toggle background">
-            <img src="./icon/eye.svg" alt="toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>
           </button>
         </div>
 
@@ -412,7 +651,22 @@
             </select>
           </div>
           <button id="copyBtn" class="copy-btn" onclick="copyCSS(this)">
-            <img class="copy-svg" src="./icon/copy.svg" alt="copy">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
+                  fill="#ffffff" />
+                <path
+                  d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
+                  fill="#ffffff" />
+              </g>
+
+            </svg>
             <span>Copy All</span>
           </button>
         </div>
@@ -422,7 +676,22 @@
             <div class="output-header">
               <span>Gradient</span>
               <button class="copy-btn" onclick="copyGradientCSS(this)">
-                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+
+                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                  <g id="SVGRepo_iconCarrier">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
+                      fill="#ffffff" />
+                    <path
+                      d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
+                      fill="#ffffff" />
+                  </g>
+
+                </svg>Copy
               </button>
             </div>
             <iframe id="cssGradient" class="css-output"></iframe>
@@ -432,7 +701,22 @@
             <div class="output-header">
               <span>Fillter Noise</span>
               <button class="copy-btn" onclick="copyNoiseCSS(this)">
-                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+
+                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                  <g id="SVGRepo_iconCarrier">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
+                      fill="#ffffff" />
+                    <path
+                      d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
+                      fill="#ffffff" />
+                  </g>
+
+                </svg>Copy
               </button>
             </div>
             <iframe id="cssNoise" class="css-output css-output-sm"></iframe>
@@ -442,7 +726,22 @@
             <div class="output-header">
               <span>Noise SVG</span>
               <button class="copy-btn" onclick="copySVGFilter(this)">
-                <img class="copy-svg" src="./icon/copy.svg" alt="copy">Copy
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+
+                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                  <g id="SVGRepo_iconCarrier">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
+                      fill="#ffffff" />
+                    <path
+                      d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
+                      fill="#ffffff" />
+                  </g>
+
+                </svg>Copy
               </button>
             </div>
             <iframe id="cssSVG" class="css-output css-output-sm"></iframe>
@@ -459,7 +758,15 @@
       <div class="picker-header">
         <span class="picker-title">Color</span>
         <button class="picker-close" id="pickerClose">
-          <img src="./icon/close.svg" alt="close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+            <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+            
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+            
+            <g id="SVGRepo_iconCarrier"> <path d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z" fill="#ffffff"/> </g>
+            
+            </svg>
         </button>
       </div>
 

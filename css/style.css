@@ -110,6 +110,10 @@
   tap-highlight-color: transparent;
 }
 
+*::selection{
+  background: #00ebc07c;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -173,6 +177,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 2px;
   background: none;
   border: 1px solid var(--border);
   color: inherit;

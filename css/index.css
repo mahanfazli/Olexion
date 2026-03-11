@@ -1015,7 +1015,7 @@
 .footer-version {
   margin-top: 8px;
   font-size: 0.8rem;
-  opacity: 0.4;
+  opacity: 0.4 !important;
 }
 
 /* ========================================
@@ -1240,6 +1240,10 @@
   
   .nav-list{
     gap: 12px;
+  }
+  
+  .nav-link {
+    font-size: 13px;
   }
 
   .hero-section {

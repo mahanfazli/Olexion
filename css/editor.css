@@ -859,6 +859,7 @@ header h1 {
 .zoom-controls button {
   width: 32px;
   height: 32px;
+  padding: 6px !important;
   border: none;
   border-radius: 50%;
   background: var(--bg-transparent);
@@ -1208,14 +1209,9 @@ button.sm {
   color: var(--text-primary);
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  transition: var(--btn-transition);
 }
 
 .sm:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: var(--shadow);
   background: var(--accent-gradient);
   color: var(--text-contrast);
 }
@@ -1480,9 +1476,10 @@ button.sm {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 11px;
+  padding: 0;
 }
 
 .control-btn img {

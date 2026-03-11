@@ -129,6 +129,7 @@ code {
   margin-top: 0.5rem;
   font-size: 0.9rem;
   overflow-x: auto;
+  cursor: text;
 }
 
 .description-box {
@@ -455,15 +456,6 @@ code {
     padding: 0 16px;
   }
 
-  .nav-list {
-    gap: 20px;
-  }
-
-  .nav-link {
-    font-size: 13px;
-  }
-
-
   h2 {
     font-size: 26px;
   }
@@ -471,6 +463,7 @@ code {
   .container {
     margin-block: 5rem;
     gap: 1.5rem;
+    justify-content: center;
   }
 
   main {
@@ -502,10 +495,6 @@ code {
     opacity: 1;
   }
 
-  .nav-list {
-    gap: 12px;
-  }
-
   .header-right {
     gap: 10px;
   }
@@ -528,7 +517,6 @@ code {
   .container {
     margin-block: 3rem;
     gap: 1rem;
-    justify-content: center;
   }
 
   main {
@@ -593,6 +581,14 @@ code {
   .header-cta svg {
     width: 14px;
     height: 14px;
+  }
+  
+  .nav-list {
+    gap: 12px;
+  }
+
+  .nav-link {
+    font-size: 13px;
   }
 
   h2 {
