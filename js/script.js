@@ -22,6 +22,11 @@ function applyTheme(theme) {
   if (themeMeta && themeColors[finalTheme]) {
     themeMeta.setAttribute("content", themeColors[finalTheme]);
   }
+  
+  if (typeof refresh !== 'undefined') {
+    refresh();
+  }
+  
 }
 
 const savedTheme = localStorage.getItem("theme") || "auto";
@@ -119,4 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }, 100);
+});
+
+const buttons = document.querySelectorAll('.animate');
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.remove('run');
+    void btn.offsetWidth;        
+    btn.classList.add('run');
+  });
 });

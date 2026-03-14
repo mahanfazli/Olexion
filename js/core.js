@@ -16,18 +16,25 @@ const CONFIG = {
   colors: {
     palette: [
       "#ff0066",
-      "#00ff88",
       "#7c3aed",
       "#ff6600",
-      "#00d4ff",
       "#ffdd00",
       "#ff3366",
       "#00ffcc",
+      "#3a0ca3",
+      "#00d4ff",
+      "#00ff88",
+      "#b3945b",
+      "#fb5607",
+      "#119da4",
+      "#cf9893",
+      "#6968a6",
+      "#dd7a83",
+      "#3f5e96",
+      "#010528",
     ],
   },
 };
-
-// const STORAGE_KEY = 'gradient-designer-state-v1';
 
 // ========== DOM ELEMENTS ==========
 const canvas = document.getElementById("canvas");
@@ -75,36 +82,6 @@ let sbDrag = false,
   alphaDrag = false;
 let pickerDragging = false;
 
-// ========== ASPECT RATIO & RESOLUTION STATE ==========
-const aspectPresets = {
-  free: { w: null, h: null },
-  "1:1": { w: 1, h: 1 },
-  "4:3": { w: 4, h: 3 },
-  "3:4": { w: 3, h: 4 },
-  "16:9": { w: 16, h: 9 },
-  "9:16": { w: 9, h: 16 },
-};
-
-const resolutionPresets = {
-  "1280x720": { w: 1280, h: 720, name: "HD" },
-  "1920x1080": { w: 1920, h: 1080, name: "FHD" },
-  "2560x1440": { w: 2560, h: 1440, name: "2K" },
-  "3840x2160": { w: 3840, h: 2160, name: "4K" },
-};
-
-const dimensionState = {
-  // Aspect Ratio
-  aspectLocked: false,
-  aspectW: null,
-  aspectH: null,
-  aspectRatio: null,
-  activeAspectPreset: "free",
-
-  // Resolution
-  activeResolutionPreset: null,
-  isResolutionMode: false,
-};
-
 // ========== ZOOM STATE ==========
 const zoomState = {
   current: 100,
@@ -126,12 +103,6 @@ function isMobile() {
   return (
     window.innerWidth <= CONFIG.mobile.breakpoint || "ontouchstart" in window
   );
-}
-
-function getHitRadius() {
-  const scale = Math.max(W, H) / 800;
-  const radius = 25 * scale;
-  return clamp(radius, 20, 60);
 }
 
 function getGCD(a, b) {
@@ -381,14 +352,6 @@ function randColor() {
   ];
 }
 
-function isLight(hex) {
-  hex = hex.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000 > 155;
-}
-
 function darken(hex, amount = 40) {
   hex = hex.replace("#", "");
   let r = Math.max(0, parseInt(hex.substring(0, 2), 16) - amount);
@@ -415,15 +378,192 @@ function lighten(hex, amount = 20) {
   );
 }
 
-// ========== UNDO/REDO SYSTEM ==========
+// ========== FILE MANAGER ==========
+const FileManager = {
+  AUTO_SAVE_KEY: "AutoSave",
+  AUTO_SAVE_DELAY: 500,
+  autoSaveTimer: null,
+  initialized: false,
+
+  getState() {
+    return {
+      timestamp: Date.now(),
+      stops: state.stops,
+      selected: state.selected,
+      bgColor: state.bgColor,
+      bgAlpha: state.bgAlpha,
+      bgBlendMode: state.bgBlendMode,
+      bgEnabled: state.bgEnabled,
+      bgImage: state.bgImage || null,
+      cssFormat: state.cssFormat,
+      canvasWidth: state.canvasWidth,
+      canvasHeight: state.canvasHeight,
+      lockVertical: state.lockVertical,
+      showHandles: state.showHandles,
+      filterState: { ...filterState },
+      noiseState: { ...noiseState },
+      dimensionState: { ...dimensionState },
+    };
+  },
+
+  setState(data) {
+    if (!data) return false;
+    try {
+      if (data.stops)
+        state.stops = data.stops.map((s) => ({ ...s, id: s.id || uid() }));
+      state.selected = data.selected || null;
+      state.bgColor = data.bgColor || "#0a0e14";
+      state.bgAlpha = data.bgAlpha ?? 100;
+      state.bgBlendMode = data.bgBlendMode || "normal";
+      state.bgEnabled = data.bgEnabled ?? true;
+      state.bgImage = data.bgImage || null;
+      state.cssFormat = data.cssFormat || "rgba";
+      state.canvasWidth = data.canvasWidth || 800;
+      state.canvasHeight = data.canvasHeight || 600;
+      state.lockVertical = data.lockVertical ?? false;
+      state.showHandles = data.showHandles ?? true;
+      if (data.filterState) Object.assign(filterState, data.filterState);
+      if (data.noiseState) Object.assign(noiseState, data.noiseState);
+      if (data.dimensionState)
+        Object.assign(dimensionState, data.dimensionState);
+      if (data.counter !== undefined) counter = data.counter;
+      return true;
+    } catch (e) {
+      console.error("setState error:", e);
+      return false;
+    }
+  },
+
+  scheduleAutoSave() {
+    if (!this.initialized) return;
+    clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = setTimeout(() => {
+      this.autoSave();
+    }, this.AUTO_SAVE_DELAY);
+  },
+
+  autoSave() {
+    if (!this.initialized) return;
+    try {
+      const data = this.getState();
+      localStorage.setItem(this.AUTO_SAVE_KEY, JSON.stringify(data));
+      console.log("✅ Auto-saved at", new Date().toLocaleTimeString());
+    } catch (e) {
+      console.warn("Auto-save failed:", e);
+    }
+  },
+
+  loadAutoSave() {
+    try {
+      const saved = localStorage.getItem(this.AUTO_SAVE_KEY);
+      if (!saved) {
+        console.log("ℹ️ No auto-save found");
+        return false;
+      }
+
+      const data = JSON.parse(saved);
+      console.log(
+        "📂 Found auto-save from:",
+        new Date(data.timestamp).toLocaleString(),
+      );
+
+      if (this.setState(data)) {
+        counter = state.stops.length;
+        console.log("✅ Auto-save loaded, stops:", state.stops.length);
+        return true;
+      }
+    } catch (e) {
+      console.error("Failed to load auto-save:", e);
+      localStorage.removeItem(this.AUTO_SAVE_KEY);
+    }
+    return false;
+  },
+
+  clearAutoSave() {
+    localStorage.removeItem(this.AUTO_SAVE_KEY);
+    console.log("🗑️ Auto-save cleared");
+  },
+
+  exportJSON() {
+    const data = this.getState();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `gradient-${Date.now()}.json`;
+    a.click();
+  },
+
+  importJSON() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        History.saveState();
+        if (this.setState(data)) {
+          counter = state.stops.length;
+          this.refreshAll();
+          History.clear();
+          this.autoSave();
+        }
+      } catch (err) {
+        console.error("Import failed:", err);
+      }
+    };
+    input.click();
+  },
+
+  loadPresetFromSession() {
+    const json = sessionStorage.getItem("loadPreset");
+    if (!json) return false;
+    sessionStorage.removeItem("loadPreset");
+    try {
+      const preset = JSON.parse(json);
+      if (this.setState(preset.data)) {
+        counter = state.stops.length;
+        console.log("✅ Session preset loaded");
+        return true;
+      }
+    } catch (e) {
+      console.error("Session preset load failed:", e);
+    }
+    return false;
+  },
+
+  refreshAll() {
+    // چک کردن وجود توابع قبل از اجرا
+    if (typeof resize === "function") resize();
+    if (typeof draw === "function") draw();
+    if (typeof renderList === "function") renderList();
+    if (typeof renderInspector === "function") renderInspector();
+    if (typeof updateCSS === "function") updateCSS();
+    if (typeof updateBgPreview === "function") updateBgPreview();
+    if (typeof updateSizeInputs === "function") updateSizeInputs();
+    if (typeof updateAllDimensionUI === "function") updateAllDimensionUI();
+    if (typeof updateFilterUI === "function") updateFilterUI();
+    if (typeof updateNoiseUI === "function") updateNoiseUI();
+    if (typeof updateBgUI === "function") updateBgUI();
+    if (typeof updateZoomUI === "function") updateZoomUI();
+    if (typeof applyNoiseFilter === "function") applyNoiseFilter();
+    if (typeof fitToScreen === "function") fitToScreen();
+    if (typeof initFiltersFromState === "function") initFiltersFromState();
+  },
+};
+
+// ------ UNDO/REDO SYSTEM ------
 const History = {
   undoStack: [],
   redoStack: [],
   maxSize: 50,
   isRestoring: false,
   lastSnapshot: null,
-  inputSnapshot: null, // برای input ها
-  dragSnapshot: null, // برای drag
+  inputSnapshot: null,
+  dragSnapshot: null,
 
   createSnapshot() {
     return JSON.stringify({
@@ -852,197 +992,18 @@ const History = {
   },
 };
 
-// ========== HELPER FUNCTIONS برای Inspector ==========
-// این توابع با onfocus و onblur کار می‌کنن
-
 function HF() {
   History.onInputFocus();
-} // History Focus
+}
+
 function HB() {
   History.onInputBlur();
-} // History Blur
+}
 
 window.HF = HF;
 window.HB = HB;
 
-// ========== FILE MANAGER ==========
-const FileManager = {
-  AUTO_SAVE_KEY: "AutoSave",
-  AUTO_SAVE_DELAY: 500,
-  autoSaveTimer: null,
-  initialized: false, // اضافه شد
-
-  getState() {
-    return {
-      timestamp: Date.now(),
-      stops: state.stops,
-      selected: state.selected,
-      bgColor: state.bgColor,
-      bgAlpha: state.bgAlpha,
-      bgBlendMode: state.bgBlendMode,
-      bgEnabled: state.bgEnabled,
-      bgImage: state.bgImage || null,
-      cssFormat: state.cssFormat,
-      canvasWidth: state.canvasWidth,
-      canvasHeight: state.canvasHeight,
-      lockVertical: state.lockVertical,
-      showHandles: state.showHandles,
-      filterState: { ...filterState },
-      noiseState: { ...noiseState },
-      dimensionState: { ...dimensionState },
-    };
-  },
-
-  setState(data) {
-    if (!data) return false;
-    try {
-      if (data.stops)
-        state.stops = data.stops.map((s) => ({ ...s, id: s.id || uid() }));
-      state.selected = data.selected || null;
-      state.bgColor = data.bgColor || "#0a0e14";
-      state.bgAlpha = data.bgAlpha ?? 100;
-      state.bgBlendMode = data.bgBlendMode || "normal";
-      state.bgEnabled = data.bgEnabled ?? true;
-      state.bgImage = data.bgImage || null;
-      state.cssFormat = data.cssFormat || "rgba";
-      state.canvasWidth = data.canvasWidth || 800;
-      state.canvasHeight = data.canvasHeight || 600;
-      state.lockVertical = data.lockVertical ?? false;
-      state.showHandles = data.showHandles ?? true;
-      if (data.filterState) Object.assign(filterState, data.filterState);
-      if (data.noiseState) Object.assign(noiseState, data.noiseState);
-      if (data.dimensionState)
-        Object.assign(dimensionState, data.dimensionState);
-      if (data.counter !== undefined) counter = data.counter;
-      return true;
-    } catch (e) {
-      console.error("setState error:", e);
-      return false;
-    }
-  },
-
-  scheduleAutoSave() {
-    if (!this.initialized) return; // جلوگیری از save قبل از init
-    clearTimeout(this.autoSaveTimer);
-    this.autoSaveTimer = setTimeout(() => {
-      this.autoSave();
-    }, this.AUTO_SAVE_DELAY);
-  },
-
-  autoSave() {
-    if (!this.initialized) return;
-    try {
-      const data = this.getState();
-      localStorage.setItem(this.AUTO_SAVE_KEY, JSON.stringify(data));
-      console.log("✅ Auto-saved at", new Date().toLocaleTimeString());
-    } catch (e) {
-      console.warn("Auto-save failed:", e);
-    }
-  },
-
-  loadAutoSave() {
-    try {
-      const saved = localStorage.getItem(this.AUTO_SAVE_KEY);
-      if (!saved) {
-        console.log("ℹ️ No auto-save found");
-        return false;
-      }
-
-      const data = JSON.parse(saved);
-      console.log(
-        "📂 Found auto-save from:",
-        new Date(data.timestamp).toLocaleString(),
-      );
-
-      if (this.setState(data)) {
-        counter = state.stops.length;
-        console.log("✅ Auto-save loaded, stops:", state.stops.length);
-        return true;
-      }
-    } catch (e) {
-      console.error("Failed to load auto-save:", e);
-      localStorage.removeItem(this.AUTO_SAVE_KEY); // پاک کردن داده خراب
-    }
-    return false;
-  },
-
-  clearAutoSave() {
-    localStorage.removeItem(this.AUTO_SAVE_KEY);
-    console.log("🗑️ Auto-save cleared");
-  },
-
-  exportJSON() {
-    const data = this.getState();
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `gradient-${Date.now()}.json`;
-    a.click();
-  },
-
-  importJSON() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        const data = JSON.parse(await file.text());
-        History.saveState();
-        if (this.setState(data)) {
-          counter = state.stops.length;
-          this.refreshAll();
-          History.clear();
-          this.autoSave();
-        }
-      } catch (err) {
-        console.error("Import failed:", err);
-      }
-    };
-    input.click();
-  },
-
-  loadPresetFromSession() {
-    const json = sessionStorage.getItem("loadPreset");
-    if (!json) return false;
-    sessionStorage.removeItem("loadPreset");
-    try {
-      const preset = JSON.parse(json);
-      if (this.setState(preset.data)) {
-        counter = state.stops.length;
-        console.log("✅ Session preset loaded");
-        return true;
-      }
-    } catch (e) {
-      console.error("Session preset load failed:", e);
-    }
-    return false;
-  },
-
-  refreshAll() {
-    // چک کردن وجود توابع قبل از اجرا
-    if (typeof resize === "function") resize();
-    if (typeof draw === "function") draw();
-    if (typeof renderList === "function") renderList();
-    if (typeof renderInspector === "function") renderInspector();
-    if (typeof updateCSS === "function") updateCSS();
-    if (typeof updateBgPreview === "function") updateBgPreview();
-    if (typeof updateSizeInputs === "function") updateSizeInputs();
-    if (typeof updateAllDimensionUI === "function") updateAllDimensionUI();
-    if (typeof updateFilterUI === "function") updateFilterUI();
-    if (typeof updateNoiseUI === "function") updateNoiseUI();
-    if (typeof updateBgUI === "function") updateBgUI();
-    if (typeof updateZoomUI === "function") updateZoomUI();
-    if (typeof applyNoiseFilter === "function") applyNoiseFilter();
-    if (typeof fitToScreen === "function") fitToScreen();
-    if (typeof initFiltersFromState === "function") initFiltersFromState();
-  },
-};
-
-// ========== KEYBOARD ==========
+// ------ KEYBOARD ------
 document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
     if (e.key === "Escape") e.target.blur();
@@ -1064,14 +1025,14 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ========== AUTO SAVE TRIGGER ==========
+// ------ AUTO SAVE TRIGGER ------
 const originalHistorySaveState = History.saveState;
 History.saveState = function () {
   originalHistorySaveState.call(this);
   FileManager.scheduleAutoSave();
 };
 
-// ========== INIT ==========
+// ------ INIT ------
 function initFileManager() {
   console.log("🚀 Initializing FileManager...");
 
@@ -1102,18 +1063,14 @@ function initFileManager() {
   console.log("✅ FileManager initialized");
 }
 
-// اجرا بعد از لود کامل صفحه
 if (document.readyState === "complete") {
-  // اگه صفحه کامل لود شده
   setTimeout(initFileManager, 100);
 } else {
-  // صبر برای لود کامل
   window.addEventListener("load", () => {
     setTimeout(initFileManager, 100);
   });
 }
 
-// Export globals
 window.History = History;
 window.FileManager = FileManager;
 window.undo = () => History.undo();
@@ -1121,21 +1078,21 @@ window.redo = () => History.redo();
 window.exportJSON = () => FileManager.exportJSON();
 window.importJSON = () => FileManager.importJSON();
 
-// ========== SECTION DRAG & DROP - TOUCH + MOUSE ==========
+// ========== SECTION DRAG & DROP - PANEL ==========
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".panel");
   if (!container) return;
 
-  // ========== CONFIG ==========
+  // ------ CONFIG ------
   const STORAGE_KEY = "section-order";
   const DRAG_CONFIG = {
-    delay: 300, // ⬆️ افزایش از 200 به 400 - نگه داشتن بیشتر لازمه
-    scrollThreshold: 8, // ⬇️ کاهش از 15 به 8 - حساسیت بیشتر به اسکرول
+    delay: 300,
+    scrollThreshold: 8,
     throttleMs: 16,
-    moveCancel: 10, // 🆕 حداقل حرکت برای لغو درگ
+    moveCancel: 10,
   };
 
-  // ========== STATE ==========
+  // ------ STATE ------
   const sectionDrag = {
     active: false,
     pending: false,
@@ -1150,12 +1107,11 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollCancelled: false,
     rafId: null,
     lastMoveTime: 0,
-    // 🆕 فیلدهای جدید
     initialScrollTop: 0,
     touchId: null,
   };
 
-  // ========== LOAD ORDER FROM STORAGE ==========
+  // ------ LOAD ORDER FROM STORAGE ------
   function loadOrder() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -1186,7 +1142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== SAVE ORDER TO STORAGE ==========
+  // ------ SAVE ORDER TO STORAGE ------
   function saveOrder() {
     try {
       const sections = container.querySelectorAll(
@@ -1209,7 +1165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== INIT ==========
+  // ------ INIT ------
   loadOrder();
 
   container.querySelectorAll(".section").forEach((section) => {
@@ -1225,7 +1181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== MOUSE ==========
     header.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest("select, input, button, a, .control-btn")) return;
+      if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
       e.preventDefault();
       startPending(section, e.clientX, e.clientY, null);
     });
@@ -1235,19 +1191,17 @@ document.addEventListener("DOMContentLoaded", () => {
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn")) return;
+        if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
 
-        // 🆕 فقط pending ست کن، اسکرول رو بلاک نکن
         const touch = e.touches[0];
         startPending(section, touch.clientX, touch.clientY, touch.identifier);
       },
       { passive: true },
-    ); // ✅ passive: true → اسکرول بلاک نمیشه
+    );
   });
 
-  // ========== START PENDING ==========
+  // ------ START PENDING ------
   function startPending(section, clientX, clientY, touchId) {
-    // 🆕 اگر قبلاً pending هست، لغو کن
     if (sectionDrag.pending || sectionDrag.active) {
       cancelPending();
     }
@@ -1263,14 +1217,12 @@ document.addEventListener("DOMContentLoaded", () => {
       initialRect: rect,
       scrollCancelled: false,
       touchId: touchId,
-      // 🆕 ذخیره scroll position فعلی
       initialScrollTop: window.scrollY || document.documentElement.scrollTop,
     });
 
     sectionDrag.delayTimer = setTimeout(() => {
       if (!sectionDrag.pending || sectionDrag.scrollCancelled) return;
 
-      // 🆕 بررسی مجدد: آیا صفحه اسکرول شده؟
       const currentScroll =
         window.scrollY || document.documentElement.scrollTop;
       if (Math.abs(currentScroll - sectionDrag.initialScrollTop) > 2) {
@@ -1283,23 +1235,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onEnd);
-    document.addEventListener("touchmove", onTouchMovePending, {
-      passive: true,
-    });
+    document.addEventListener("touchmove", onTouchMovePending, {passive: true});
     document.addEventListener("touchend", onEnd);
     document.addEventListener("touchcancel", onEnd);
-
-    // 🆕 اسکرول صفحه هم چک بشه
     window.addEventListener("scroll", onScrollDuringPending, { passive: true });
   }
 
-  // 🆕 ========== SCROLL DETECTION DURING PENDING ==========
+  // ------ SCROLL DETECTION DURING PENDING ------
   function onScrollDuringPending() {
     if (!sectionDrag.pending || sectionDrag.active) return;
     cancelPending();
   }
 
-  // 🆕 ========== CANCEL PENDING ==========
+  // ------ CANCEL PENDING ------
   function cancelPending() {
     clearTimeout(sectionDrag.delayTimer);
     sectionDrag.pending = false;
@@ -1317,7 +1265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🆕 ========== TOUCH MOVE DURING PENDING (passive) ==========
+  // ------ TOUCH MOVE DURING PENDING (passive) ------
   function onTouchMovePending(e) {
     if (!sectionDrag.pending || sectionDrag.active) {
       // اگر active شده، سوئیچ به onMove اصلی
@@ -1342,7 +1290,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🆕 ========== GET CORRECT TOUCH ==========
+  // ------ GET CORRECT TOUCH ------
   function getTouch(e) {
     if (!e.touches) return null;
     if (sectionDrag.touchId === null) return e.touches[0];
@@ -1355,12 +1303,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return null;
   }
 
-  // ========== ON MOVE (ONLY WHEN ACTIVE) ==========
+  // ------ ON MOVE (ONLY WHEN ACTIVE) ------
   function onMove(e) {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-    // در حالت pending (فقط برای mouse)
     if (sectionDrag.pending && !sectionDrag.active) {
       const dx = Math.abs(clientX - sectionDrag.startX);
       const dy = Math.abs(clientY - sectionDrag.startY);
@@ -1381,7 +1328,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onMoveActive(e);
   }
 
-  // 🆕 ========== MOVE ACTIVE (shared logic) ==========
+  // ------ MOVE ACTIVE (shared logic) ------
   function onMoveActive(e) {
     if (!sectionDrag.active || !sectionDrag.clone) return;
 
@@ -1408,7 +1355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ========== UPDATE PLACEHOLDER ==========
+  // ------ UPDATE PLACEHOLDER ------
   function updatePlaceholderPosition(clientY) {
     const sections = container.querySelectorAll(
       ".section:not(.drag-original):not(.section-drag-placeholder)",
@@ -1448,7 +1395,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== START ACTUAL DRAG ==========
+  // ------ START ACTUAL DRAG ------
   function startActualDrag() {
     if (sectionDrag.active || !sectionDrag.element) return;
 
@@ -1458,13 +1405,11 @@ document.addEventListener("DOMContentLoaded", () => {
     sectionDrag.pending = false;
     sectionDrag.active = true;
 
-    // 🆕 حالا که active شد، listener با preventDefault اضافه کن
     document.removeEventListener("touchmove", onTouchMovePending);
     document.addEventListener("touchmove", onTouchMoveActive, {
       passive: false,
-    }); // ✅ non-passive
+    });
 
-    // 🆕 حذف scroll listener
     window.removeEventListener("scroll", onScrollDuringPending);
 
     // Clone
@@ -1479,9 +1424,9 @@ document.addEventListener("DOMContentLoaded", () => {
       zIndex: "10000",
       pointerEvents: "none",
       opacity: "0.95",
-      boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
-      borderRadius: "8px",
-      background: "var(--TransParent-bg)",
+      boxShadow: "var(--shadow)",
+      borderRadius: "12px",
+      background: "var(--bg-transparent)",
       backdropFilter: "blur(6px)",
       border: "2px solid var(--border)",
       willChange: "transform",
@@ -1496,12 +1441,11 @@ document.addEventListener("DOMContentLoaded", () => {
       height: rect.height + "px",
       marginBottom: "18px",
       border: "2px dashed var(--border)",
-      borderRadius: "8px",
+      borderRadius: "12px",
       background: "rgba(255,255,255,0.05)",
       transition: "height 0.2s ease",
     });
 
-    // مخفی کردن اصلی
     section.classList.add("drag-original");
     Object.assign(section.style, {
       opacity: "0",
@@ -1521,10 +1465,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (navigator.vibrate) navigator.vibrate(30);
   }
 
-  // 🆕 ========== TOUCH MOVE WHEN ACTIVE (non-passive) ==========
+  // ------ TOUCH MOVE WHEN ACTIVE (non-passive) ------
   function onTouchMoveActive(e) {
     if (!sectionDrag.active || !sectionDrag.clone) return;
-    e.preventDefault(); // ✅ جلوگیری از اسکرول حین درگ
+    e.preventDefault();
 
     const touch = getTouch(e);
     if (!touch) return;
@@ -1547,7 +1491,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🆕 ========== REMOVE ALL LISTENERS ==========
+  // ------ REMOVE ALL LISTENERS ------
   function removeAllListeners() {
     document.removeEventListener("mousemove", onMove);
     document.removeEventListener("mouseup", onEnd);
@@ -1558,7 +1502,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.removeEventListener("scroll", onScrollDuringPending);
   }
 
-  // ========== ON END ==========
+  // ------ ON END ------
   function onEnd() {
     clearTimeout(sectionDrag.delayTimer);
     if (sectionDrag.rafId) cancelAnimationFrame(sectionDrag.rafId);
@@ -1570,7 +1514,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // انیمیشن بازگشت
     if (sectionDrag.clone && sectionDrag.placeholder) {
       const placeholderRect = sectionDrag.placeholder.getBoundingClientRect();
 
@@ -1579,7 +1522,7 @@ document.addEventListener("DOMContentLoaded", () => {
         transform: "scale(1)",
         top: placeholderRect.top + "px",
         left: placeholderRect.left + "px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+        boxShadow: "var(--shadow)",
       });
 
       setTimeout(finalizeDrag, 200);
@@ -1588,7 +1531,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========== FINALIZE ==========
+  // ------ FINALIZE ------
   function finalizeDrag() {
     if (sectionDrag.element && sectionDrag.placeholder) {
       container.insertBefore(sectionDrag.element, sectionDrag.placeholder);
@@ -1600,9 +1543,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (wasActive) {
       saveOrder();
     }
+    refresh();
   }
 
-  // ========== CLEANUP ==========
+  // ------ CLEANUP ------
   function cleanup() {
     sectionDrag.clone?.remove();
     sectionDrag.placeholder?.remove();
@@ -1647,18 +1591,18 @@ document.addEventListener("DOMContentLoaded", () => {
     let isOpen = false;
     let isAnimating = false;
 
-    // ========== Touch State ==========
+    // ------ Touch State ------
     let touchStartY = 0;
     let touchStartTime = 0;
     let isTouchMoved = false;
 
-    // ========== CONFIG ==========
+    // ------ CONFIG ------
     const TAP_THRESHOLD = 10;
     const TAP_MAX_DURATION = 300;
 
     content.style.height = "0px";
 
-    // ========== Toggle Function ==========
+    // ------ Toggle Function ------
     function toggle() {
       if (isAnimating) return;
       isAnimating = true;
@@ -1680,18 +1624,17 @@ document.addEventListener("DOMContentLoaded", () => {
       isOpen = !isOpen;
     }
 
-    // ========== Mouse Click ==========
     header.addEventListener("click", (e) => {
-      if (e.target.closest("button, input, select, a, .control-btn")) return;
+      if (e.target.closest("button, input, select, a, .control-btn, svg")) return;
       toggle();
     });
 
-    // ========== Touch Events ==========
+    // ------ Touch Events ------
     header.addEventListener(
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn")) return;
+        if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
 
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
@@ -1717,7 +1660,7 @@ document.addEventListener("DOMContentLoaded", () => {
     header.addEventListener(
       "touchend",
       (e) => {
-        if (e.target.closest("button, input, select, a, .control-btn")) return;
+        if (e.target.closest("button, input, select, a, .control-btn, svg")) return;
 
         const touchDuration = Date.now() - touchStartTime;
 
@@ -1733,7 +1676,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { passive: false },
     );
 
-    // ========== Transition End ==========
+    // ------ Transition End ------
     content.addEventListener("transitionend", (e) => {
       if (e.propertyName !== "height") return;
 
@@ -1747,8 +1690,33 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========== DIMENSION SYSTEM ==========
+const aspectPresets = {
+  free: { w: null, h: null },
+  "1:1": { w: 1, h: 1 },
+  "4:3": { w: 4, h: 3 },
+  "16:9": { w: 16, h: 9 },
+  "9:16": { w: 9, h: 16 },
+};
+
+const resolutionPresets = {
+  "1280x720": { w: 1280, h: 720, name: "HD" },
+  "1920x1080": { w: 1920, h: 1080, name: "FHD" },
+  "2560x1440": { w: 2560, h: 1440, name: "2K" },
+  "3840x2160": { w: 3840, h: 2160, name: "4K" },
+};
+
+const dimensionState = {
+  aspectLocked: false,
+  aspectW: null,
+  aspectH: null,
+  aspectRatio: null,
+  activeAspectPreset: "free",
+
+  activeResolutionPreset: null,
+  isResolutionMode: false,
+};
+
 function clearAllPresetSelections() {
-  // پاک کردن همه انتخاب‌ها
   dimensionState.activeAspectPreset = null;
   dimensionState.activeResolutionPreset = null;
   dimensionState.isResolutionMode = false;
@@ -1759,7 +1727,6 @@ function setAspectRatio(ratioName) {
   const preset = aspectPresets[ratioName];
   if (!preset) return;
 
-  // پاک کردن resolution preset
   dimensionState.activeResolutionPreset = null;
   dimensionState.isResolutionMode = false;
 
@@ -1786,7 +1753,6 @@ function setCustomAspectRatio(w, h, applyToCanvas = true) {
   w = parseInt(w) || 0;
   h = parseInt(h) || 0;
 
-  // پاک کردن presets
   dimensionState.activeAspectPreset = null;
   dimensionState.activeResolutionPreset = null;
   dimensionState.isResolutionMode = false;
@@ -1823,24 +1789,17 @@ function setCustomAspectRatio(w, h, applyToCanvas = true) {
 }
 
 function setResolution(w, h) {
-  // پاک کردن aspect preset (اما حفظ ratio)
   dimensionState.activeAspectPreset = null;
 
   state.canvasWidth = clamp(w, CONFIG.canvas.minWidth, CONFIG.canvas.maxWidth);
-  state.canvasHeight = clamp(
-    h,
-    CONFIG.canvas.minHeight,
-    CONFIG.canvas.maxHeight,
-  );
+  state.canvasHeight = clamp(h,CONFIG.canvas.minHeight, CONFIG.canvas.maxHeight);
 
-  // تنظیم aspect ratio از resolution
   const simple = simplifyRatio(w, h);
   dimensionState.aspectW = simple.w;
   dimensionState.aspectH = simple.h;
   dimensionState.aspectRatio = w / h;
   dimensionState.aspectLocked = true;
 
-  // چک کردن آیا با resolution preset مطابقت داره
   const key = `${w}x${h}`;
   if (resolutionPresets[key]) {
     dimensionState.activeResolutionPreset = key;
@@ -1924,7 +1883,6 @@ function toggleAspectLock() {
     dimensionState.activeAspectPreset = "free";
   }
 
-  // پاک کردن resolution preset
   dimensionState.activeResolutionPreset = null;
   dimensionState.isResolutionMode = false;
 
@@ -1955,12 +1913,10 @@ function swapDimensions() {
       dimensionState.aspectW / dimensionState.aspectH;
   }
 
-  // پاک کردن presets چون سایز عوض شد
   dimensionState.activeAspectPreset = null;
   dimensionState.activeResolutionPreset = null;
   dimensionState.isResolutionMode = false;
 
-  // چک کن آیا با preset جدید مطابقت داره
   checkAndSetMatchingPresets();
 
   updateSizeInputs();
@@ -2035,7 +1991,6 @@ function clearResolutionPreset() {
 }
 
 function checkAndSetMatchingPresets() {
-  // چک aspect ratio
   if (dimensionState.aspectW && dimensionState.aspectH) {
     dimensionState.activeAspectPreset = null;
     for (const [name, preset] of Object.entries(aspectPresets)) {
@@ -2049,19 +2004,19 @@ function checkAndSetMatchingPresets() {
     }
   }
 
-  // چک resolution
   const key = `${state.canvasWidth}x${state.canvasHeight}`;
   if (resolutionPresets[key]) {
     dimensionState.activeResolutionPreset = key;
   }
 }
 
-// ========== UI UPDATE FUNCTIONS ==========
+// ------ UI UPDATE FUNCTIONS ------
 
 function updateAllDimensionUI() {
   updateAspectButtonsUI();
   updateAspectInputsUI();
   updateResolutionButtonsUI();
+  updateResolutionInputsUI();
   updateLockButtonUI();
 }
 
@@ -2089,7 +2044,6 @@ function updateAspectInputsUI() {
 
   if (!inputW || !inputH) return;
 
-  // اگر کاربر نسبت دلخواه وارد کرده، همان مقادیر را نمایش بده
   if (
     dimensionState.aspectLocked &&
     dimensionState.aspectW &&
@@ -2098,7 +2052,6 @@ function updateAspectInputsUI() {
     inputW.value = dimensionState.aspectW;
     inputH.value = dimensionState.aspectH;
   } else {
-    // در غیر این صورت، نسبت ساده‌شده‌ی بوم را نشان بده
     const simple = simplifyRatio(state.canvasWidth, state.canvasHeight);
     inputW.value = simple.w;
     inputH.value = simple.h;
@@ -2116,23 +2069,71 @@ function updateResolutionButtonsUI() {
   });
 }
 
+function updateResolutionInputsUI() {
+  const inputW = document.getElementById("canvasWidth");
+  const inputH = document.getElementById("canvasHeight");
+
+  if (!inputW || !inputH) return;
+
+  inputW.value = state.canvasWidth;
+  inputH.value = state.canvasHeight;
+}
+
+
 function updateLockButtonUI() {
   const lockBtn = document.getElementById("aspectLockBtn");
-  const lockIcon = document.getElementById("aspectLockIcon");
+  const lockIcon = document
+    .getElementById("aspectLockBtn")
+    .querySelector("svg");
+  const linkIcon = document.getElementById("sizeLinkBtn").querySelector("svg");
   const linkBtn = document.getElementById("sizeLinkBtn");
 
   if (lockBtn) {
     lockBtn.classList.toggle("locked", dimensionState.aspectLocked);
-  }
+    lockIcon.innerHTML = dimensionState.aspectLocked
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 
-  if (lockIcon) {
-    lockIcon.src = dimensionState.aspectLocked
-      ? "./icon/lock.svg"
-      : "./icon/unlock.svg";
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+          
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+          
+<g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+          
+</svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+
+</svg>`;
   }
 
   if (linkBtn) {
     linkBtn.classList.toggle("linked", dimensionState.aspectLocked);
+    linkBtn.innerHTML = dimensionState.aspectLocked
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+
+          <g id="SVGRepo_iconCarrier">
+            <path d="M14 7H16C18.7614 7 21 9.23858 21 12C21 14.7614 18.7614 17 16 17H14M10 7H8C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10M8 12H16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </g>
+
+        </svg>
+`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path d="M14 7H16C18.7614 7 21 9.23858 21 12C21 14.7614 18.7614 17 16 17H14M10 7H8C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10"
+          stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>`;
   }
 }
 
@@ -2150,46 +2151,7 @@ function updateSizeDisplay() {
   }
 }
 
-// ========== CANVAS ==========
-function resize() {
-  W = state.canvasWidth;
-  H = state.canvasHeight;
-
-  const maxDim = Math.max(W, H);
-  const isMobileDevice = window.innerWidth < 768;
-  let dpr = devicePixelRatio || 1;
-
-  if (isMobileDevice) dpr = Math.min(dpr, 1.5);
-  else if (maxDim > 2000) dpr = 1;
-  else if (maxDim > 1200) dpr = 1.5;
-  else dpr = Math.min(dpr, 2);
-
-  canvas.width = Math.floor(W * dpr);
-  canvas.height = Math.floor(H * dpr);
-
-  const scale = zoomState.current / 100;
-  canvas.style.width = W * scale + "px";
-  canvas.style.height = H * scale + "px";
-
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  const key = `${W}x${H}`;
-  if (resolutionPresets[key]) {
-    dimensionState.activeResolutionPreset = key;
-    dimensionState.isResolutionMode = true;
-  } else {
-    dimensionState.activeResolutionPreset = null;
-    dimensionState.isResolutionMode = false;
-  }
-
-  updateAllDimensionUI();
-  calcDynamicMinZoom();
-  updateZoomUI();
-  updateSizeDisplay();
-  checkAndFixZoom();
-
-  draw();
-}
+// ========== CENTER UI ==========
 const toolbar = document.querySelector(".tool-bar");
 const zoomControls = document.querySelector(".zoom-controls");
 const canvasWrap = document.querySelector(".canvas-wrap");
@@ -2228,7 +2190,14 @@ function getEventPos(e) {
   };
 }
 
-// ========== FIX: onPointerDown - ذخیره offset زاویه ==========
+// ========== UTILITIES ==========
+canvas.addEventListener("mousedown", onPointerDown);
+canvas.addEventListener("touchstart", onPointerDown, { passive: false });
+document.addEventListener("mousemove", onPointerMove);
+document.addEventListener("touchmove", onPointerMove, { passive: false });
+document.addEventListener("mouseup", onPointerUp);
+document.addEventListener("touchend", onPointerUp);
+
 function onPointerDown(e) {
   e.preventDefault();
 
@@ -2370,7 +2339,6 @@ function onPointerDown(e) {
   refresh();
 }
 
-// ========== FIX: onPointerMove - استفاده از offset ==========
 function onPointerMove(e) {
   if (!drag) return;
   e.preventDefault();
@@ -2443,21 +2411,29 @@ function onPointerMove(e) {
 function onPointerUp() {
   if (drag) {
     updateCSS();
-    updateInspectorInputs(drag.s.id); // ✅ آپدیت نهایی
+    updateInspectorInputs(drag.s.id);
   }
   drag = null;
 }
 
-// Canvas events
-canvas.addEventListener("mousedown", onPointerDown);
-canvas.addEventListener("touchstart", onPointerDown, { passive: false });
-document.addEventListener("mousemove", onPointerMove);
-document.addEventListener("touchmove", onPointerMove, { passive: false });
-document.addEventListener("mouseup", onPointerUp);
-document.addEventListener("touchend", onPointerUp);
-// ========== DRAWING FUNCTIONS (OPTIMIZED) ==========
+function getCanvasBlendMode(mode) {
+  return !mode || mode === "normal" ? "source-over" : mode;
+}
 
-// ✅ Mobile detection (cached once)
+function hasNonBlurFilters() {
+  return (
+    filterState.enabled &&
+    (filterState.brightness !== 100 ||
+      filterState.contrast !== 100 ||
+      filterState.saturate !== 100 ||
+      filterState.hue !== 0 ||
+      filterState.grayscale > 0 ||
+      filterState.sepia > 0 ||
+      filterState.invert > 0)
+  );
+}
+
+// ========== DRAWING FUNCTIONS ==========
 const IS_MOBILE = (() => {
   try {
     return (
@@ -2470,7 +2446,6 @@ const IS_MOBILE = (() => {
   }
 })();
 
-// ✅ Temp canvas pool — avoids GC thrashing every frame
 const _canvasPool = {};
 function tmpCanvas(key, w, h) {
   let e = _canvasPool[key];
@@ -2486,7 +2461,6 @@ function tmpCanvas(key, w, h) {
   return e;
 }
 
-// ✅ Cached scale
 let _scale = 1;
 function updateScale() {
   _scale = Math.max(W, H) / 800;
@@ -2520,7 +2494,17 @@ function getBlurCanvas(w, h) {
   return { canvas: _blurCanvas, ctx: _blurCtx };
 }
 
-// ========== MAIN DRAW ==========
+// ------ THROTTLED DRAW ------
+let drawRAF = null;
+function throttledDraw() {
+  if (drawRAF) return;
+  drawRAF = requestAnimationFrame(() => {
+    drawRAF = null;
+    draw();
+  });
+}
+
+// ------ MAIN DRAW ------
 function draw() {
   const dpr = canvas.width / W;
 
@@ -2532,7 +2516,6 @@ function draw() {
   const canvasW = canvas.width;
   const canvasH = canvas.height;
 
-  // ========== 1. رندر گرادینت‌ها روی canvas جداگانه ==========
   const { canvas: sceneCanvas, ctx: sceneCtx } = getSceneCanvas(
     canvasW,
     canvasH,
@@ -2540,26 +2523,20 @@ function draw() {
 
   sceneCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // رسم محتوا (پس‌زمینه + گرادینت‌ها)
   drawSceneContent(sceneCtx, W, H);
 
-  // ========== 2. اعمال فیلترها روی scene canvas ==========
   if (hasActiveFilters()) {
     applyCanvasFilters(sceneCanvas, sceneCtx, dpr);
   }
 
-  // ========== 3. اعمال نویز ==========
   if (noiseState.enabled && noiseState.opacity > 0) {
     applyNoiseLayerSync(sceneCtx, canvasW, canvasH);
   }
 
-  // ========== 4. کپی محتوای فیلتر شده به canvas اصلی ==========
   ctx.drawImage(sceneCanvas, 0, 0);
 
-  // ========== 5. رسم هندل‌ها (بدون فیلتر!) ==========
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // خط قفل عمودی
   if (state.lockVertical && state.showHandles) {
     ctx.strokeStyle = "rgba(255,255,255,0.5)";
     ctx.lineWidth = 2 * _scale;
@@ -2612,17 +2589,15 @@ function drawSceneContent(tCtx, w, h) {
   }
 }
 
-// ========== APPLY FILTERS WITH BLUR EDGE FIX ==========
+// ------ APPLY FILTERS ------
 function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
   const w = targetCanvas.width;
   const h = targetCanvas.height;
 
-  // ========== Blur با padding برای رفع مشکل لبه ==========
   if (filterState.blur > 0) {
     const blurPx = filterState.blur * dpr;
-    const padding = Math.ceil(blurPx * 3); // padding کافی برای blur
+    const padding = Math.ceil(blurPx * 3);
 
-    // ساخت canvas با padding
     const paddedW = w + padding * 2;
     const paddedH = h + padding * 2;
 
@@ -2631,19 +2606,17 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
     padded.height = paddedH;
     const pCtx = padded.getContext("2d");
 
-    // ✅ روش Mirror/Reflect برای لبه‌ها (بهترین کیفیت)
-
     // مرکز - تصویر اصلی
     pCtx.drawImage(targetCanvas, padding, padding);
 
-    // ✅ لبه بالا (flip vertical)
+    // لبه بالا (flip vertical)
     pCtx.save();
     pCtx.translate(padding, padding);
     pCtx.scale(1, -1);
     pCtx.drawImage(targetCanvas, 0, 0, w, padding, 0, 0, w, padding);
     pCtx.restore();
 
-    // ✅ لبه پایین (flip vertical)
+    // لبه پایین (flip vertical)
     pCtx.save();
     pCtx.translate(padding, h + padding);
     pCtx.scale(1, -1);
@@ -2660,14 +2633,14 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
     );
     pCtx.restore();
 
-    // ✅ لبه چپ (flip horizontal)
+    // لبه چپ (flip horizontal)
     pCtx.save();
     pCtx.translate(padding, padding);
     pCtx.scale(-1, 1);
     pCtx.drawImage(targetCanvas, 0, 0, padding, h, 0, 0, padding, h);
     pCtx.restore();
 
-    // ✅ لبه راست (flip horizontal)
+    // لبه راست (flip horizontal)
     pCtx.save();
     pCtx.translate(w + padding, padding);
     pCtx.scale(-1, 1);
@@ -2684,7 +2657,7 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
     );
     pCtx.restore();
 
-    // ✅ گوشه‌ها (flip both)
+    // گوشه‌ها (flip both)
     // بالا-چپ
     pCtx.save();
     pCtx.translate(padding, padding);
@@ -2773,9 +2746,8 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
   }
 }
 
-// ========== NOISE LAYER (Sync version using cached canvas) ==========
+// ------ NOISE LAYER ------
 function applyNoiseLayerSync(tCtx, w, h) {
-  // استفاده از cache موجود
   if (
     noiseCache.canvas &&
     noiseCache.width === W &&
@@ -2799,7 +2771,7 @@ function applyNoiseLayerSync(tCtx, w, h) {
   }
 }
 
-// ========== ✅ UNIFIED GRADIENT ==========
+// ------ UNIFIED GRADIENT ------
 function drawGradient(s, tCtx, w, h) {
   const cx = s.x * w;
   const cy = s.y * h;
@@ -2826,7 +2798,7 @@ function drawGradient(s, tCtx, w, h) {
     const dy = (Math.sin(rad) * diag) / 2;
     const grad = tCtx.createLinearGradient(mx - dx, my - dy, mx + dx, my + dy);
 
-    fixTransparentStops(s.stops).forEach((cs) => {
+    s.stops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
         rgba(cs.color, cs.opacity / 100),
@@ -2842,7 +2814,7 @@ function drawGradient(s, tCtx, w, h) {
       cy,
     );
 
-    fixTransparentStops(s.stops).forEach((cs) => {
+    s.stops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
         rgba(cs.color, cs.opacity / 100),
@@ -2854,113 +2826,34 @@ function drawGradient(s, tCtx, w, h) {
   }
 }
 
-// ========== EXPORT WITH FILTERS ==========
-function drawForExport(targetCanvas, w, h) {
-  const tCtx = targetCanvas.getContext("2d");
-
-  if (!hasActiveFilters()) {
-    drawScene(tCtx, w, h, false);
-    return;
-  }
-
-  const tmp = tmpCanvas("exportScene", w, h);
-  drawScene(tmp.ctx, w, h, false);
-
-  // Blur
-  if (filterState.blur > 0) {
-    const blur = tmpCanvas("exportBlur", w, h);
-    blur.ctx.filter = `blur(${filterState.blur}px)`;
-    blur.ctx.drawImage(tmp.canvas, 0, 0);
-    tmp.ctx.clearRect(0, 0, w, h);
-    tmp.ctx.drawImage(blur.canvas, 0, 0);
-  }
-
-  // Pixel-level filters
-  if (hasNonBlurFilters()) {
-    const imgData = tmp.ctx.getImageData(0, 0, w, h);
-    applyFiltersToImageData(imgData);
-    tmp.ctx.putImageData(imgData, 0, 0);
-  }
-
-  tCtx.drawImage(tmp.canvas, 0, 0);
-}
-
-// ========== UTILITIES ==========
-function getCanvasBlendMode(mode) {
-  return !mode || mode === "normal" ? "source-over" : mode;
-}
-
-function getLinearGradientPoints(angle, w, h) {
-  const rad = ((angle - 90) * Math.PI) / 180;
-  const d = Math.hypot(w, h);
-  const cx = w / 2,
-    cy = h / 2;
-  const dx = (Math.cos(rad) * d) / 2;
-  const dy = (Math.sin(rad) * d) / 2;
-  return { x1: cx - dx, y1: cy - dy, x2: cx + dx, y2: cy + dy, cx, cy };
-}
-
-function fixTransparentStops(stops) {
-  const sorted = [...stops].sort((a, b) => a.pos - b.pos);
-  const result = [];
-
-  for (let i = 0; i < sorted.length; i++) {
-    const cs = sorted[i];
-    if (cs.opacity === 0) {
-      const prev = sorted[i - 1];
-      const next = sorted[i + 1];
-      if (prev) result.push({ pos: cs.pos, color: prev.color, opacity: 0 });
-      if (next) result.push({ pos: cs.pos, color: next.color, opacity: 0 });
-      if (!prev && !next) result.push(cs);
-    } else {
-      result.push(cs);
-    }
-  }
-  return result;
-}
-
-function hasNonBlurFilters() {
-  return (
-    filterState.enabled &&
-    (filterState.brightness !== 100 ||
-      filterState.contrast !== 100 ||
-      filterState.saturate !== 100 ||
-      filterState.hue !== 0 ||
-      filterState.grayscale > 0 ||
-      filterState.sepia > 0 ||
-      filterState.invert > 0)
-  );
-}
-
-// ========== ✅ HANDLE SIZING (mobile = bigger touch targets) ==========
+// ------ HANDLE SIZING ------
 function getHandleSize(sel) {
-  const mobileBoost = IS_MOBILE ? 1.6 : 1; // ✅ 60% بزرگ‌تر برای موبایل
+  const mobileBoost = IS_MOBILE ? 1.6 : 1;
   const base = sel ? 12 : 8;
   const size = base * _scale * mobileBoost;
   return clamp(size, base * mobileBoost, (sel ? 50 : 35) * mobileBoost);
 }
 
 function getLineWidth(sel) {
-  const mobileBoost = IS_MOBILE ? 1.4 : 1; // ✅ 40% ضخیم‌تر برای موبایل
+  const mobileBoost = IS_MOBILE ? 1 : 0.6;
   const base = sel ? 5 : 4;
   const width = base * _scale * mobileBoost;
   return clamp(width, base * mobileBoost, (sel ? 16 : 12) * mobileBoost);
 }
 
 function getFontSize() {
-  const mobileBoost = IS_MOBILE ? 1.3 : 1; // ✅ 30% بزرگ‌تر برای موبایل
+  const mobileBoost = IS_MOBILE ? 1.3 : 1.2;
   const size = 10 * _scale * mobileBoost;
   return clamp(size, 10 * mobileBoost, 36 * mobileBoost);
 }
 
-// ✅ Touch hit area (برای تشخیص کلیک/لمس - بزرگ‌تر از handle بصری)
 function getHitRadius(sel) {
   const visualSize = getHandleSize(sel);
-  const minHitSize = IS_MOBILE ? 22 : 12; // ✅ حداقل ۴۴px touch target روی موبایل (22*2)
+  const minHitSize = IS_MOBILE ? 22 : 12; // ۴۴px touch target روی موبایل (22*2)
   return Math.max(visualSize, minHitSize);
 }
 
-// ========== HANDLE DRAWING ==========
+// ========== GRADIENT HANDLE ==========
 function drawHandle(s) {
   const sel = state.selected === s.id;
   const cx = s.x * W,
@@ -2974,45 +2867,54 @@ function drawHandle(s) {
 function drawRadialHandle(s, cx, cy, sel) {
   const hs = getHandleSize(sel);
   const lw = getLineWidth(sel);
+  const fillStyleValue = getComputedStyle(
+    document.documentElement,
+  ).getPropertyValue("--bg-transparent");
 
-  // Size indicator circle
+  ctx.save();
+
+  ctx.fillStyle = fillStyleValue;
+  ctx.beginPath();
+  ctx.arc(cx, cy, hs * 1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
   if (sel) {
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.setLineDash([8 * _scale, 4 * _scale]);
+    ctx.strokeStyle = fillStyleValue;
+    ctx.setLineDash([10 * _scale, 10 * _scale]);
     ctx.lineWidth = 2 * _scale;
+    ctx.lineCap = "round";
     ctx.beginPath();
     ctx.arc(cx, cy, s.size, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
-
-    // Glow
-    ctx.save();
-    ctx.shadowColor = s.color;
-    ctx.shadowBlur = 20 * _scale;
-    ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.beginPath();
-    ctx.arc(cx, cy, hs * 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
   }
 
-  // Main handle
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.5)";
-  ctx.shadowBlur = 8 * _scale;
-  ctx.shadowOffsetY = 2 * _scale;
+  const innerGrad = ctx.createRadialGradient(
+    cx - hs * 0.2,
+    cy - hs * 0.2,
+    0,
+    cx,
+    cy,
+    hs * 0.6,
+  );
 
-  ctx.strokeStyle = s.color;
+  innerGrad.addColorStop(0, lighten(s.color, 30));
+  innerGrad.addColorStop(1, s.color);
+
+  ctx.fillStyle = innerGrad;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, hs * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = innerGrad;
   ctx.lineWidth = lw;
   ctx.beginPath();
-  ctx.arc(cx, cy, hs, 0, Math.PI * 2);
+  ctx.arc(cx, cy, hs * 1, 0, Math.PI * 2);
   ctx.stroke();
-
-  ctx.fillStyle = s.color;
-  ctx.beginPath();
-  ctx.arc(cx, cy, hs * 0.5, 0, Math.PI * 2);
-  ctx.fill();
   ctx.restore();
 }
 
@@ -3030,12 +2932,10 @@ function drawLinearHandle(s, cx, cy, sel) {
   const x2 = cx + dx,
     y2 = cy + dy;
 
-  // Gradient line with glow
   ctx.save();
-  if (sel) {
-    ctx.shadowColor = "rgba(255,255,255,0.3)";
-    ctx.shadowBlur = 10 * _scale;
-  }
+
+  ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+  ctx.shadowBlur = 10 * _scale;
 
   const lineGrad = ctx.createLinearGradient(x1, y1, x2, y2);
   if (s.stops.length >= 2) {
@@ -3057,18 +2957,17 @@ function drawLinearHandle(s, cx, cy, sel) {
   ctx.stroke();
   ctx.restore();
 
-  // Color stops
+  drawCenterHandle(cx, cy, sel, hs * 0.6, lw);
+
   s.stops.forEach((cs) => {
     const px = lerp(x1, x2, cs.pos / 100);
     const py = lerp(y1, y2, cs.pos / 100);
     drawColorStop(px, py, cs, sel, hs, lw);
 
     if (sel) {
-      drawStopLabel(px, py + hs + 12 * _scale, cs.pos + "%", fs);
+      drawStopLabel(px, py + hs + 20 * _scale, cs.pos + "%", fs, cs.color);
     }
   });
-
-  drawCenterHandle(cx, cy, sel, hs * 0.6, lw);
 }
 
 function drawConicHandle(s, cx, cy, sel) {
@@ -3077,25 +2976,33 @@ function drawConicHandle(s, cx, cy, sel) {
   const fs = getFontSize();
   const radius = Math.min(W, H) * 0.25;
   const startRad = ((s.startAngle - 90) * Math.PI) / 180;
+  const fillStyleValue = getComputedStyle(
+    document.documentElement,
+  ).getPropertyValue("--bg-transparent");
+  const shadow = getComputedStyle(document.documentElement).getPropertyValue(
+    "--shadow-elevated",
+  );
 
-  // 1. Guide circle
   if (sel) {
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.setLineDash([5 * _scale, 5 * _scale]);
+    ctx.strokeStyle = fillStyleValue;
+    ctx.setLineDash([10 * _scale, 10 * _scale]);
     ctx.lineWidth = 2 * _scale;
+    ctx.lineCap = "round";
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
   }
 
-  // 2. Start angle line
   const rx = cx + Math.cos(startRad) * radius;
   const ry = cy + Math.sin(startRad) * radius;
 
   ctx.save();
-  ctx.strokeStyle = sel ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.4)";
+  ctx.shadowColor = shadow;
+  ctx.shadowBlur = 10 * _scale;
+  ctx.shadowOffsetY = 2 * _scale;
+  ctx.strokeStyle = fillStyleValue;
   ctx.lineWidth = lw;
   ctx.lineCap = "round";
   ctx.beginPath();
@@ -3104,19 +3011,6 @@ function drawConicHandle(s, cx, cy, sel) {
   ctx.stroke();
   ctx.restore();
 
-  // 3. Rotation handle at line end
-  if (sel) {
-    ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.4)";
-    ctx.shadowBlur = 6 * _scale;
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(rx, ry, 4 * _scale * (IS_MOBILE ? 1.5 : 1), 0, Math.PI * 2); // ✅ بزرگ‌تر برای موبایل
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // 4. Color stops
   s.stops.forEach((cs) => {
     const angle = startRad + (cs.pos / 100) * Math.PI * 2;
     const px = cx + Math.cos(angle) * radius;
@@ -3125,47 +3019,32 @@ function drawConicHandle(s, cx, cy, sel) {
     drawColorStop(px, py, cs, sel, hs * 0.8, lw);
 
     if (sel) {
-      const lr = radius + hs + 20 * _scale;
+      const lr = radius + hs + 28 * _scale;
       drawStopLabel(
         cx + Math.cos(angle) * lr,
         cy + Math.sin(angle) * lr,
         cs.pos + "%",
         fs,
+        cs.color,
       );
     }
   });
 
-  // 5. Center handle
-  drawCenterHandle(cx, cy, sel, hs, lw, s.stops[0]?.color);
+  drawCenterHandle(cx, cy, sel, hs * 0.6, lw);
 }
 
-// ========== SHARED HANDLE COMPONENTS ==========
 function drawColorStop(px, py, cs, sel, hs, lw) {
-  // Glow effect
-  if (sel) {
-    ctx.save();
-    ctx.shadowColor = cs.color;
-    ctx.shadowBlur = 15 * _scale;
-    ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.beginPath();
-    ctx.arc(px, py, hs * 1.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
+  const fillStyleValue = getComputedStyle(
+    document.documentElement,
+  ).getPropertyValue("--bg-transparent");
 
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.4)";
-  ctx.shadowBlur = 8 * _scale;
-  ctx.shadowOffsetY = 3 * _scale;
-
-  // Outer ring
-  ctx.strokeStyle = cs.color;
-  ctx.lineWidth = lw * 0.8;
+  ctx.fillStyle = fillStyleValue;
   ctx.beginPath();
-  ctx.arc(px, py, hs, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.arc(px, py, hs * 1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 
-  // Inner gradient fill
   const innerGrad = ctx.createRadialGradient(
     px - hs * 0.2,
     py - hs * 0.2,
@@ -3179,59 +3058,114 @@ function drawColorStop(px, py, cs, sel, hs, lw) {
 
   ctx.fillStyle = innerGrad;
   ctx.beginPath();
-  ctx.arc(px, py, hs * 0.55, 0, Math.PI * 2);
+  ctx.arc(px, py, hs * 0.5, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
 
-function drawStopLabel(x, y, text, fs) {
+function drawStopLabel(x, y, text, fs, color) {
   ctx.save();
   const pad = 6 * _scale;
   const bw = fs * 2.5 + pad * 2;
   const bh = fs + pad * 2;
+  const shadow = getComputedStyle(document.documentElement)
+    .getPropertyValue("--shadow-elevated")
+    .trim();
 
-  ctx.fillStyle = "rgba(0,0,0,0.6)";
+  function invertColor(c) {
+    c = c.trim();
+    if (c.startsWith("rgb")) {
+      const nums = c.match(/\d+/g);
+      const r = 255 - parseInt(nums[0]);
+      const g = 255 - parseInt(nums[1]);
+      const b = 255 - parseInt(nums[2]);
+      return `rgb(${r}, ${g}, ${b})`;
+    } else if (c.startsWith("#")) {
+      let hex = c.replace("#", "");
+      if (hex.length === 3)
+        hex = hex
+          .split("")
+          .map((h) => h + h)
+          .join("");
+      const r = 255 - parseInt(hex.slice(0, 2), 16);
+      const g = 255 - parseInt(hex.slice(2, 4), 16);
+      const b = 255 - parseInt(hex.slice(4, 6), 16);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    return "#000";
+  }
+
+  const bgColor = color || "#fff";
+  const textColor = invertColor(bgColor);
+
   ctx.beginPath();
-  ctx.roundRect(x - bw / 2, y - bh / 2, bw, bh, 4 * _scale);
+  ctx.shadowColor = shadow;
+  ctx.shadowBlur = 10 * _scale;
+  ctx.shadowOffsetY = 2 * _scale;
+  ctx.roundRect(x - bw / 2, y - bh / 2, bw, bh, 8 * _scale);
+  ctx.fillStyle = bgColor;
   ctx.fill();
 
-  ctx.fillStyle = "#fff";
-  ctx.font = `bold ${fs}px sans-serif`;
+  function drawTextWithSpacing(ctx, text, x, y, spacing, fs, color, shadow) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = `bold ${fs}px 'SN Pro'`;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.shadowColor = shadow;
+    ctx.shadowBlur = 6 * _scale;
+    ctx.shadowOffsetY = 2 * _scale;
+
+    let totalWidth = 0;
+    for (let i = 0; i < text.length; i++) {
+      totalWidth += ctx.measureText(text[i]).width + spacing;
+    }
+    totalWidth -= spacing;
+    let startX = x - totalWidth / 2;
+
+    for (let i = 0; i < text.length; i++) {
+      ctx.fillText(text[i], startX, y);
+      startX += ctx.measureText(text[i]).width + spacing;
+    }
+
+    ctx.restore();
+  }
+
+  ctx.fillStyle = textColor;
+  ctx.font = `bold ${fs}px 'SN Pro'`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(text, x, y);
+  ctx.shadowColor = shadow;
+  ctx.shadowBlur = 3 * _scale;
+  ctx.shadowOffsetY = 2 * _scale;
+  drawTextWithSpacing(ctx, text, x, y, 1.5 * _scale, fs, textColor, shadow);
+
   ctx.restore();
 }
 
 function drawCenterHandle(cx, cy, sel, size, lw, color) {
-  // Glow
-  // if (sel) {
-  //   ctx.save();
-  //   ctx.shadowColor = "rgba(255,255,255,0.5)";
-  //   ctx.shadowBlur = 12 * _scale;
-  //   ctx.fillStyle = "rgba(255,255,255,0.15)";
-  //   ctx.beginPath();
-  //   ctx.arc(cx, cy, size * 1.5, 0, Math.PI * 2);
-  //   ctx.fill();
-  //   ctx.restore();
-  // }
+  const bg = getComputedStyle(document.documentElement).getPropertyValue(
+    "--bg-secondary",
+  );
+  const shadow = getComputedStyle(document.documentElement).getPropertyValue(
+    "--shadow-elevated",
+  );
 
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.4)";
-  ctx.shadowBlur = 6 * _scale;
+  ctx.shadowColor = shadow;
+  ctx.shadowBlur = 10 * _scale;
   ctx.shadowOffsetY = 2 * _scale;
 
-  // Gradient fill
   const outerGrad = ctx.createRadialGradient(
-    cx - size * 0.3,
-    cy - size * 0.3,
+    cx - size * 0.1,
+    cy - size * 0.1,
     0,
     cx,
     cy,
     size,
   );
-  outerGrad.addColorStop(0, "#ffffff");
-  outerGrad.addColorStop(1, "#e0e0e0");
+
+  outerGrad.addColorStop(0, bg);
 
   ctx.fillStyle = outerGrad;
   ctx.beginPath();
@@ -3240,16 +3174,121 @@ function drawCenterHandle(cx, cy, sel, size, lw, color) {
   ctx.restore();
 }
 
-// ========== THROTTLED DRAW ==========
-let drawRAF = null;
-function throttledDraw() {
-  if (drawRAF) return;
-  drawRAF = requestAnimationFrame(() => {
-    drawRAF = null;
-    draw();
-  });
+// ========== LOCK BUTTON ==========
+const btnLock = document.getElementById("btnLock");
+let lastLockTime = 0;
+
+function handleLockClick(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+
+  const now = Date.now();
+  if (now - lastLockTime < 300) return;
+  lastLockTime = now;
+
+  state.lockVertical = !state.lockVertical;
+
+  if (btnLock) {
+    btnLock.classList.toggle("active", state.lockVertical);
+    btnLock.innerHTML = state.lockVertical
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+
+</svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+
+</svg>`;
+  }
+
+  if (state.lockVertical) {
+    state.stops.forEach((s) => (s.y = 0.5));
+  }
+
+  draw();
+  renderList();
+  renderInspector();
+  updateCSS();
+  updateBgPreview();
 }
-// ========== RESIZE HANDLES ==========
+
+if (btnLock) {
+  btnLock.addEventListener("click", handleLockClick);
+
+  btnLock.addEventListener(
+    "touchstart",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    { passive: false },
+  );
+
+  btnLock.addEventListener(
+    "touchend",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleLockClick(e);
+    },
+    { passive: false },
+  );
+}
+
+// ========== RESIZE CANVAS HANDLES ==========
+function resize() {
+  W = state.canvasWidth;
+  H = state.canvasHeight;
+
+  const maxDim = Math.max(W, H);
+  const isMobileDevice = window.innerWidth < 768;
+  let dpr = devicePixelRatio || 1;
+
+  if (isMobileDevice) dpr = Math.min(dpr, 1.5);
+  else if (maxDim > 2000) dpr = 1;
+  else if (maxDim > 1200) dpr = 1.5;
+  else dpr = Math.min(dpr, 2);
+
+  canvas.width = Math.floor(W * dpr);
+  canvas.height = Math.floor(H * dpr);
+
+  const scale = zoomState.current / 100;
+  canvas.style.width = W * scale + "px";
+  canvas.style.height = H * scale + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const key = `${W}x${H}`;
+  if (resolutionPresets[key]) {
+    dimensionState.activeResolutionPreset = key;
+    dimensionState.isResolutionMode = true;
+  } else {
+    dimensionState.activeResolutionPreset = null;
+    dimensionState.isResolutionMode = false;
+  }
+
+  updateAllDimensionUI();
+  calcDynamicMinZoom();
+  updateZoomUI();
+  updateSizeDisplay();
+  checkAndFixZoom();
+
+  draw();
+}
+
 const widthHandle = document.querySelector(".resize-h");
 const heightHandle = document.querySelector(".resize-w");
 
@@ -3474,7 +3513,7 @@ const panState = {
   startY: 0,
   scrollLeft: 0,
   scrollTop: 0,
-  mode: false, // true = pan mode فعال
+  mode: false,
 };
 
 function initPan() {
@@ -3482,7 +3521,6 @@ function initPan() {
   const canvas = document.getElementById("canvas");
   if (!wrap || !canvas) return;
 
-  // ✅ دکمه Pan
   const panBtn = document.getElementById("panBtn");
   if (panBtn) {
     panBtn.addEventListener("click", (e) => {
@@ -3502,7 +3540,6 @@ function initPan() {
     );
   }
 
-  // ========== MOUSE - فقط روی Canvas ==========
   canvas.addEventListener("mousedown", (e) => {
     if (e.button === 1 || (e.button === 0 && panState.mode)) {
       e.preventDefault();
@@ -3522,7 +3559,6 @@ function initPan() {
     endPan(wrap);
   });
 
-  // Space + drag (desktop)
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space" && !e.target.closest("input, textarea")) {
       e.preventDefault();
@@ -3538,7 +3574,7 @@ function initPan() {
     }
   });
 
-  // ========== TOUCH - فقط روی Canvas ==========
+  // ------ TOUCH ------
   canvas.addEventListener(
     "touchstart",
     (e) => {
@@ -3638,6 +3674,75 @@ function updatePanUI() {
 }
 window.togglePanMode = togglePanMode;
 
+// ========== TOGGLE HANDLES ==========
+const toggleBtn = document.getElementById("toggleHandles");
+let lastToggleTime = 0;
+
+function handleToggleClick(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+
+  const now = Date.now();
+  if (now - lastToggleTime < 300) return;
+  lastToggleTime = now;
+
+  state.showHandles = !state.showHandles;
+
+  if (toggleBtn) {
+    toggleBtn.innerHTML = state.showHandles
+      ? `        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+
+</svg>`;
+    toggleBtn.classList.toggle("handles-hidden", !state.showHandles);
+  }
+  draw();
+}
+
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", handleToggleClick);
+
+  toggleBtn.addEventListener(
+    "touchstart",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    { passive: false },
+  );
+
+  toggleBtn.addEventListener(
+    "touchend",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleToggleClick(e);
+    },
+    { passive: false },
+  );
+}
+
 // ========== FULLSCREEN PREVIEW ==========
 let fullscreenOverlay = null;
 let fullscreenCanvas = null;
@@ -3667,7 +3772,6 @@ const fullscreenZoom = {
 };
 
 async function openFullscreenPreview() {
-  // ریست
   fullscreenRotation = 0;
   Object.assign(fullscreenZoom, {
     scale: 1,
@@ -3677,10 +3781,8 @@ async function openFullscreenPreview() {
     isPanning: false,
   });
 
-  // History برای Back
   history.pushState({ fullscreen: true }, "", "");
 
-  // ساخت overlay
   fullscreenOverlay = document.createElement("div");
   fullscreenOverlay.className = "fullscreen-overlay";
   fullscreenOverlay.innerHTML = `
@@ -3760,10 +3862,8 @@ async function openFullscreenPreview() {
 
   const container = document.getElementById("fsContainer");
 
-  // ✅ رندر و منتظر بمون
   await renderFullscreenCanvas();
 
-  // Event Listeners
   fullscreenOverlay.addEventListener("click", (e) => {
     if (e.target === fullscreenOverlay) history.back();
   });
@@ -3806,7 +3906,6 @@ async function openFullscreenPreview() {
 
   window.addEventListener("resize", handleFSResize);
 
-  // انیمیشن
   requestAnimationFrame(() => {
     fullscreenOverlay.classList.add("show");
     setTimeout(() => {
@@ -3880,7 +3979,7 @@ async function renderFullscreenCanvas() {
   const originalW = state.canvasWidth;
   const originalH = state.canvasHeight;
 
-  // ========== محاسبه ابعاد نمایش ==========
+  // ------ DIMENSION CALCULATION ------
   const isRotated = fullscreenRotation === 90 || fullscreenRotation === 270;
   const sourceW = isRotated ? originalH : originalW;
   const sourceH = isRotated ? originalW : originalH;
@@ -3889,29 +3988,29 @@ async function renderFullscreenCanvas() {
   const vpH = window.innerHeight;
   const scaleX = vpW / sourceW;
   const scaleY = vpH / sourceH;
-  const fitScale = Math.min(scaleX, scaleY, 1); // حداکثر 100%
+  const fitScale = Math.min(scaleX, scaleY, 1); // max 100%
 
   const dispW = sourceW * fitScale;
   const dispH = sourceH * fitScale;
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  // ========== تنظیم سایز canvas نمایش ==========
+  // تنظیم سایز canvas نمایش
   fullscreenCanvas.width = dispW * dpr;
   fullscreenCanvas.height = dispH * dpr;
   fullscreenCanvas.style.width = dispW + "px";
   fullscreenCanvas.style.height = dispH + "px";
 
-  // ========== رندر در ابعاد اصلی (بدون چرخش) ==========
+  // رندر در ابعاد اصلی (بدون چرخش)
   const workCanvas = document.createElement("canvas");
   workCanvas.width = originalW;
   workCanvas.height = originalH;
   const workCtx = workCanvas.getContext("2d");
 
-  // ✅ پاس دادن true برای isFullscreen
+  //  پاس دادن true برای isFullscreen
   await renderSceneToContext(workCtx, originalW, originalH, true);
 
-  // ========== انتقال به canvas نمایش با چرخش ==========
+  // انتقال به canvas نمایش با چرخش
   const ctx = fullscreenCanvas.getContext("2d");
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, fullscreenCanvas.width, fullscreenCanvas.height);
@@ -3942,7 +4041,7 @@ async function renderFullscreenCanvas() {
   ctx.restore();
 }
 
-// ========== تابع اصلی رندر - مشترک بین canvas و fullscreen ==========
+// ------ تابع اصلی رندر - مشترک بین canvas و fullscreen ------
 async function renderSceneToContext(
   targetCtx,
   width,
@@ -3965,7 +4064,6 @@ async function renderSceneToContext(
   let renderCtx = targetCtx;
   let tempCanvas = null;
 
-  // اگر فیلتر داریم، روی canvas موقت رندر کن
   if (needsFilter) {
     tempCanvas = document.createElement("canvas");
     tempCanvas.width = width;
@@ -3973,13 +4071,11 @@ async function renderSceneToContext(
     renderCtx = tempCanvas.getContext("2d");
   }
 
-  // ========== 1. پس‌زمینه ==========
   if (state.bgEnabled) {
     renderCtx.fillStyle = rgba(state.bgColor, state.bgAlpha / 100);
     renderCtx.fillRect(0, 0, width, height);
   }
 
-  // ========== 2. خط قفل عمودی - فقط در حالت عادی، نه در فول‌اسکرین ==========
   if (state.lockVertical && state.showHandles && !isFullscreen) {
     // ✅ چک isFullscreen
     const scale = Math.max(width, height) / 800;
@@ -3993,7 +4089,6 @@ async function renderSceneToContext(
     renderCtx.setLineDash([]);
   }
 
-  // ========== 3. گرادینت‌ها (ترتیب معکوس) ==========
   if (visibleStops.length > 0) {
     const reversedStops = [...visibleStops].reverse();
 
@@ -4005,7 +4100,6 @@ async function renderSceneToContext(
     renderCtx.globalCompositeOperation = "source-over";
   }
 
-  // ========== 4. فیلترها ==========
   if (needsFilter && tempCanvas) {
     // Blur
     if (filterState.blur > 0) {
@@ -4030,7 +4124,6 @@ async function renderSceneToContext(
     targetCtx.drawImage(tempCanvas, 0, 0);
   }
 
-  // ========== 5. نویز ==========
   if (noiseState.enabled && noiseState.opacity > 0) {
     const noiseCanvas = await getNoiseCanvas(
       width,
@@ -4047,11 +4140,10 @@ async function renderSceneToContext(
     }
   }
 
-  // برگرداندن W و H
   W = savedW;
   H = savedH;
 }
-// ========== رسم گرادینت روی هر context با ابعاد دلخواه ==========
+// ------ رسم گرادینت روی هر context با ابعاد دلخواه ------
 function drawGradToCtxGeneric(s, ctx, width, height) {
   const cx = s.x * width;
   const cy = s.y * height;
@@ -4080,7 +4172,7 @@ function drawGradToCtxGeneric(s, ctx, width, height) {
 
     const grad = ctx.createLinearGradient(mx - dx, my - dy, mx + dx, my + dy);
 
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
@@ -4094,7 +4186,7 @@ function drawGradToCtxGeneric(s, ctx, width, height) {
     const startAngle = ((s.startAngle - 90) * Math.PI) / 180;
     const grad = ctx.createConicGradient(startAngle, cx, cy);
 
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
@@ -4107,7 +4199,7 @@ function drawGradToCtxGeneric(s, ctx, width, height) {
   }
 }
 
-// ========== DRAW GRADIENT FOR FULLSCREEN ==========
+// ------ DRAW GRADIENT FOR FULLSCREEN ------
 function drawGradientForFullscreen(s, ctx, W, H, sizeScale) {
   const cx = s.x * W;
   const cy = s.y * H;
@@ -4171,7 +4263,7 @@ function drawGradientForFullscreen(s, ctx, W, H, sizeScale) {
   }
 }
 
-// ========== RENDER GRADIENT - FIXED ==========
+// ------ RENDER GRADIENT ------
 function renderGradientFS(s, ctx, W, H, sizeScale) {
   const cx = s.x * W;
   const cy = s.y * H;
@@ -4257,14 +4349,12 @@ function renderGradientFS(s, ctx, W, H, sizeScale) {
   ctx.restore();
 }
 
-// ========== RGBA HELPER - LOCAL ==========
+// ------ RGBA HELPER - LOCAL ------
 function rgbaColor(hex, alpha) {
-  // اگر تابع rgba وجود داره ازش استفاده کن
   if (typeof rgba === "function") {
     return rgba(hex, alpha);
   }
 
-  // fallback
   hex = hex || "#000000";
   hex = hex.replace("#", "");
 
@@ -4279,7 +4369,7 @@ function rgbaColor(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-// ========== ZOOM FUNCTIONS ==========
+// ------ ZOOM FUNCTIONS ------
 function zoomFullscreen(factor, clientX, clientY) {
   const container = document.getElementById("fsContainer");
   if (!container || !fullscreenCanvas) return;
@@ -4338,7 +4428,6 @@ function zoomFullscreen(factor, clientX, clientY) {
   applyFullscreenTransform();
   updateFullscreenZoomUI();
 
-  // استفاده از requestAnimationFrame برای بهبود performance
   requestAnimationFrame(() => constrainFullscreenPan());
 }
 
@@ -4356,8 +4445,7 @@ function applyFullscreenTransform(animate = false) {
   if (!fullscreenCanvas) return;
 
   if (animate) {
-    fullscreenCanvas.style.transition =
-      "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    fullscreenCanvas.style.transition = "var(--transition-fast)";
   } else {
     fullscreenCanvas.style.transition = "none";
   }
@@ -4380,7 +4468,6 @@ function constrainFullscreenPan() {
 
   const containerRect = container.getBoundingClientRect();
 
-  // دریافت ابعاد واقعی canvas
   const canvasRect = fullscreenCanvas.getBoundingClientRect();
   const originalWidth = canvasRect.width / fullscreenZoom.scale;
   const originalHeight = canvasRect.height / fullscreenZoom.scale;
@@ -4391,12 +4478,9 @@ function constrainFullscreenPan() {
   let newTranslateX = fullscreenZoom.translateX;
   let newTranslateY = fullscreenZoom.translateY;
 
-  // محدود کردن pan در محور X
   if (scaledW <= containerRect.width) {
-    // اگر عرض canvas کمتر از container است، وسط چین کن
     newTranslateX = 0;
   } else {
-    // محاسبه حداکثر مقدار translate
     const maxTranslateX = (scaledW - containerRect.width) / 2;
     newTranslateX = Math.max(
       -maxTranslateX,
@@ -4404,12 +4488,9 @@ function constrainFullscreenPan() {
     );
   }
 
-  // محدود کردن pan در محور Y
   if (scaledH <= containerRect.height) {
-    // اگر ارتفاع canvas کمتر از container است، وسط چین کن
     newTranslateY = 0;
   } else {
-    // محاسبه حداکثر مقدار translate
     const maxTranslateY = (scaledH - containerRect.height) / 2;
     newTranslateY = Math.max(
       -maxTranslateY,
@@ -4417,7 +4498,6 @@ function constrainFullscreenPan() {
     );
   }
 
-  // اعمال تغییرات اگر لازم است
   if (
     newTranslateX !== fullscreenZoom.translateX ||
     newTranslateY !== fullscreenZoom.translateY
@@ -4460,7 +4540,6 @@ function updateFullscreenCursor() {
   }
 }
 
-// تابع کمکی برای زوم با موقعیت موس
 function zoomAtPoint(factor, mouseEvent) {
   if (mouseEvent) {
     zoomFullscreen(factor, mouseEvent.clientX, mouseEvent.clientY);
@@ -4469,14 +4548,13 @@ function zoomAtPoint(factor, mouseEvent) {
   }
 }
 
-// برای استفاده با چرخ موس
 function handleWheelZoom(event) {
   event.preventDefault();
   const factor = event.deltaY < 0 ? 1.1 : 0.9;
   zoomAtPoint(factor, event);
 }
 
-// ========== TOUCH ==========
+// ------ TOUCH ------
 function handleFSTouchStart(e) {
   const container = document.getElementById("fsContainer");
   if (!container) return;
@@ -4597,7 +4675,7 @@ function handleFSDoubleTap(clientX, clientY) {
   }
 }
 
-// ========== MOUSE ==========
+// ------ MOUSE ------
 function handleFSWheel(e) {
   e.preventDefault();
   zoomFullscreen(e.deltaY > 0 ? 0.85 : 1.18, e.clientX, e.clientY);
@@ -4638,14 +4716,14 @@ function handleFSDoubleClick(e) {
   }
 }
 
-// ========== RESIZE ==========
+// ------ RESIZE ------
 async function handleFSResize() {
   if (!fullscreenCanvas) return;
   await renderFullscreenCanvas();
   resetFullscreenView();
 }
 
-// ========== ROTATE ==========
+// ------ ROTATE ------
 async function rotateFullscreen() {
   fullscreenRotation = (fullscreenRotation + 90) % 360;
 
@@ -4667,7 +4745,7 @@ async function rotateFullscreen() {
   }
 }
 
-// ========== UTILS ==========
+// ------ UTILS ------
 function getPinchDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
   const dy = touches[0].clientY - touches[1].clientY;
@@ -4683,152 +4761,6 @@ function getPinchCenter(touches) {
 window.openFullscreenPreview = openFullscreenPreview;
 window.closeFullscreenPreview = closeFullscreenPreview;
 window.rotateFullscreen = rotateFullscreen;
-
-// ========== TOGGLE HANDLES ==========
-const toggleBtn = document.getElementById("toggleHandles");
-let lastToggleTime = 0;
-
-function handleToggleClick(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-  }
-
-  const now = Date.now();
-  if (now - lastToggleTime < 300) return;
-  lastToggleTime = now;
-
-  state.showHandles = !state.showHandles;
-
-  if (toggleBtn) {
-    toggleBtn.innerHTML = state.showHandles
-      ? `        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-          <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-          <g id="SVGRepo_iconCarrier">
-            <path
-              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
-              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </g>
-
-        </svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`;
-    toggleBtn.classList.toggle("handles-hidden", !state.showHandles);
-  }
-  draw();
-}
-
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", handleToggleClick);
-
-  toggleBtn.addEventListener(
-    "touchstart",
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    { passive: false },
-  );
-
-  toggleBtn.addEventListener(
-    "touchend",
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      handleToggleClick(e);
-    },
-    { passive: false },
-  );
-}
-
-// ========== LOCK BUTTON ==========
-const btnLock = document.getElementById("btnLock");
-let lastLockTime = 0;
-
-function handleLockClick(e) {
-  // ✅ اول همه event ها رو متوقف کن
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-  }
-
-  // جلوگیری از اجرای دوباره
-  const now = Date.now();
-  if (now - lastLockTime < 300) return;
-  lastLockTime = now;
-
-  state.lockVertical = !state.lockVertical;
-
-  if (btnLock) {
-    btnLock.classList.toggle("active", state.lockVertical);
-    btnLock.innerHTML = state.lockVertical
-      ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`;
-  }
-
-  if (state.lockVertical) {
-    state.stops.forEach((s) => (s.y = 0.5));
-  }
-
-  // فقط UI آپدیت بشه
-  draw();
-  renderList();
-  renderInspector();
-  updateCSS();
-  updateBgPreview();
-}
-
-if (btnLock) {
-  btnLock.addEventListener("click", handleLockClick);
-
-  btnLock.addEventListener(
-    "touchstart",
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    { passive: false },
-  );
-
-  btnLock.addEventListener(
-    "touchend",
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      handleLockClick(e);
-    },
-    { passive: false },
-  );
-}
 
 // ========== ZOOM SYSTEM ==========
 function calcDynamicMinZoom() {
@@ -5037,10 +4969,6 @@ function setupKeyboardZoom() {
           e.preventDefault();
           zoomOut();
           break;
-        case "0":
-          e.preventDefault();
-          resetZoom();
-          break;
       }
     }
 
@@ -5056,11 +4984,6 @@ function setupKeyboardZoom() {
           handleToggleClick(e);
         }
         break;
-      case "x":
-        if (!isMod) {
-          e.preventDefault();
-          swapDimensions();
-        }
         break;
       case "l":
         if (!isMod) {
@@ -5195,7 +5118,6 @@ function initZoom() {
   document.getElementById("zoomIn")?.addEventListener("click", zoomIn);
   document.getElementById("zoomOut")?.addEventListener("click", zoomOut);
   document.getElementById("zoomFit")?.addEventListener("click", fitToScreen);
-  document.getElementById("zoomReset")?.addEventListener("click", resetZoom);
 
   setupZoomSlider();
   setupWheelZoom();
@@ -5205,7 +5127,6 @@ function initZoom() {
 
   setTimeout(() => {
     fitToScreen();
-    centerCanvas();
   }, 100);
 }
 
@@ -5217,111 +5138,7 @@ function refreshUI() {
   updateBgPreview();
 }
 
-// ========== STOP CRUD ==========
-function getStop(id) {
-  return state.stops.find((s) => s.id === id);
-}
-
-function addStop(type) {
-  counter++;
-  const typeNames = { radial: "Radial", linear: "Linear", conic: "Conic" };
-  const s = {
-    id: uid(),
-    name: `${typeNames[type]} ${counter}`,
-    type,
-    visible: true,
-    x: 0.2 + Math.random() * 0.6,
-    y: state.lockVertical ? 0.5 : 0.2 + Math.random() * 0.6,
-    color: randColor(),
-    size: 80 + Math.random() * 100,
-    feather: 60,
-    opacity: 100,
-    angle: Math.floor(Math.random() * 180),
-    startAngle: 0,
-    blendMode: "screen", // ✅ اضافه شد - پیش‌فرض screen
-    stops: [
-      { pos: 0, color: randColor(), opacity: 100 },
-      { pos: 100, color: randColor(), opacity: 100 },
-    ],
-  };
-  state.stops.push(s);
-  state.selected = s.id;
-  refresh();
-}
-
-function delStop(id) {
-  state.stops = state.stops.filter((s) => s.id !== id);
-  if (state.selected === id) state.selected = null;
-  refresh();
-}
-
-function dupStop(id) {
-  const o = getStop(id);
-  if (!o) return;
-
-  const c = JSON.parse(JSON.stringify(o));
-  c.id = uid();
-
-  // === Name logic ===
-  const baseName = o.name.replace(/\sCopy(\s\d+)?$/, "");
-  const copies = state.stops.filter(
-    (s) =>
-      s.name === `${baseName} Copy` ||
-      s.name.match(new RegExp(`^${baseName} Copy \\d+$`)),
-  );
-
-  if (copies.length === 0) {
-    c.name = `${baseName} Copy`;
-  } else {
-    c.name = `${baseName} Copy ${copies.length + 1}`;
-  }
-
-  c.x = clamp(c.x + 0.04, 0, 1);
-  c.y = clamp(c.y + 0.04, 0, 1);
-
-  state.stops.push(c);
-  state.selected = c.id;
-  refresh();
-}
-
-function toggleVis(id) {
-  const s = getStop(id);
-  if (s) {
-    s.visible = !s.visible;
-    refresh();
-  }
-}
-
-function addColorStop(s) {
-  const pos =
-    s.stops.length < 5
-      ? Math.round(100 / (s.stops.length + 1)) * s.stops.length
-      : 50;
-  s.stops.push({ pos, color: randColor(), opacity: 100 });
-  s.stops.sort((a, b) => a.pos - b.pos);
-  refresh();
-}
-
-function delColorStop(s, i) {
-  if (s.stops.length > 2) {
-    s.stops.splice(i, 1);
-    refresh();
-  }
-}
-
-function safeButtonAction(action) {
-  isButtonInteraction = true;
-
-  try {
-    action();
-  } finally {
-    setTimeout(() => {
-      isButtonInteraction = false;
-    }, 100);
-  }
-}
-
-// ========== FILTER - CSS BASED APPROACH ==========
+// ========== FILTERS ==========
 
 const filterState = {
   enabled: true,
@@ -5346,7 +5163,6 @@ const filterDefaults = {
   invert: 0,
 };
 
-// ✅ نگه‌داری آخرین مقدار برای جلوگیری از آپدیت غیرضروری
 let lastFilterString = "";
 let filterUpdateScheduled = false;
 
@@ -5414,10 +5230,9 @@ function setFilter(name, value) {
   const [min, max] = limits[name] || [0, 100];
   filterState[name] = clamp(numValue, min, max);
 
-  // ✅ آپدیت UI و redraw
   updateFilterDisplay();
 }
-// ✅ آپدیت سبک: فقط CSS، بدون redraw
+
 function updateFilterDisplay() {
   if (filterUpdateScheduled) return;
 
@@ -5425,7 +5240,6 @@ function updateFilterDisplay() {
   requestAnimationFrame(() => {
     updateFilterUI();
 
-    // ✅ به جای CSS filter، canvas رو دوباره رسم کن
     draw();
     updateCSS();
 
@@ -5438,23 +5252,13 @@ function toggleFilters() {
   updateFilterDisplay();
 }
 
-// ✅ ریست کامل فیلترها
 function resetFilters() {
-  // اول مقادیر پیش‌فرض رو برگردون
   Object.keys(filterDefaults).forEach((key) => {
     filterState[key] = filterDefaults[key];
   });
   filterState.enabled = true;
 
-  // بعد UI رو آپدیت کن
   updateFilterDisplay();
-
-  // انیمیشن ریست
-  const btn = document.getElementById("filtersResetBtn");
-  if (btn) {
-    btn.classList.add("resetting");
-    setTimeout(() => btn.classList.remove("resetting"), 500);
-  }
 }
 
 function updateFilterUI() {
@@ -5469,7 +5273,6 @@ function updateFilterUI() {
     "invert",
   ];
 
-  // ✅ فقط المنت‌هایی که نیازه رو آپدیت کن
   filters.forEach((name) => {
     const slider = document.getElementById(`filter${capitalize(name)}`);
     const numInput = document.getElementById(`filter${capitalize(name)}Num`);
@@ -5488,17 +5291,34 @@ function updateFilterUI() {
     }
   });
 
-  // Toggle button
   const toggleBtn = document.getElementById("filtersToggleBtn");
+
   if (toggleBtn) {
     toggleBtn.classList.toggle("disabled", !filterState.enabled);
-    const img = toggleBtn.querySelector("img");
-    if (img) {
-      img.src = filterState.enabled ? "./icon/eye.svg" : "./icon/eye-close.svg";
-    }
+    toggleBtn.innerHTML = filterState.enabled
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+           <g stroke-width="0"></g>
+           <g stroke-linecap="round" stroke-linejoin="round"></g>
+           <g>
+             <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21"
+               stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+           </g>
+         </svg>`;
   }
 
-  // Disable controls
   const controls = document.querySelector(".filter-controls");
   if (controls) {
     controls.classList.toggle("disabled", !filterState.enabled);
@@ -5509,7 +5329,6 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// ✅ Event handling با کمترین overhead
 function initFilterEvents() {
   const filters = [
     "brightness",
@@ -5528,7 +5347,6 @@ function initFilterEvents() {
 
     if (!slider) return;
 
-    // ✅ برای اسلایدر: Live update اما throttled
     let sliderTimer = null;
     slider.addEventListener("input", (e) => {
       const value = e.target.value;
@@ -5570,7 +5388,6 @@ function initFilterEvents() {
       }, 16); // ~60fps
     });
 
-    // Save history on drag end
     slider.addEventListener("mousedown", () => History.onDragStart());
     slider.addEventListener("mouseup", () => History.onDragEnd());
     slider.addEventListener("touchstart", () => History.onDragStart(), {
@@ -5578,7 +5395,6 @@ function initFilterEvents() {
     });
     slider.addEventListener("touchend", () => History.onDragEnd());
 
-    // ✅ Number input
     if (numInput) {
       numInput.addEventListener("input", (e) => {
         setFilter(name, e.target.value);
@@ -5587,7 +5403,6 @@ function initFilterEvents() {
       numInput.addEventListener("blur", () => History.onInputBlur());
     }
 
-    // Double-click reset
     const row = slider.closest(".filter-row");
     if (row) {
       row.addEventListener("dblclick", (e) => {
@@ -5638,7 +5453,7 @@ function initFiltersFromState() {
   draw();
 }
 
-// ========== EXPORT SUPPORT ==========
+// ------ EXPORT SUPPORT ------
 function applyFiltersToImageData(imageData) {
   if (!hasActiveFilters()) return imageData;
 
@@ -5663,7 +5478,6 @@ function applyFiltersToImageData(imageData) {
     let g = data[i + 1];
     let b = data[i + 2];
 
-    // Apply filters in order
     if (brightness !== 1) {
       r *= brightness;
       g *= brightness;
@@ -5740,7 +5554,7 @@ function getHueRotationMatrix(degrees) {
   ];
 }
 
-// ========== INIT ON PAGE LOAD ==========
+// ------ INIT ON PAGE LOAD ------
 if (document.readyState === "complete") {
   setTimeout(initFiltersFromState, 100);
 } else {
@@ -5749,7 +5563,6 @@ if (document.readyState === "complete") {
   });
 }
 
-// Exports
 window.setFilter = setFilter;
 window.toggleFilters = toggleFilters;
 window.resetFilters = resetFilters;
@@ -5775,11 +5588,30 @@ function updateBgUI() {
   const bgControls = document.querySelector(".bg-controls");
 
   if (toggleBtn) {
-    const img = toggleBtn.querySelector("img");
-    if (img) {
-      img.src = state.bgEnabled ? "./icon/eye.svg" : "./icon/eye-close.svg";
-    }
     toggleBtn.classList.toggle("disabled", !state.bgEnabled);
+
+    toggleBtn.innerHTML = state.bgEnabled
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+              <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+
+            </svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+           <g stroke-width="0"></g>
+           <g stroke-linecap="round" stroke-linejoin="round"></g>
+           <g>
+             <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21"
+               stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+           </g>
+         </svg>`;
   }
 
   if (bgControls) {
@@ -5807,7 +5639,7 @@ function initBackgroundEvents() {
 window.toggleBackground = toggleBackground;
 window.setBgBlendMode = setBgBlendMode;
 
-// ========== SVG NOISE FILTER SYSTEM ==========
+// ========== NOISE CONTROLS ==========
 const noiseState = {
   enabled: true,
   opacity: 0,
@@ -5823,7 +5655,6 @@ function applyNoiseFilter() {
   draw();
 }
 
-// ========== NOISE CONTROLS ==========
 function setNoiseOpacity(value) {
   noiseState.opacity = clamp(parseFloat(value) || 0, 0, 100);
   updateNoiseUI();
@@ -5923,7 +5754,7 @@ async function getNoiseCanvas(width, height, frequency) {
   });
 }
 
-// ========== UI SYNC ==========
+// ------ UI SYNC ------
 function updateNoiseUI() {
   const opacityInput = document.getElementById("noiseOpacity");
   const frequencyInput = document.getElementById("noiseFrequency");
@@ -5940,14 +5771,33 @@ function updateNoiseUI() {
 
   if (toggleBtn) {
     toggleBtn.classList.toggle("disabled", !noiseState.enabled);
-    const img = toggleBtn.querySelector("img");
-    if (img) {
-      img.src = noiseState.enabled ? "./icon/eye.svg" : "./icon/eye-close.svg";
-    }
+
+    toggleBtn.innerHTML = noiseState.enabled
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+       <g stroke-width="0"></g>
+       <g stroke-linecap="round" stroke-linejoin="round"></g>
+       <g>
+         <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21"
+           stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+       </g>
+     </svg>`;
   }
 }
 
-// ========== EVENTS ==========
+// ------ EVENTS ------
 function initNoiseEvents() {
   const opacityInput = document.getElementById("noiseOpacity");
   const frequencyInput = document.getElementById("noiseFrequency");
@@ -6008,7 +5858,7 @@ function initNoiseEvents() {
   }
 }
 
-// ========== INIT ==========
+// ------ INIT ------
 document.addEventListener("DOMContentLoaded", () => {
   initNoiseEvents();
   applyNoiseFilter();
@@ -6069,6 +5919,7 @@ function handleAngleMove(e) {
     updateStopItem(stopId);
   }
 }
+
 function startAngleDrag(e, stopId) {
   e.preventDefault();
   activeAnglePicker = stopId;
@@ -6097,7 +5948,7 @@ function stopAngleDrag() {
   document.removeEventListener("touchend", stopAngleDrag);
 }
 
-// ========== Export ==========
+// ------ Export ------
 window.liveUpdate = liveUpdate;
 window.updateInspectorInputs = updateInspectorInputs;
 window.updateStopItem = updateStopItem;
@@ -6195,21 +6046,116 @@ function updateConicAngleFromInput(id, val) {
   }
 }
 
-// ========== UI FUNCTIONS ==========
-function refresh() {
-  resize();
-  draw();
-  renderList();
-  renderInspector();
-  updateCSS();
-  updateBgPreview();
+// ========== ADD GRADIENT ==========
+function getStop(id) {
+  return state.stops.find((s) => s.id === id);
 }
 
+function addStop(type) {
+  counter++;
+  const typeNames = { radial: "Radial", linear: "Linear", conic: "Conic" };
+  const s = {
+    id: uid(),
+    name: `${typeNames[type]} ${counter}`,
+    type,
+    visible: true,
+    x: 0.2 + Math.random() * 0.6,
+    y: state.lockVertical ? 0.5 : 0.2 + Math.random() * 0.6,
+    color: randColor(),
+    size: 80 + Math.random() * 100,
+    feather: 60,
+    opacity: 100,
+    angle: Math.floor(Math.random() * 180),
+    startAngle: 0,
+    blendMode: "screen",
+    stops: [
+      { pos: 0, color: randColor(), opacity: 100 },
+      { pos: 100, color: randColor(), opacity: 100 },
+    ],
+  };
+  state.stops.push(s);
+  state.selected = s.id;
+  refresh();
+}
+
+function delStop(id) {
+  state.stops = state.stops.filter((s) => s.id !== id);
+  if (state.selected === id) state.selected = null;
+  refresh();
+}
+
+function dupStop(id) {
+  const o = getStop(id);
+  if (!o) return;
+
+  const c = JSON.parse(JSON.stringify(o));
+  c.id = uid();
+
+  // === Name logic ===
+  const baseName = o.name.replace(/\sCopy(\s\d+)?$/, "");
+  const copies = state.stops.filter(
+    (s) =>
+      s.name === `${baseName} Copy` ||
+      s.name.match(new RegExp(`^${baseName} Copy \\d+$`)),
+  );
+
+  if (copies.length === 0) {
+    c.name = `${baseName} Copy`;
+  } else {
+    c.name = `${baseName} Copy ${copies.length + 1}`;
+  }
+
+  c.x = clamp(c.x + 0.04, 0, 1);
+  c.y = clamp(c.y + 0.04, 0, 1);
+
+  state.stops.push(c);
+  state.selected = c.id;
+  refresh();
+}
+
+function toggleVis(id) {
+  const s = getStop(id);
+  if (s) {
+    s.visible = !s.visible;
+    refresh();
+  }
+}
+
+function addColorStop(s) {
+  const pos =
+    s.stops.length < 5
+      ? Math.round(100 / (s.stops.length + 1)) * s.stops.length
+      : 50;
+  s.stops.push({ pos, color: randColor(), opacity: 100 });
+  s.stops.sort((a, b) => a.pos - b.pos);
+  refresh();
+}
+
+function delColorStop(s, i) {
+  if (s.stops.length > 2) {
+    s.stops.splice(i, 1);
+    refresh();
+  }
+}
+
+function safeButtonAction(action) {
+  isButtonInteraction = true;
+
+  try {
+    action();
+  } finally {
+    setTimeout(() => {
+      isButtonInteraction = false;
+    }, 100);
+  }
+}
+
+// ========== GRAIENT PROPERTIES ==========
 function updateBgPreview() {
   const el = document.getElementById("bgPreview");
   if (el) el.style.background = rgba(state.bgColor, state.bgAlpha / 100);
 }
-// ========== RADIAL GRADIENT HELPER ==========
+
 function addRadialGradientStops(grad, color, hex, solidEnd) {
   grad.addColorStop(0, color);
   if (solidEnd >= 0.99) {
@@ -6222,7 +6168,7 @@ function addRadialGradientStops(grad, color, hex, solidEnd) {
     grad.addColorStop(1, rgba(hex, 0));
   }
 }
-// ========== getGradPreview ==========
+
 function getGradPreview(s) {
   if (s.type === "radial") {
     const solidEnd = 1 - (s.feather ?? 60) / 100;
@@ -6263,8 +6209,6 @@ function getGradPreview(s) {
   return `linear-gradient(${s.angle || 0}deg, ${stopsStr})`;
 }
 
-// ========== LIVE UPDATE STOP ITEMS ==========
-
 function updateStopItem(stopId) {
   const s = getStop(stopId);
   if (!s) return;
@@ -6292,21 +6236,13 @@ function updateStopItem(stopId) {
   if (name && name.textContent !== s.name) {
     name.textContent = s.name;
   }
-
-  const visBtn = item.querySelector(
-    '.control-btn img[alt="eye"], .control-btn img[alt="eye-close"]',
-  );
-  if (visBtn) {
-    visBtn.src = s.visible ? "./icon/eye.svg" : "./icon/eye-close.svg";
-    visBtn.alt = s.visible ? "eye" : "eye-close";
-  }
 }
 
 function updateAllStopItems() {
   state.stops.forEach((s) => updateStopItem(s.id));
 }
 
-// ========== LAYER DRAG & DROP - TOUCH + MOUSE ==========
+// ========== LAYER DRAG & DROP ==========
 (function () {
   const HOLD_DURATION = 300;
 
@@ -6332,7 +6268,7 @@ function updateAllStopItems() {
     list.removeEventListener("touchstart", onPointerDown);
 
     list.addEventListener("mousedown", onPointerDown);
-    list.addEventListener("touchstart", onPointerDown, { passive: true }); // ✅ passive
+    list.addEventListener("touchstart", onPointerDown, { passive: true });
   }
 
   function onPointerDown(e) {
@@ -6371,7 +6307,6 @@ function updateAllStopItems() {
     document.addEventListener("touchcancel", onUpPending);
   }
 
-  // حرکت در حالت pending
   function onMovePending(e) {
     if (!drag.pending) return;
 
@@ -6434,9 +6369,9 @@ function updateAllStopItems() {
       zIndex: "10000",
       pointerEvents: "none",
       opacity: "0.95",
-      boxShadow: "0 15px 50px rgba(0,0,0,0.5)",
+      boxShadow: "var(--shadow)",
       borderRadius: "8px",
-      background: "var(--TransParent-bg, rgba(30,30,30,0.95))",
+      background: "var(--bg-transparent, rgba(30,30,30,0.95))",
       backdropFilter: "blur(6px)",
       border: "2px solid var(--border, #444)",
       transform: "scale(1.03)",
@@ -6573,7 +6508,7 @@ function updateAllStopItems() {
   }
 
   function isValidDragTarget(target) {
-    if (target.closest(".control-btn, button, input, select")) return false;
+    if (target.closest(".control-btn, button, input, select, svg")) return false;
     const handle = target.closest(".drag-handle");
     const preview = target.closest(".stop-preview");
     const info = target.closest(".stop-info");
@@ -6582,7 +6517,8 @@ function updateAllStopItems() {
 
   window.initLayerDragDrop = initLayerDragDrop;
 })();
-// ========== به‌روزرسانی renderList با data-id ==========
+
+// ========== LAYER ==========
 function renderList() {
   const el = document.getElementById("list");
   if (!state.stops.length) {
@@ -6591,91 +6527,70 @@ function renderList() {
   }
 
   el.innerHTML = state.stops
-    .map(
-      (s) => `
-    <div class="stop-item ${state.selected === s.id ? "selected" : ""} ${!s.visible ? "hidden" : ""}" 
-         data-id="${s.id}"
-         onclick="state.selected='${s.id}';refresh()">
-      <div class="stop-header">
-        <div class="stop-preview">
-          <div class="stop-preview-inner" style="background:${getGradPreview(s)}"></div>
-        </div>
-        <div class="stop-info">
-          <div class="stop-name">${s.name}</div>
-          <div class="stop-meta">${s.type} · ${
-            s.type === "radial"
-              ? Math.round(s.size) + "px"
-              : s.type === "conic"
-                ? s.startAngle + "°"
-                : s.angle + "°"
-          } · <span class="blend-tag">${s.blendMode || "screen"}</span></div>
-        </div>
-        <div class="stop-actions">
-          <button class="control-btn" onclick="event.stopPropagation();toggleVis('${s.id}')">
-            ${
-              s.visible
-                ? `            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-
-              <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-              <g id="SVGRepo_iconCarrier">
-                <path
-                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
-                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </g>
-
-            </svg>`
-                : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`
-            }
-          </button>
-          <button class="control-btn" onclick="event.stopPropagation();dupStop('${s.id}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-
-                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-                  <g id="SVGRepo_iconCarrier">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                      d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
-                      fill="#ffffff" />
-                    <path
-                      d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
-                      fill="#ffffff" />
-                  </g>
-
-                </svg>
-          </button>
-          <button class="control-btn" onclick="event.stopPropagation();delStop('${s.id}')">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-
-            <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-            
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-            
-            <g id="SVGRepo_iconCarrier"> <path d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z" fill="#ffffff"/> </g>
-            
-            </svg>
-          </button>
-        </div>
-      </div>
+    .map((s) => `
+<div class="stop-item ${state.selected === s.id ? "selected" : ""} ${!s.visible ? "hidden" : ""}" 
+  data-id="${s.id}" onclick="state.selected='${s.id}';refresh()">
+    <div class="stop-header">
+      <div class="stop-preview">
+    <div class="stop-preview-inner" style="background:${getGradPreview(s)}"></div>
+  </div>
+  <div class="stop-info">
+  <div class="stop-name">${s.name}</div>
+  <div class="stop-meta">${s.type} · ${
+    s.type === "radial"
+    ? Math.round(s.size) + "px"
+    : s.type === "conic"
+    ? s.startAngle + "°"
+    : s.angle + "°"
+    } · <span class="blend-tag">${s.blendMode || "screen"}</span></div>
+  </div>
+  <div class="stop-actions">
+  <button class="control-btn" onclick="event.stopPropagation();toggleVis('${s.id}')">
+    ${s.visible
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+          <g id="SVGRepo_iconCarrier">
+        <path
+          d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+      </svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+        <g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21"
+            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+      </svg>`}
+  </button>
+    <button class="control-btn" onclick="event.stopPropagation();dupStop('${s.id}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+        <g id="SVGRepo_iconCarrier">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"
+          fill="#ffffff" />
+        <path
+          d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"
+          fill="#ffffff" />
+        </g>
+        </svg>
+      </button>
+        <button class="control-btn" onclick="event.stopPropagation();delStop('${s.id}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+        <g id="SVGRepo_iconCarrier"> <path d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z" fill="#ffffff"/> </g>        
+      </svg>
+      </button>
     </div>
-  `,
-    )
-    .join("");
+  </div>
+</div>
+  `)
+.join("");
 }
 
-// ✅ تابع جدید: آپدیت input های inspector بدون re-render
 function updateInspectorInputs(stopId) {
   const s = getStop(stopId);
   if (!s || state.selected !== stopId) return;
@@ -6683,7 +6598,7 @@ function updateInspectorInputs(stopId) {
   const inspector = document.getElementById("inspector");
   if (!inspector) return;
 
-  // ========== Position X, Y ==========
+  // ------ Position X, Y ------
   const allInputs = inspector.querySelectorAll("input");
   allInputs.forEach((input) => {
     if (input === document.activeElement) return; // Skip focused inputs
@@ -6708,7 +6623,7 @@ function updateInspectorInputs(stopId) {
     }
   });
 
-  // ========== Radial opacity ==========
+  // ------ Radial opacity ------
   if (s.type === "radial") {
     const opacityInput = document.getElementById(`opacity_${stopId}`);
     if (opacityInput && opacityInput !== document.activeElement) {
@@ -6716,7 +6631,7 @@ function updateInspectorInputs(stopId) {
     }
   }
 
-  // ========== Linear angle ==========
+  // ------ Linear angle ------
   if (s.type === "linear") {
     const angleNum = document.getElementById(`angleNum_${stopId}`);
     const angleCenter = document.getElementById(`angleCenter_${stopId}`);
@@ -6733,7 +6648,7 @@ function updateInspectorInputs(stopId) {
     }
   }
 
-  // ========== Conic angle ==========
+  // ------ Conic angle ------
   if (s.type === "conic") {
     const angleNum = document.getElementById(`conicAngleNum_${stopId}`);
     const angleCenter = document.getElementById(`conicAngleCenter_${stopId}`);
@@ -6750,7 +6665,7 @@ function updateInspectorInputs(stopId) {
     }
   }
 
-  // ========== Color Stops (linear/conic) ==========
+  // ------ Color Stops (linear/conic) ------
   if (s.stops && (s.type === "linear" || s.type === "conic")) {
     s.stops.forEach((cs, i) => {
       const row = inspector.querySelector(
@@ -6780,7 +6695,7 @@ function updateInspectorInputs(stopId) {
     });
   }
 
-  // ========== Radial color swatch ==========
+  // ------ Radial color swatch ------
   if (s.type === "radial") {
     const container = inspector.querySelector(`[data-stop-id="${stopId}"]`);
     if (container) {
@@ -6791,7 +6706,7 @@ function updateInspectorInputs(stopId) {
     }
   }
 }
-// ========== تابع یکپارچه برای به‌روزرسانی همه چیز ==========
+
 function liveUpdate(stopId = null) {
   draw();
   updateCSS();
@@ -6803,12 +6718,10 @@ function liveUpdate(stopId = null) {
   }
 }
 
-// به‌روزرسانی preview در inspector
 function updateInspectorPreview(stopId) {
   const s = getStop(stopId);
   if (!s) return;
 
-  // برای radial
   if (s.type === "radial") {
     const container = document.querySelector(`[data-stop-id="${stopId}"]`);
     if (container) {
@@ -6819,7 +6732,6 @@ function updateInspectorPreview(stopId) {
     }
   }
 
-  // برای color stops در linear/conic
   s.stops?.forEach((cs, i) => {
     const row = document.querySelector(
       `[data-stop-id="${stopId}"][data-color-stop="${i}"]`,
@@ -6875,7 +6787,7 @@ function updateConicAngleFromInput(id, val) {
   }
 }
 
-// ========== تابع تنظیم Blend Mode ==========
+// ------ STOP Blend Mode ------
 function setStopBlendMode(stopId, mode) {
   const s = getStop(stopId);
   if (s) {
@@ -6885,65 +6797,7 @@ function setStopBlendMode(stopId, mode) {
 }
 window.setStopBlendMode = setStopBlendMode;
 
-// ========== به‌روزرسانی onPointerMove برای canvas drag ==========
-function onPointerMove(e) {
-  if (!drag) return;
-  e.preventDefault();
-
-  const pos = getEventPos(e);
-  const mx = pos.x;
-  const my = pos.y;
-  const cx = drag.s.x * W;
-  const cy = drag.s.y * H;
-
-  switch (drag.t) {
-    case "move":
-      drag.s.x = clamp(mx / W, 0, 1);
-      if (!state.lockVertical) {
-        drag.s.y = clamp(my / H, 0, 1);
-      }
-      break;
-
-    case "cs":
-      const { x1, y1, x2, y2 } = drag;
-      const dx = x2 - x1,
-        dy = y2 - y1;
-      const len2 = dx * dx + dy * dy;
-      const t = clamp(((mx - x1) * dx + (my - y1) * dy) / len2, 0, 1);
-      drag.s.stops[drag.i].pos = Math.round(t * 100);
-      break;
-
-    case "angle":
-      let newAngle = (Math.atan2(my - cy, mx - cx) * 180) / Math.PI + 90;
-      if (newAngle < 0) newAngle += 360;
-      drag.s.angle = Math.round(newAngle) % 360;
-      break;
-
-    case "conic-angle":
-      let conicAngle = (Math.atan2(my - cy, mx - cx) * 180) / Math.PI + 90;
-      if (conicAngle < 0) conicAngle += 360;
-      drag.s.startAngle = Math.round(conicAngle) % 360;
-      break;
-
-    case "conic-cs":
-      const startAngleRad = ((drag.s.startAngle - 90) * Math.PI) / 180;
-      let relAngle = Math.atan2(my - cy, mx - cx) - startAngleRad;
-      if (relAngle < 0) relAngle += Math.PI * 2;
-      drag.s.stops[drag.i].pos = clamp(
-        Math.round((relAngle / (Math.PI * 2)) * 100),
-        0,
-        100,
-      );
-      break;
-  }
-
-  throttledDraw();
-  updateStopItem(drag.s.id);
-  updateInspectorInputs(drag.s.id); // ✅ اضافه شد
-  updateCSS(); // ✅ اضافه شد برای آپدیت CSS در حین drag
-}
-
-// ========== به‌روزرسانی angle drag ==========
+// ------ Update angle drag ------
 function handleAngleMove(e) {
   if (!activeAnglePicker) return;
   e.preventDefault();
@@ -6983,7 +6837,7 @@ function handleAngleMove(e) {
   }
 }
 
-// ==========conic angle drag ==========
+// ------ conic angle drag ------
 function startConicAngleDrag(e, id) {
   e.preventDefault();
 
@@ -7035,7 +6889,7 @@ function startConicAngleDrag(e, id) {
   document.addEventListener("touchend", up);
 }
 
-// ========== picker callback ==========
+// ------ picker callback ------
 function openStopColorPicker(stopId, isColorStop = false, colorStopIndex = 0) {
   const s = getStop(stopId);
   if (!s) return;
@@ -7062,7 +6916,7 @@ function openStopColorPicker(stopId, isColorStop = false, colorStopIndex = 0) {
     });
   }
 }
-// ========== به‌روزرسانی renderInspector ==========
+// ------ update renderInspector ------
 function renderInspector() {
   const el = document.getElementById("inspector");
   const s = getStop(state.selected);
@@ -7124,7 +6978,9 @@ function renderInspector() {
           onfocus="HF()" onblur="HB()"
           oninput="getStop('${s.id}').y=+this.value/100;liveUpdate('${s.id}')"
           ${state.lockVertical ? "disabled" : ""}>
-        ${state.lockVertical ? `<span><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
+        ${
+          state.lockVertical
+            ? `<span><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
 
 <g id="SVGRepo_bgCarrier" stroke-width="0"/>
 
@@ -7132,7 +6988,9 @@ function renderInspector() {
 
 <g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
 
-</svg></span>` : ""}
+</svg></span>`
+            : ""
+        }
       </div>
     </div>
   `;
@@ -7285,8 +7143,7 @@ function renderInspector() {
   initColorStopDrag();
 }
 
-// ================= COLOR STOP DRAG =================
-
+// ------ COLOR STOP DRAG ------
 (function () {
   // ========== CONFIG ==========
   const DRAG_CONFIG = {
@@ -7510,7 +7367,7 @@ function renderInspector() {
       opacity: "0.95",
       boxShadow: "0 15px 50px rgba(0,0,0,0.5)",
       borderRadius: "8px",
-      background: "var(--TransParent-bg, rgba(30,30,30,0.95))",
+      background: "var(--bg-transparent, rgba(30,30,30,0.95))",
       backdropFilter: "blur(6px)",
       border: "2px solid var(--border, #444)",
       willChange: "transform",
@@ -7685,78 +7542,58 @@ function updateCSS() {
 
   let gradientLines = [];
 
-  if (!vis.length) {
-    // ========== فقط پس‌زمینه ==========
-    if (state.bgEnabled) {
-      gradientLines.push(`background: ${bgColorFmt};`);
-    } else {
-      gradientLines.push(`background: transparent;`);
-    }
-  } else {
-    // ========== پس‌زمینه + گرادینت‌ها ==========
-    gradientLines.push(`position: relative;`);
-    gradientLines.push(`width: ${Math.floor(W)}px;`);
-    gradientLines.push(`height: ${Math.floor(H)}px;`);
+  gradientLines.push(`width: ${Math.floor(W)}px;`);
+  gradientLines.push(`height: ${Math.floor(H)}px;`);
 
-    if (state.bgEnabled) {
-      gradientLines.push(`background-color: ${bgColorFmt};`);
-    }
-
-    // Gradients
-    const grads = vis.map((s) => {
-      if (s.type === "radial") {
-        const x = (s.x * 100).toFixed(0);
-        const y = (s.y * 100).toFixed(0);
-        const size = Math.round(s.size);
-        const feather = (s.feather ?? 60) / 100;
-        const solidStop = Math.round((1 - feather) * 100);
-        const colorFmt = formatColor(s.color, s.opacity, fmt);
-        const transFmt = formatColor(s.color, 0, fmt);
-
-        if (solidStop >= 99) {
-          // بدون feather → دایره ثابت
-          return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${colorFmt} 100%)`;
-        }
-        if (solidStop > 0) {
-          return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${colorFmt} ${solidStop}%, ${transFmt} 100%)`;
-        }
-        return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${transFmt} 100%)`;
-      } else if (s.type === "linear") {
-        const sorted = [...s.stops].sort((a, b) => a.pos - b.pos);
-        const cs = sorted
-          .map((c) => `${formatColor(c.color, c.opacity, fmt)} ${c.pos}%`)
-          .join(", ");
-        return `linear-gradient(${s.angle}deg, ${cs})`;
-      } else if (s.type === "conic") {
-        const x = (s.x * 100).toFixed(0);
-        const y = (s.y * 100).toFixed(0);
-        const sorted = [...s.stops].sort((a, b) => a.pos - b.pos);
-        const cs = sorted
-          .map((c) => `${formatColor(c.color, c.opacity, fmt)} ${c.pos}%`)
-          .join(", ");
-        return `conic-gradient(from ${s.startAngle}deg at ${x}% ${y}%, ${cs})`;
-      }
-    });
-
-    gradientLines.push(`background-image:`);
-    gradientLines.push(`  ${grads.join(",\n  ")};`);
-
-    // ========== Blend Modes ==========
-    const individualBlends = vis.map((s) => s.blendMode || "screen");
-
-    if (state.bgEnabled && state.bgBlendMode !== "normal") {
-      gradientLines.push(
-        `background-blend-mode: ${individualBlends.join(", ")};`,
-      );
-      gradientLines.push(`mix-blend-mode: ${state.bgBlendMode};`);
-    } else {
-      gradientLines.push(
-        `background-blend-mode: ${individualBlends.join(", ")};`,
-      );
-    }
+  if (state.bgEnabled) {
+    gradientLines.push(`background-color: ${bgColorFmt};`);
   }
 
-  // ✅ فیلتر فقط اینجا اضافه میشه (یکبار)
+  const grads = vis.map((s) => {
+    if (s.type === "radial") {
+      const x = (s.x * 100).toFixed(0);
+      const y = (s.y * 100).toFixed(0);
+      const size = Math.round(s.size);
+      const feather = (s.feather ?? 60) / 100;
+      const solidStop = Math.round((1 - feather) * 100);
+      const colorFmt = formatColor(s.color, s.opacity, fmt);
+      const transFmt = formatColor(s.color, 0, fmt);
+
+      if (solidStop >= 99) {
+        // بدون feather → دایره ثابت
+        return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${colorFmt} 100%)`;
+      }
+      if (solidStop > 0) {
+        return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${colorFmt} ${solidStop}%, ${transFmt} 100%)`;
+      }
+      return `radial-gradient(${size}px ${size}px at ${x}% ${y}%, ${colorFmt} 0%, ${transFmt} 100%)`;
+    } else if (s.type === "linear") {
+      const sorted = [...s.stops].sort((a, b) => a.pos - b.pos);
+      const cs = sorted
+        .map((c) => `${formatColor(c.color, c.opacity, fmt)} ${c.pos}%`)
+        .join(", ");
+      return `linear-gradient(${s.angle}deg, ${cs})`;
+    } else if (s.type === "conic") {
+      const x = (s.x * 100).toFixed(0);
+      const y = (s.y * 100).toFixed(0);
+      const sorted = [...s.stops].sort((a, b) => a.pos - b.pos);
+      const cs = sorted
+        .map((c) => `${formatColor(c.color, c.opacity, fmt)} ${c.pos}%`)
+        .join(", ");
+      return `conic-gradient(from ${s.startAngle}deg at ${x}% ${y}%, ${cs})`;
+    }
+  });
+
+  gradientLines.push(`background-image:`);
+  gradientLines.push(`  ${grads.join(",\n  ")};`);
+
+  const individualBlends = vis.map((s) => s.blendMode || "screen");
+
+  gradientLines.push(`background-blend-mode: ${individualBlends.join(", ")};`);
+
+  if (state.bgEnabled && state.bgBlendMode !== "normal") {
+    gradientLines.push(`mix-blend-mode: ${state.bgBlendMode};`);
+  }
   const hasFilters = hasActiveFilters();
   if (hasFilters) {
     gradientLines.push(`filter: ${getFilterString()};`);
@@ -7764,10 +7601,8 @@ function updateCSS() {
 
   currentGradientCSS = gradientLines.join("\n");
 
-  // ✅ حذف شد - دیگه currentFilterCSS جداگانه نداریم
-  currentFilterCSS = ""; // خالی
+  currentFilterCSS = "";
 
-  // ========== Noise CSS ==========
   const hasNoise = noiseState.enabled && noiseState.opacity > 0;
 
   if (hasNoise) {
@@ -7793,14 +7628,14 @@ mix-blend-mode: ${noiseState.blend};`;
     currentSVGFilter = "";
   }
 
-  // ========== UI Updates ==========
+  // UI Updates
   const noiseBlock = document.getElementById("noiseOutputBlock");
   const svgBlock = document.getElementById("svgOutputBlock");
 
   if (noiseBlock) noiseBlock.style.display = hasNoise ? "block" : "none";
   if (svgBlock) svgBlock.style.display = hasNoise ? "block" : "none";
 
-  // ========== Render ==========
+  // Render
   renderIframe("cssGradient", currentGradientCSS);
   if (hasNoise) {
     renderIframe("cssNoise", currentNoiseCSS);
@@ -7808,48 +7643,25 @@ mix-blend-mode: ${noiseState.blend};`;
   }
 }
 
-// ========== COPY FUNCTION - FIXED ==========
-function copyCSS(btn) {
-  let allCSS = currentGradientCSS || "";
-
-  // ✅ فیلتر دیگه جداگانه اضافه نمیشه چون توی currentGradientCSS هست
-
-  if (currentNoiseCSS) {
-    allCSS += "\n\n/* Noise Overlay (::after) */\n" + currentNoiseCSS;
-  }
-
-  if (currentSVGFilter) {
-    allCSS += "\n\n/* SVG Filter (add to HTML) */\n" + currentSVGFilter;
-  }
-
-  copyToClipboard(allCSS, btn);
-}
-
 function highlightCSS_DOM(container, doc) {
   const html = container.textContent
-    // 1. Gradient functions (اولین اولویت)
     .replace(
       /\b(radial-gradient|linear-gradient|conic-gradient|url)\b/g,
       '<span class="f">$1</span>',
     )
-    // 2. Colors
     .replace(
       /(rgba?\s*\([^)]+\)|hsla?\s*\([^)]+\)|#[0-9a-fA-F]{3,8})/g,
       '<span class="v">$1</span>',
     )
-    // 3. Properties
     .replace(/^(\s*)([a-z-]+)(\s*:)/gm, '$1<span class="p">$2</span>$3')
-    // 4. Numbers
     .replace(
       /\b(\d+\.?\d*(?:px|%|deg|rem|em)?)\b/g,
       '<span class="n">$1</span>',
     )
-    // 5. Keywords
     .replace(
-      /\b(normal|screen|overlay|multiply|soft-light|hard-light|transparent|absolute|relative|none)\b/g,
-      '<span class="k">$1</span>',
-    );
-
+      /\b(normal|screen|overlay|multiply|darken|lighten|difference|exclusion|color-(?:dodge|burn)|hue|saturation|luminosity|soft-light|hard-light|transparent|absolute|relative|none|brightness|contrast|saturate|hue-rotate|blur|grayscale|sepia|invert)\b/g,
+      '<span class="k">$1</span>'
+    )
   container.innerHTML = html;
 }
 
@@ -7989,7 +7801,14 @@ function renderIframe(id, content, isSVG = false) {
     border-radius: 5px;
     background-color: #666;
   }
+
 *{margin:0;padding:0;box-sizing:border-box}
+
+*::selection{
+  background:rgba(56, 191, 248, 0.2);
+  color:var(--text-primary);
+}
+  
 body{
   color:#c9d1d9;
   font-family:'Fira Code', monospace;
@@ -7997,12 +7816,12 @@ body{
   line-height:1.6;
   padding:12px;
   overflow-x: hidden;
+  
 pre, div {
   white-space: pre-wrap;
-  overflow-wrap: break-word; /* یا anywhere */
+  overflow-wrap: break-word;
   word-break: normal;
 }
-
 
 .p{
   background: linear-gradient(90deg, #00d4ff 0%, #0099ff 50%, #6366f1 100%);
@@ -8014,7 +7833,12 @@ pre, div {
 
 /* Function*/
 .f{
-  background: linear-gradient(90deg, #a855f7 0%, #ec4899 100%);
+  background-image:
+  linear-gradient(139deg, rgba(207, 152, 147, 0.49) 0%, rgba(207, 152, 147, 0.50) 20%, rgba(207, 152, 147, 0.45) 40%, rgba(255, 0, 102, 0.73) 60%, rgba(255, 0, 102, 0.44) 80%, rgba(221, 122, 131, 0.52) 100%),
+  radial-gradient(155px 155px at 70% 55%, rgba(255, 0, 102, 0.84) 0%, rgba(255, 0, 102, 0.84) 26%, rgba(255, 0, 102, 0.00) 100%),
+  linear-gradient(216deg, rgba(105, 104, 166, 0.62) 0%, rgba(105, 104, 166, 0.66) 50%, rgba(105, 104, 166, 0.33) 100%),
+  linear-gradient(315deg, rgba(105, 104, 166, 0.45) 0%, rgba(221, 122, 131, 0.40) 25%, rgba(255, 0, 102, 0.63) 50%, rgba(255, 0, 102, 0.66) 75%, rgba(255, 0, 102, 0.20) 100%),
+  radial-gradient(167px 167px at 24% 23%, rgba(105, 104, 166, 0.25) 0%, rgba(105, 104, 166, 0.25) 6%, rgba(105, 104, 166, 0.00) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -8023,7 +7847,9 @@ pre, div {
 
 /* Value/Color */
 .v{
-  background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+background-image:
+  linear-gradient(236deg, rgba(105, 104, 166, 0.48) 0%, rgba(0, 255, 136, 0.50) 9%, rgba(0, 255, 136, 0.77) 20%, rgba(0, 255, 136, 0.50) 60%, rgba(0, 255, 136, 0.64) 80%, rgba(105, 104, 166, 0.67) 100%),
+  linear-gradient(127deg, rgba(0, 255, 136, 0.36) 0%, rgba(0, 255, 136, 0.50) 33%, rgba(105, 104, 166, 0.67) 68%, rgba(207, 152, 147, 0.26) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -8031,7 +7857,11 @@ pre, div {
 
 /* Number */
 .n{
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
+background-image:
+  conic-gradient(from 220deg at 40% 100%, rgba(251, 86, 7, 0.72) 35%, rgba(221, 122, 131, 0.59) 73%, rgba(221, 122, 131, 0.56) 86%),
+  conic-gradient(from 343deg at 0% 54%, rgba(251, 86, 7, 0.69) 22%, rgba(221, 122, 131, 0.32) 71%, rgba(221, 122, 131, 0.67) 92%),
+  linear-gradient(316deg, rgba(207, 152, 147, 0.57) 0%, rgba(207, 152, 147, 0.48) 25%, rgba(207, 152, 147, 0.54) 50%, rgba(207, 152, 147, 0.66) 75%, rgba(221, 122, 131, 0.61) 100%),
+  linear-gradient(129deg, rgba(251, 86, 7, 0.68) 0%, rgba(207, 152, 147, 0.59) 25%, rgba(207, 152, 147, 0.21) 50%, rgba(0, 212, 255, 0.38) 75%, rgba(207, 152, 147, 0.32) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -8039,13 +7869,15 @@ pre, div {
 
 /* Keyword */
 .k{
-  background: linear-gradient(90deg, #fb923c 0%, #f97316 100%);
+background-image:
+  linear-gradient(332deg, rgba(255, 0, 0, 0.73) 0%, rgba(251, 86, 7, 0.56) 50%, rgba(255, 0, 0, 0.54) 100%),
+  linear-gradient(30deg, rgba(255, 0, 0, 0.38) 0%, rgba(255, 0, 0, 0.67) 0%, rgba(251, 86, 7, 0.30) 20%, rgba(251, 86, 7, 0.65) 77%, rgba(255, 0, 0, 0.28) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Tag - قرمز */
+/* Tag */
 .t{
   background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
   -webkit-background-clip: text;
@@ -8077,7 +7909,7 @@ pre, div {
   }
 }
 
-// ========== COPY FUNCTIONS ==========
+// ------ COPY FUNCTION ------
 function copyCSS(btn) {
   let allCSS = currentGradientCSS || "";
 
@@ -8107,7 +7939,6 @@ function copySVGFilter(btn) {
 function copyToClipboard(text, btn = null) {
   if (!text || !text.trim()) return;
 
-  // Modern API (Android / Desktop / new iOS)
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard
       .writeText(text)
@@ -8130,7 +7961,7 @@ function legacyCopy(text, btn) {
 
   textarea.focus();
   textarea.select();
-  textarea.setSelectionRange(0, text.length); // iOS fix
+  textarea.setSelectionRange(0, text.length);
 
   try {
     document.execCommand("copy");
@@ -8147,7 +7978,6 @@ const feedbackTimers = new WeakMap();
 function feedback(btn) {
   if (!btn) return;
 
-  // تایمر قبلی این دکمه را بکش
   if (feedbackTimers.has(btn)) {
     clearTimeout(feedbackTimers.get(btn));
     feedbackTimers.delete(btn);
@@ -8158,10 +7988,10 @@ function feedback(btn) {
 
   btn.classList.add("copied");
   btn.innerHTML = `
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="#4ade80">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="#4ade80">
       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
     </svg>
-    <span>Copied!</span>
+    <span>Copied !</span>
   `;
 
   const timer = setTimeout(() => {
@@ -8173,7 +8003,7 @@ function feedback(btn) {
   feedbackTimers.set(btn, timer);
 }
 
-// ========== EXPORT ==========
+// ------ EXPORT ------
 document
   .getElementById("exportSelect")
   ?.addEventListener("change", function (e) {
@@ -8188,7 +8018,7 @@ document
     this.value = "";
   });
 
-// ========== EXPORT - FIXED ==========
+
 async function exportAsImage(format = "png", quality = 0.92) {
   const width = state.canvasWidth;
   const height = state.canvasHeight;
@@ -8199,7 +8029,6 @@ async function exportAsImage(format = "png", quality = 0.92) {
   exportCanvas.width = width;
   exportCanvas.height = height;
 
-  // ========== 1. رسم محتوا ==========
   const visibleStops = state.stops.filter((s) => s.visible);
   const reversedStops = [...visibleStops].reverse();
 
@@ -8238,7 +8067,6 @@ async function exportAsImage(format = "png", quality = 0.92) {
     }
   }
 
-  // ========== 2. فیلترها با رفع مشکل blur ==========
   if (hasActiveFilters()) {
     // Blur با padding
     if (filterState.blur > 0) {
@@ -8342,7 +8170,6 @@ async function exportAsImage(format = "png", quality = 0.92) {
     }
   }
 
-  // ========== 3. نویز ==========
   if (noiseState.enabled && noiseState.opacity > 0) {
     const noiseCanvas = await getNoiseCanvas(
       width,
@@ -8388,10 +8215,6 @@ async function exportAsImage(format = "png", quality = 0.92) {
   );
 }
 
-// ========== EXPORT - FIXED VERSION ==========
-
-// Remove all duplicate definitions and replace with this single version:
-
 function drawGradForExport(s, ctx, width, height) {
   const cx = s.x * width;
   const cy = s.y * height;
@@ -8417,8 +8240,7 @@ function drawGradForExport(s, ctx, width, height) {
 
     const grad = ctx.createLinearGradient(mx - dx, my - dy, mx + dx, my + dy);
 
-    // ✅ اصلاح شده
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(cs.pos / 100, rgba(cs.color, cs.opacity / 100));
     });
@@ -8429,8 +8251,7 @@ function drawGradForExport(s, ctx, width, height) {
     const start = ((s.startAngle - 90) * Math.PI) / 180;
     const grad = ctx.createConicGradient(start, cx, cy);
 
-    // ✅ اصلاح شده
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(cs.pos / 100, rgba(cs.color, cs.opacity / 100));
     });
@@ -8440,7 +8261,7 @@ function drawGradForExport(s, ctx, width, height) {
   }
 }
 
-// ========== EXPORT AS SVG - FIXED ==========
+// ------ EXPORT AS SVG ------
 // ========== EXPORT AS SVG - PIXEL PERFECT ==========
 // ========== RASTER SVG EXPORT (بهینه‌شده) ==========
 async function exportAsSVG() {
@@ -8485,7 +8306,6 @@ async function exportAsSVG() {
   );
 }
 
-// ========== رندر گرادینت (بدون تغییر) ==========
 function renderGradient(s, ctx, width, height) {
   const cx = s.x * width;
   const cy = s.y * height;
@@ -8510,7 +8330,7 @@ function renderGradient(s, ctx, width, height) {
     const dy = (Math.sin(angleRad) * diagonal) / 2;
 
     const grad = ctx.createLinearGradient(mx - dx, my - dy, mx + dx, my + dy);
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
@@ -8523,7 +8343,7 @@ function renderGradient(s, ctx, width, height) {
   } else if (s.type === "conic") {
     const startAngle = ((s.startAngle - 90) * Math.PI) / 180;
     const grad = ctx.createConicGradient(startAngle, cx, cy);
-    const fixedStops = fixTransparentStops(s.stops);
+    const fixedStops = s.stops;
     fixedStops.forEach((cs) => {
       grad.addColorStop(
         clamp(cs.pos / 100, 0, 1),
@@ -8541,7 +8361,6 @@ function getCanvasBlendMode(cssBlendMode) {
   return cssBlendMode;
 }
 
-// ========== HELPER: دانلود فایل ==========
 function downloadFile(content, mimeType, filename) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -8554,13 +8373,11 @@ function downloadFile(content, mimeType, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// ========== HELPER: فرمت عدد کوتاه ==========
 function n(val, decimals = 2) {
   const num = +parseFloat(val).toFixed(decimals);
-  return String(num); // حذف صفرهای انتهایی
+  return String(num);
 }
 
-// ========== VECTOR SVG EXPORT (بهینه‌شده) ==========
 function exportAsVectorSVG() {
   const width = state.canvasWidth;
   const height = state.canvasHeight;
@@ -8607,7 +8424,7 @@ function exportAsVectorSVG() {
 
       defs += `<linearGradient id="${id}" x1="${n(50 - cos * 50)}%" y1="${n(50 - sin * 50)}%" x2="${n(50 + cos * 50)}%" y2="${n(50 + sin * 50)}%">`;
 
-      fixTransparentStops(s.stops).forEach((cs) => {
+      s.stops.forEach((cs) => {
         const c = hexToRgb(cs.color);
         defs += `<stop offset="${cs.pos}%" stop-color="rgb(${c.r},${c.g},${c.b})" stop-opacity="${n(cs.opacity / 100, 3)}"/>`;
       });
@@ -8658,7 +8475,7 @@ function exportAsVectorSVG() {
     } else if (s.type === "conic") {
       const x = n(s.x * 100);
       const y = n(s.y * 100);
-      const stopsCSS = fixTransparentStops(s.stops)
+      const stopsCSS = s.stops
         .map((cs) => {
           const c = hexToRgb(cs.color);
           return `rgba(${c.r},${c.g},${c.b},${n(cs.opacity / 100, 3)}) ${cs.pos}%`;
@@ -8695,7 +8512,6 @@ ${content}
   );
 }
 
-// ========== SVG Filter از CSS (فقط یکبار - بهینه) ==========
 function generateSVGFilterFromCSS() {
   if (!hasActiveFilters()) return "";
 
@@ -8864,7 +8680,7 @@ function hasNonBlurFilters() {
   );
 }
 
-// ========== DIMENSION EVENT LISTENERS ==========
+// ------ DIMENSION EVENT LISTENERS ------
 function initDimensionEvents() {
   // Aspect ratio buttons
   document.querySelectorAll(".aspect-btn").forEach((btn) => {
@@ -9522,8 +9338,8 @@ function initMobile() {
   );
 }
 
-// ========== HELPERS ==========
 
+// ========== RANDOM GRADIENT GENERATOR ==========
 function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
@@ -9536,33 +9352,16 @@ function randFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-const COLOR_POOL = [
-  "#ff0066",
-  "#3a0ca3",
-  "#00d4ff",
-  "#00ff88",
-  "#b3945b",
-  "#fb5607",
-  "#119da4",
-  "#cf9893",
-  "#6968a6",
-  "#dd7a83",
-  "#3f5e96",
-  "#010528",
-];
-
-// ترکیب رنگ‌های هماهنگ‌تر
 function generatePalette(baseCount = 3) {
-  const base = randFrom(COLOR_POOL);
+  const base = randFrom(CONFIG.colors.palette);
   const colors = [base];
   while (colors.length < baseCount) {
-    const c = randFrom(COLOR_POOL);
+    const c = randFrom(CONFIG.colors.palette);
     if (!colors.includes(c)) colors.push(c);
   }
   return colors;
 }
 
-// ساخت استاپ‌های گرادیانت با تنوع
 function createGradientStops(
   palette,
   countRange = [2, 5],
@@ -9581,8 +9380,6 @@ function createGradientStops(
   }
   return stops;
 }
-
-// ========== RANDOM GRADIENT GENERATOR ==========
 
 function generateRandomGradient() {
   // پاک کردن تمام استاپ‌ها
@@ -9673,8 +9470,6 @@ function generateRandomGradient() {
   refresh();
 }
 
-// ========== ADD GENERATE BUTTON ==========
-
 function addGenerateButton() {
   // پیدا کردن container (کنار undo/redo)
   const undoBtn = document.getElementById("undoBtn");
@@ -9686,8 +9481,6 @@ function addGenerateButton() {
   document.getElementById("generateBtn");
 }
 
-// ========== KEYBOARD SHORTCUT ==========
-
 document.addEventListener("keydown", (e) => {
   // Ctrl+G یا Cmd+G برای Generate
   if ((e.ctrlKey || e.metaKey) && e.key === "g") {
@@ -9696,8 +9489,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ========== INIT ==========
-
+// ========== init ==========
 async function init() {
   initMobile();
   initPickerEvents();
@@ -9717,12 +9509,10 @@ async function init() {
   initLayerDragDrop();
   syncCSSFormat();
 
-  // بارگذاری History
   if (typeof History !== "undefined" && History.init) {
     History.init();
   }
 
-  // اگر auto-save وجود نداشت، گرادیانت تصادفی بساز
   const hasAutoSave = localStorage.getItem(
     History?.autoSaveKey || "gradientEditor_autoSave",
   );
@@ -9733,11 +9523,18 @@ async function init() {
     refresh();
   }
 
-  // ✅ اضافه کردن دکمه Generate
   addGenerateButton();
 }
 
-// ========== FALLBACK برای HTML موجود ==========
+function refresh() {
+  resize();
+  draw();
+  renderList();
+  renderInspector();
+  updateCSS();
+  updateBgPreview();
+}
+// ========== FALLBACK HTML ==========
 
 document.addEventListener("DOMContentLoaded", () => {
   const existingBtn = document.getElementById("generateBtn");
@@ -9752,6 +9549,7 @@ if (document.readyState === "loading") {
   init();
 }
 
+// ========== SCRUBBING ==========
 (() => {
   let activeInput = null;
   let isTouchScrub = false;
@@ -9873,6 +9671,10 @@ if (document.readyState === "loading") {
 
     const now = performance.now();
     const dt = now - lastMoveTime;
+
+    // محدود کردن نرخ به‌روزرسانی برای جلوگیری از هنگ کردن
+    if (dt < 10) return; // فقط هر 10 میلی‌ثانیه به‌روزرسانی کن
+
     const dx = e.clientX - lastMoveX; // ✅ فقط تغییر از فریم قبل
 
     if (dt <= 0 || dx === 0) {
@@ -9944,3 +9746,4 @@ if (document.readyState === "loading") {
     input.style.cursor = "text";
   });
 })();
+

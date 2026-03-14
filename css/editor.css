@@ -84,6 +84,7 @@ header h1 {
 }
 
 .aspect-ratio-btns {
+  height: 35px;
   display: flex;
   gap: 2px;
   flex: 1;
@@ -108,30 +109,28 @@ header h1 {
   justify-content: center;
 }
 
+.aspect-btn:hover {
+  transform: none;
+}
+
+.aspect-btn:active {
+  transform: scale(.9);
+}
+
 .aspect-btn.active {
   background: var(--accent-gradient);
   color: #000;
 }
 
-.aspect-btn.active:hover {
-  background: var(--accent-gradient);
-  color: #000;
-}
-
-.aspect-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
 .aspect-lock-btn {
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 35px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -145,14 +144,7 @@ header h1 {
   border-color: var(--accent-gradient);
 }
 
-.aspect-lock-btn img {
-  width: 16px;
-  height: 16px;
-  opacity: 0.7;
-}
-
-.aspect-lock-btn.locked img {
-  opacity: 1;
+.aspect-lock-btn.locked svg{
   filter: brightness(0) !important;
 }
 
@@ -163,28 +155,11 @@ header h1 {
   grid-column: 4/5;
 }
 
-.size-input-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.size-input-group label {
-  font-size: 10px;
-  color: var(--text-muted);
-  width: 16px;
-}
 
 .size-input-group .num-input {
   flex: 1;
   width: 60px;
   padding: 10px;
-}
-
-.size-input-group .unit {
-  font-size: 9px;
-  color: var(--text-muted);
 }
 
 .size-link {
@@ -200,7 +175,7 @@ header h1 {
   color: var(--accent-gradient);
 }
 
-.size-link-btn.linked img {
+.size-link-btn.linked svg {
   filter: invert(1) brightness(0) !important;
 }
 
@@ -211,10 +186,10 @@ header h1 {
   justify-content: center;
   grid-column: 5/6;
   gap: 6px;
-  padding: 6px;
+  padding: 8px;
   font-size: 10px;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -225,14 +200,14 @@ header h1 {
   display: flex;
   align-items: center;
   gap: 6px;
-  border-radius: 8px;
   grid-column: 2/3;
 }
 
 .aspect-input-num {
+  height: 35px;
   flex: 1;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px;
   color: var(--text-primary);
   font-size: 13px;
@@ -269,7 +244,6 @@ header h1 {
   color: var(--text-muted);
   width: 14px;
   position: absolute;
-  margin-bottom: 2px;
   right: 0;
 }
 
@@ -285,15 +259,15 @@ header h1 {
 
 /* Size Link Button */
 .size-link-btn {
-  width: 33px;
-  height: 33px;
+  width: 35px;
+  height: 35px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
@@ -311,6 +285,7 @@ header h1 {
 }
 
 .resolution-presets {
+  height: 35px;
   position: relative;
   grid-column: 3/4;
 }
@@ -339,6 +314,16 @@ header h1 {
   align-items: center;
   justify-content: center;
 }
+
+
+.preset-btn:hover {
+  transform: none;
+}
+
+.preset-btn:active {
+  transform: scale(.9);
+}
+
 
 .preset-btn.selected {
   background: var(--accent-gradient);
@@ -433,7 +418,7 @@ header h1 {
   color: var(--text-contrast);
   border: none;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   z-index: 3;
   margin: 0 .5rem ;
   right: 0;
@@ -954,7 +939,7 @@ header h1 {
 ======================================== */
 .section {
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px;
   margin-bottom: 18px;
   position: relative;
@@ -1033,6 +1018,10 @@ body.dragging-section {
 /* ========================================
    noise
 ======================================== */
+.noise-controls{
+  padding-right: 3px;
+}
+
 .noise-controls .form-row {
   margin-block: .8rem;
   justify-content: space-between;
@@ -1064,7 +1053,7 @@ body.dragging-section {
   grid-column: 3/4;
   grid-row: 1/2;
   width: 50px;
-  margin-right: 10px;
+  margin-right: 3px;
 }
 
 .filter-row .unit {
@@ -1074,9 +1063,8 @@ body.dragging-section {
   font-size: 10px;
   color: var(--text-muted);
   width: 14px;
-  margin-bottom: 2px;
   right: 0;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .filter-row label {
@@ -1085,7 +1073,7 @@ body.dragging-section {
   margin-left: 10px;
 }
 
-#filtersResetBtn.run img {
+#filtersResetBtn.run svg{
   animation: rotate 600ms ease;
 }
 
@@ -1136,7 +1124,7 @@ body.dragging-section {
   flex-wrap: wrap;
   justify-content: space-between;
   background: var(--bg);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px;
   margin-bottom: 6px;
   gap: 8px;
@@ -1370,6 +1358,7 @@ button.sm {
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 8px;
+  box-shadow: var(--shadow); 
 }
 
 .drag-handle {
@@ -1494,6 +1483,7 @@ button.sm {
 @keyframes blur {
   50%   {  filter: blur(2px);}
 }
+
 /* .control-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -1780,6 +1770,14 @@ button.sm {
 /* ========================================
    CSS OUTPUT
 ======================================== */
+.output-section{
+  padding-inline: 0;
+}
+
+.output-section .section-header{
+  margin-inline: 12px;
+}
+
 .output-header {
   display: flex;
   justify-content: space-between;
@@ -1791,6 +1789,10 @@ button.sm {
   color: var(--text-muted);
   font-size: 13px;
 
+}
+
+.output-block{
+  margin-inline: 12px;
 }
 
 .css-output {
@@ -1826,7 +1828,7 @@ button.sm {
   align-items: center;
   gap: 6px;
   padding: 5px 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-right: .4rem;
   cursor: pointer;
   transition:
@@ -1835,7 +1837,6 @@ button.sm {
     box-shadow 0.2s ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  z-index: 100;
 }
 
 .copy-btn img {

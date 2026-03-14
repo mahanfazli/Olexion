@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary Meta Tags -->
-  <title>Olexion Guide - Learn Gradients, Noise, Filters & Blend Modes</title>
+  <title>Olexion - Guide</title>
   <meta name="title" content="Olexion Guide - Learn Gradients, Noise, Filters & Blend Modes">
   <meta name="description"
     content="Quick guide to master gradient design. Learn about linear, radial, conic gradients, noise effects, CSS filters, blend modes, layers, and export options.">
@@ -477,7 +477,7 @@
             <h3>CSS Export</h3>
             <p>Copy the generated CSS and apply it directly to the target element. The result will match the preview
               exactly and adapt to the element's size.</p>
-            <code>.element { background-image: gradients; }</code>
+            <code>.element { background-image: gradient(); }</code>
           </div>
         </div>
         <div id="noise-svg">
@@ -605,8 +605,7 @@
             </p>
             <img src="./img/gradient-text.webp" alt="gradient text">
             <pre>
-              <code>background-image: gradient();
--webkit-background-clip: text;
+              <code>-webkit-background-clip: text;
 -webkit-text-fill-color: transparent;</code>
             </pre>
             <img src="./img/gradient.webp" alt="gradient">
@@ -626,5 +625,4 @@
     <script src="./js/script.js"></script>
     <script src="./js/guide.js"></script>
   </body>
-
 </html>
