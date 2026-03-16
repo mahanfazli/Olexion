@@ -381,7 +381,7 @@ function lighten(hex, amount = 20) {
 // ========== FILE MANAGER ==========
 const FileManager = {
   AUTO_SAVE_KEY: "AutoSave",
-  AUTO_SAVE_DELAY: 500,
+  AUTO_SAVE_DELAY: 1000,
   autoSaveTimer: null,
   initialized: false,
 
@@ -1181,7 +1181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== MOUSE ==========
     header.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
+      if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
       e.preventDefault();
       startPending(section, e.clientX, e.clientY, null);
     });
@@ -1191,7 +1191,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
+        if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
 
         const touch = e.touches[0];
         startPending(section, touch.clientX, touch.clientY, touch.identifier);
@@ -1625,7 +1625,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     header.addEventListener("click", (e) => {
-      if (e.target.closest("button, input, select, a, .control-btn, svg")) return;
+      if (e.target.closest("button, input, select, a, .control-btn, svg, span")) return;
       toggle();
     });
 
@@ -1634,7 +1634,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn, svg")) return;
+        if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
 
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
@@ -1660,7 +1660,7 @@ document.addEventListener("DOMContentLoaded", () => {
     header.addEventListener(
       "touchend",
       (e) => {
-        if (e.target.closest("button, input, select, a, .control-btn, svg")) return;
+        if (e.target.closest("button, input, select, a, .control-btn, svg, span")) return;
 
         const touchDuration = Date.now() - touchStartTime;
 
@@ -2075,10 +2075,9 @@ function updateResolutionInputsUI() {
 
   if (!inputW || !inputH) return;
 
-  inputW.value = state.canvasWidth;
-  inputH.value = state.canvasHeight;
+  inputW.value = Math.floor(state.canvasWidth);
+  inputH.value = Math.floor(state.canvasHeight);
 }
-
 
 function updateLockButtonUI() {
   const lockBtn = document.getElementById("aspectLockBtn");
@@ -2138,8 +2137,8 @@ function updateLockButtonUI() {
 }
 
 function updateSizeInputs() {
-  if (canvasWidth) canvasWidth.value = Math.round(state.canvasWidth);
-  if (canvasHeight) canvasHeight.value = Math.round(state.canvasHeight);
+  if (canvasWidth) canvasWidth.value = Math.floor(state.canvasWidth);
+  if (canvasHeight) canvasHeight.value = Math.floor(state.canvasHeight);
 }
 
 function updateSizeDisplay() {
@@ -4808,11 +4807,9 @@ function centerCanvasAt(point, scale) {
 function zoomIn() {
   setZoom(zoomState.current + zoomState.step);
 }
+
 function zoomOut() {
   setZoom(zoomState.current - zoomState.step);
-}
-function resetZoom() {
-  setZoom(100);
 }
 
 function fitToScreen() {
@@ -5059,10 +5056,6 @@ function setupZoomSlider() {
 
   slider.addEventListener("input", (e) => {
     setZoom(parseInt(e.target.value));
-  });
-
-  slider.addEventListener("dblclick", () => {
-    resetZoom();
   });
 }
 
@@ -6577,7 +6570,7 @@ function renderList() {
         </g>
         </svg>
       </button>
-        <button class="control-btn" onclick="event.stopPropagation();delStop('${s.id}')">
+        <button class="control-btn del-layer" onclick="event.stopPropagation();delStop('${s.id}')">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
         <g id="SVGRepo_bgCarrier" stroke-width="0"/>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
@@ -8794,7 +8787,7 @@ function initDimensionEvents() {
 }
 
 // ========== COLOR PICKER ==========
-const MAX_RECENT_COLORS = 10;
+const MAX_RECENT_COLORS = 16;
 let recentColors = [];
 
 try {
@@ -8921,18 +8914,21 @@ function updatePicker() {
   const f = document.getElementById("fields");
   if (f) {
     if (fmt === "hex") {
-      f.innerHTML = `
+      const alphaHex = Math.round(picker.a / 100 * 255)
+        .toString(16)
+        .padStart(2, "0")
+        .toUpperCase(); // ✅ حروف بزرگ
+      const fullHex = `${hex}${alphaHex}`.toUpperCase(); // ✅ حروف بزرگ
+    f.innerHTML = `
         <div class="picker-field" style="flex:2">
           <label>HEX</label>
-          <input id="fHex" value="${hex}">
+          <input id="fHex" value="${fullHex}">
         </div>
         <div class="picker-field">
           <label>A</label>
-          <input type="number" id="fA" min="0" max="100" value="${Math.round(
-            a,
-          )}">
+          <input type="number" id="fA" min="0" max="100" value="${Math.round(picker.a)}">
         </div>`;
-    } else if (fmt === "rgb") {
+    }else if (fmt === "rgb") {
       f.innerHTML = `
         <div class="picker-field"><label>R</label><input type="number" id="fR" min="0" max="255" value="${
           rgb.r
@@ -8980,19 +8976,45 @@ function bindInputs() {
 
   if (fHex) {
     fHex.onchange = () => {
-      let v = fHex.value.trim();
+      let v = fHex.value.trim().toUpperCase();
+
       if (!v.startsWith("#")) v = "#" + v;
-      if (/^#[0-9a-f]{6}$/i.test(v)) {
-        const rgb = hexToRgb(v);
-        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-        picker.h = hsv.h;
-        picker.s = hsv.s;
-        picker.v = hsv.v;
-        updatePicker();
+  
+      const hex6 = /^#[0-9A-F]{6}$/.test(v);
+      const hex8 = /^#[0-9A-F]{8}$/.test(v);
+  
+      if (hex6 || hex8) {
+        try {
+          const r = parseInt(v.substr(1, 2), 16);
+          const g = parseInt(v.substr(3, 2), 16);
+          const b = parseInt(v.substr(5, 2), 16);
+          const a = hex8 ? parseInt(v.substr(7, 2), 16) : 255;
+  
+          if ([r, g, b, a].some(isNaN)) {
+            console.warn("Invalid value");
+            return;
+          }
+  
+          const rgb = { r, g, b };
+          const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+          picker.h = hsv.h;
+          picker.s = hsv.s;
+          picker.v = hsv.v;
+          picker.a = Math.round((a / 255) * 100);
+          updatePicker();
+        } catch (e) {
+          console.error("error Hex:", e);
+        }
+      } else {
+        console.warn("Invalid hex format. Expected #RRGGBBAA");
       }
     };
+  
+    fHex.onfocus = () => fHex.select();
   }
+  
 
+  
   if (fA) {
     fA.oninput = () => {
       picker.a = clamp(+fA.value, 0, 100);
@@ -9671,10 +9693,6 @@ if (document.readyState === "loading") {
 
     const now = performance.now();
     const dt = now - lastMoveTime;
-
-    // محدود کردن نرخ به‌روزرسانی برای جلوگیری از هنگ کردن
-    if (dt < 10) return; // فقط هر 10 میلی‌ثانیه به‌روزرسانی کن
-
     const dx = e.clientX - lastMoveX; // ✅ فقط تغییر از فریم قبل
 
     if (dt <= 0 || dx === 0) {

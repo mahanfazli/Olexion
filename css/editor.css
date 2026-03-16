@@ -88,7 +88,7 @@ header h1 {
   display: flex;
   gap: 2px;
   flex: 1;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 2px;
   border: 1px solid var(--border);
 }
@@ -101,7 +101,7 @@ header h1 {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -130,7 +130,7 @@ header h1 {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -153,13 +153,6 @@ header h1 {
   align-items: center;
   gap: 6px;
   grid-column: 4/5;
-}
-
-
-.size-input-group .num-input {
-  flex: 1;
-  width: 60px;
-  padding: 10px;
 }
 
 .size-link {
@@ -189,7 +182,7 @@ header h1 {
   padding: 8px;
   font-size: 10px;
   color: var(--text-muted);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
 }
 
@@ -207,7 +200,7 @@ header h1 {
   height: 35px;
   flex: 1;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 8px;
   color: var(--text-primary);
   font-size: 13px;
@@ -249,7 +242,9 @@ header h1 {
 
 .size-input-group .num-input {
   flex: 1;
-  width: 50px;
+  width: 54px;
+  padding: 10px;
+  border-radius: var(--radius-md);
 }
 
 .size-input-group .unit {
@@ -267,7 +262,7 @@ header h1 {
   justify-content: center;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
@@ -294,7 +289,7 @@ header h1 {
   display: flex;
   gap: 2px;
   flex: 1;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 2px;
   border: 1px solid var(--border);
 }
@@ -307,7 +302,7 @@ header h1 {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -331,79 +326,13 @@ header h1 {
 }
 
 /* ========================================
-   ASPECT RATIO VISUAL PREVIEW
+   file
 ======================================== */
-
-.aspect-preview {
-  width: 100%;
-  height: 60px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.aspect-preview-box {
-  background: var(--accent-gradient);
-  opacity: 0.3;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.aspect-preview-label {
-  position: absolute;
-  font-size: 10px;
-  color: var(--white-color);
-  font-weight: 600;
-}
 
 .file {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.file-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 8px;
-  min-width: 140px;
-  background: rgba(20, 20, 25, 0.98);
-  backdrop-filter: blur(12px);
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 6px;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.2s;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-}
-
-.file-menu:hover .file-dropdown {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.file-dropdown button {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: #e0e0e0;
-  font-size: 13px;
-  cursor: pointer;
 }
 
 /* ========================================
@@ -480,6 +409,7 @@ header h1 {
   position: relative;
   display: inline-block;
   transform-origin: top left;
+  direction: rtl;
 }
 
 #canvas {
@@ -742,7 +672,7 @@ header h1 {
 #fullscreenCanvas {
   display: block;
   transition: transform 0.3s ease;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .fullscreen-controls {
@@ -839,6 +769,7 @@ header h1 {
   border-radius: 30px;
   box-shadow: var(--shadow);
   z-index: 1000;
+  margin-inline: 4px;
 }
 
 .zoom-controls button {
@@ -856,7 +787,7 @@ header h1 {
   background: var(--accent-gradient);
 }
 
-.zoom-controls button:active img {
+.zoom-controls button:active svg {
   filter: invert(1) brightness(0);
 }
 
@@ -888,7 +819,7 @@ header h1 {
   transform: translate(-50%, -50%) scale(0.8);
   background: var(--bg-transparent);
   padding: 15px 30px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   font-size: 20px;
   font-weight: bold;
   pointer-events: none;
@@ -939,7 +870,7 @@ header h1 {
 ======================================== */
 .section {
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px;
   margin-bottom: 18px;
   position: relative;
@@ -1004,7 +935,7 @@ body.dragging-section {
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   touch-action: manipulation;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: background 0.2s ease;
 }
 
@@ -1040,7 +971,7 @@ body.dragging-section {
 }
 
 .filter-row.active {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .filter-slider {
@@ -1053,7 +984,7 @@ body.dragging-section {
   grid-column: 3/4;
   grid-row: 1/2;
   width: 50px;
-  margin-right: 3px;
+  margin-right: 10px;
 }
 
 .filter-row .unit {
@@ -1064,7 +995,7 @@ body.dragging-section {
   color: var(--text-muted);
   width: 14px;
   right: 0;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .filter-row label {
@@ -1124,7 +1055,7 @@ body.dragging-section {
   flex-wrap: wrap;
   justify-content: space-between;
   background: var(--bg);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 8px;
   margin-bottom: 6px;
   gap: 8px;
@@ -1165,7 +1096,7 @@ body.dragging-section {
 .stop-item {
   width: 100%;
   background: var(--bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   margin-top: 5px;
   border: 2px solid transparent;
   
@@ -1240,7 +1171,7 @@ button.sm {
 .drag-placeholder {
   background: var(--accent-gradient);
   opacity: 0.15;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 2px dashed var(--accent-gradient);
   margin: 4px 0;
   transition: height 0.15s ease;
@@ -1357,7 +1288,7 @@ button.sm {
   margin-block: 4px;
   padding: 4px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow); 
 }
 
@@ -1414,7 +1345,7 @@ button.sm {
 .stop-preview {
   width: 38px;
   height: 38px;
-  border-radius: 5px;
+  border-radius: 6px;
   position: relative;
   overflow: hidden;
   background-color: var(--bg-secondary);
@@ -1465,7 +1396,7 @@ button.sm {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 11px;
   padding: 0;
@@ -1484,10 +1415,9 @@ button.sm {
   50%   {  filter: blur(2px);}
 }
 
-/* .control-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-} */
+.del-layer:hover{
+  background: rgba(255, 87, 87, 0.4);
+}
 
 .empty-msg {
   color: var(--text-muted);
@@ -1501,7 +1431,7 @@ button.sm {
 .color-swatch {
   width: 3.5rem;
   height: 3.5rem;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -1539,8 +1469,7 @@ button.sm {
 
 .picker-modal {
   background: var(--bg);
-  backdrop-filter: blur(8px);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 12px;
   width: 25rem;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
@@ -1564,19 +1493,23 @@ button.sm {
   cursor: pointer;
   padding: 4px;
   height: 26px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
-.picker-close img {
+.picker-close svg {
   width: 18px;
   height: 18px;
+}
+
+.picker-close:hover{
+  background: hsla(0, 100%, 67%, 0.4);
 }
 
 
 .sb-box {
   width: 100%;
   height: 120px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   position: relative;
   cursor: crosshair;
   margin-bottom: 8px;
@@ -1589,7 +1522,7 @@ button.sm {
   border-radius: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow);
   pointer-events: none;
 }
 
@@ -1614,12 +1547,13 @@ button.sm {
 }
 
 .alpha-track {
-  background-color: var(--text-muted);
+  margin-top: 12px;
+  background-color: var(--bg);
   background-image: linear-gradient(to right, transparent, var(--ac, #fff)),
-    linear-gradient(45deg, #444 25%, transparent 25%),
-    linear-gradient(-45deg, #444 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #444 75%),
-    linear-gradient(-45deg, transparent 75%, #444 75%);
+    linear-gradient(45deg, var(--bg-secondary) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--bg-secondary) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--bg-secondary) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--bg-secondary) 75%);
   background-size: 100% 100%, 10px 10px, 10px 10px, 10px 10px, 10px 10px;
 }
 
@@ -1627,6 +1561,7 @@ button.sm {
   width: 4px;
   height: 14px;
   background: #fff;
+  outline: 4px solid var(--bg-transparent);
   border-radius: 2px;
   position: absolute;
   top: -2px;
@@ -1668,7 +1603,7 @@ button.sm {
 
 .format-btns {
   display: flex;
-  gap: 2px;
+  gap: 10px;
   margin-bottom: 5px;
 }
 
@@ -1691,7 +1626,7 @@ button.sm {
 
 .picker-fields {
   display: flex;
-  gap: 3px;
+  gap: 10px;
 }
 
 .picker-field {
@@ -1701,15 +1636,15 @@ button.sm {
 
 .picker-field label {
   display: block;
-  font-size: 8px;
+  font-size: 9px;
   color: var(--text-muted);
-  margin-bottom: 2px;
+  margin-top: 2px;
 }
 
 .picker-field input {
   width: 100%;
   background: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   color: inherit;
   padding: 3px;
@@ -1734,9 +1669,10 @@ button.sm {
 }
 
 .recent-color-item {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
   position: relative;
@@ -1752,7 +1688,7 @@ button.sm {
 }
 
 .recent-color-item:hover {
-  border-color: var(--accent-gradient);
+  border-color: var(--text-primary);
   transform: scale(1.1);
 }
 
@@ -1796,9 +1732,10 @@ button.sm {
 }
 
 .css-output {
+  position: relative;
   background: var(--bg);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 12px;
   font-family: "Fira Code", "Consolas", monospace;
   font-size: 11px;
@@ -1813,8 +1750,35 @@ button.sm {
   width: 100%;
 }
 
+.section #cssFormat{
+  display: none;
+}
+
+.section.open #cssFormat{
+  display: block;
+  animation: display 0.6s ease;
+}
+
+@keyframes display {
+  0%{
+    display: none;
+    opacity: 0;
+  }
+
+  10%{
+    display: block;
+  }
+
+  100%{
+    opacity: 1;
+  }
+}
 #cssFormat {
   background: none;
+  position: absolute;
+  top: 52px;
+  right: 50%;
+  transform: translateX(50%);
 }
 
 #exportSelect {
@@ -1828,7 +1792,7 @@ button.sm {
   align-items: center;
   gap: 6px;
   padding: 5px 6px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   margin-right: .4rem;
   cursor: pointer;
   transition:
@@ -1870,6 +1834,10 @@ button.sm {
 
 .copy-btn.copied {
   animation: copiedPulse 0.6s ease;
+}
+
+.copy-btn.copied svg {
+  filter: none !important;
 }
 
 @keyframes copiedPulse {
@@ -2045,6 +2013,18 @@ button.sm {
   .canvas-wrap{
     height: 42rem !important;
   }
+
+  .panel-content{
+    padding: 0;
+  }
+
+  .section-title{
+    font-size: 1rem;
+  }
+
+  .copy-btn{
+    font-size: 11px;
+  }
 }
 
 @media (max-width: 400px) {
@@ -2062,9 +2042,5 @@ button.sm {
 
   .gradient-btn {
     font-size: 11px;
-  }
-
-  #copyBtn {
-    display: none;
   }
 }

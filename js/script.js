@@ -50,7 +50,7 @@ window.matchMedia("(prefers-color-scheme: dark)")
 
 document.addEventListener('DOMContentLoaded', () => {
   
-  const animatedElements = document.querySelectorAll('p ,h1 ,h2, h3, h4, img, .fade-up, .fade-right');
+  const animatedElements = document.querySelectorAll('p ,h1 ,h2, h3, h4, code, img, .fade-up, .fade-right');
   
   const animationConfig = {
     threshold: 0.1,

@@ -118,44 +118,6 @@
   inherits: false;
   initial-value: 1.04;
 }
-.hero-section {
-  height: 93svh;
-  background-color: rgba(10, 10, 20, 1);
-  background-image:
-    radial-gradient(50% 70% at var(--rx) var(--ry),
-      rgba(0, 212, 255, 0.7) 0%,
-      rgba(0, 212, 255, 0.7) 7%,
-      rgba(0, 212, 255, 0) 100%),
-    conic-gradient(from var(--a1) at 55% 89%,
-      rgba(255, 0, 0, 0) 39%,
-      rgba(0, 212, 255, 0.6) 46%,
-      rgba(255, 255, 255, 0.4) 48%,
-      rgba(249, 249, 249, 0.4) 52%,
-      rgba(0, 255, 136, 0.6) 54%,
-      rgba(255, 0, 0, 0) 60%),
-    conic-gradient(from var(--a2) at 40% 50%,
-      rgba(255, 0, 0, 0) 27%,
-      rgba(0, 212, 255, 0.7) 46%,
-      rgba(255, 255, 255, 0.64) 48%,
-      rgba(255, 255, 255, 0.64) 52%,
-      rgba(0, 212, 255, 0.7) 54%,
-      rgba(255, 0, 0, 0) 75%),
-    conic-gradient(from var(--a3) at 27% 10%,
-      rgba(255, 0, 0, 0) 10%,
-      rgba(0, 255, 136, 0.29) 46%,
-      rgba(255, 255, 255, 0.4) 48%,
-      rgba(249, 249, 249, 0.4) 52%,
-      rgba(0, 255, 136, 0.61) 54%,
-      rgba(255, 0, 0, 0) 60%);
-
-  background-blend-mode: luminosity;
-  filter: brightness(var(--b)) contrast(130%) saturate(129%);
-
-  animation:
-    moveGradients 25s ease-in-out infinite,
-    pulseLight 6s ease-in-out infinite alternate;
-
-}
 
 @keyframes moveGradients {
   0% {
@@ -213,20 +175,51 @@
   }
 }
 
-.hero-section::after {
-  content: '';
+.hero-bg{
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.15;
-  filter: url(#noiseFilter);
-  mix-blend-mode: soft-light;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(10, 10, 20, 1);
+  background-image:
+    radial-gradient(50% 70% at var(--rx) var(--ry),
+      rgba(0, 212, 255, 0.7) 0%,
+      rgba(0, 212, 255, 0.7) 7%,
+      rgba(0, 212, 255, 0) 100%),
+    conic-gradient(from var(--a1) at 55% 89%,
+      rgba(255, 0, 0, 0) 39%,
+      rgba(0, 212, 255, 0.6) 46%,
+      rgba(255, 255, 255, 0.4) 48%,
+      rgba(249, 249, 249, 0.4) 52%,
+      rgba(0, 255, 136, 0.6) 54%,
+      rgba(255, 0, 0, 0) 60%),
+    conic-gradient(from var(--a2) at 40% 50%,
+      rgba(255, 0, 0, 0) 27%,
+      rgba(0, 212, 255, 0.7) 46%,
+      rgba(255, 255, 255, 0.64) 48%,
+      rgba(255, 255, 255, 0.64) 52%,
+      rgba(0, 212, 255, 0.7) 54%,
+      rgba(255, 0, 0, 0) 75%),
+    conic-gradient(from var(--a3) at 27% 10%,
+      rgba(255, 0, 0, 0) 10%,
+      rgba(0, 255, 136, 0.29) 46%,
+      rgba(255, 255, 255, 0.4) 48%,
+      rgba(249, 249, 249, 0.4) 52%,
+      rgba(0, 255, 136, 0.61) 54%,
+      rgba(255, 0, 0, 0) 60%);
+
+  background-blend-mode: luminosity;
+  filter: brightness(var(--b)) contrast(130%) saturate(100%) blur(10px);
+
+  transform: scale(1.05);
+
+  animation:
+    moveGradients 25s ease-in-out infinite,
+    pulseLight 6s ease-in-out infinite alternate;
 }
 
-.hero-section::before {
+.hero-bg::before {
   content: '';
   position: absolute;
   top: 0;
@@ -235,6 +228,25 @@
   height: 100%;
   pointer-events: none;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 25%, transparent 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, transparent 20%);
+}
+
+.hero-section {
+  height: 93svh;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.8;
+  filter: url(#noiseFilter);
+  mix-blend-mode: soft-light;
 }
 
 .hero-content {
@@ -302,12 +314,12 @@
 
 .feature-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 140px 999px 999px 999px;
+  border-radius: 999px;
   backdrop-filter: blur(10px);
 
 }
@@ -320,7 +332,7 @@
   align-items: center;
   justify-content: center;
   background: var(--accent-gradient);
-  border-radius: 200px 999px 999px 999px;
+  border-radius: 999px;
 }
 
 .feature-icon svg {
@@ -604,9 +616,9 @@
 .preset-tag {
   font-size: 0.75rem;
   padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--bg-transparent);
   border-radius: var(--radius-full);
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
   backdrop-filter: blur(4px);
 }
 
@@ -848,20 +860,6 @@
     --angle6: 334deg;
     --angle7: 347deg;
   }
-}
-
-
-.site-footer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.35;
-  filter: url(#noiseFilter);
-  mix-blend-mode: soft-light;
 }
 
 .container {
@@ -1115,7 +1113,7 @@
   .feature-icon {
     width: 40px;
     height: 40px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
 
   .feature-icon svg {
@@ -1274,12 +1272,14 @@
     text-align: left;
     padding: 14px;
     gap: 12px;
+    border-radius: 999px;
   }
 
   .feature-icon {
     width: 36px;
     height: 36px;
     flex-shrink: 0;
+    border-radius: 999px;
   }
 
   .feature-content h3 {
@@ -1297,6 +1297,14 @@
   .btn-enter-editor {
     padding: 16px 20px;
     font-size: 0.9rem;
+  }
+
+  .preset-card-name{
+    font-size: 16px;
+  }
+
+  .preset-tag{
+    font-size: .65rem;
   }
 }
 

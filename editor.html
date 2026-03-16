@@ -519,7 +519,7 @@
             <label>Hue</label>
             <input type="range" id="filterHue" class="filter-slider hue-slider" min="0" max="360" value="0">
             <input type="number" id="filterHueNum" class="num-input" min="0" max="360" value="0">
-            <span class="unit" style="margin-right: 0;">°</span>
+            <span class="unit" style="margin-right: 5px;">°</span>
           </div>
 
           <!-- Blur -->
@@ -638,13 +638,6 @@
               <option value="svg">SVG</option>
             </select>
           </div>
-          <div class="Format">
-            <select id="cssFormat">
-              <option value="hex">HEX</option>
-              <option value="rgba">RGBA</option>
-              <option value="hsla">HSLA</option>
-            </select>
-          </div>
           <button id="copyBtn" class="copy-btn" onclick="copyCSS(this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
 
@@ -670,6 +663,13 @@
           <div class="output-block">
             <div class="output-header">
               <span>Gradient</span>
+              <div class="Format">
+                <select id="cssFormat">
+                  <option value="hex">HEX</option>
+                  <option value="rgba">RGBA</option>
+                  <option value="hsla">HSLA</option>
+                </select>
+              </div>
               <button class="copy-btn" onclick="copyGradientCSS(this)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
 

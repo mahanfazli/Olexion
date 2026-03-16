@@ -453,7 +453,7 @@
           <img src="./img/radial-down.webp" alt="Layer order example - bottom" loading="lazy">
           <img src="./img/radial-up.webp" alt="Layer order example - top" loading="lazy">
           <div class="description-box">
-            <h3>How Layers Work</h3>
+            <h3>How Layers Work?</h3>
             <p>Layer order controls visual priority. Changing the stacking order alters how gradients overlap, while
               blend modes determine how colors blend with underlying layers.</p>
           </div>
@@ -486,16 +486,16 @@
             <h3>Noise SVG</h3>
             <p>The Noise SVG is generated as a standalone filter. Simply add it to the SVG document and apply the effect
               to elements via CSS.</p>
-            <code>
-            &lt;body&gt;
-              &lt;div&gt;&lt;/div&gt;
-              &lt;svg&gt;
-                &lt;filter&gt;
-                  ...
-                &lt;/filter&gt;
-              &lt;/svg&gt;
-            &lt;/body&gt;
-            </code>
+<pre>
+  <code>&lt;body&gt;
+  &lt;div&gt;&lt;/div&gt;
+    &lt;svg&gt;
+      &lt;filter&gt;
+          ...
+      &lt;/filter&gt;
+  &lt;/svg&gt;
+&lt;/body&gt;</code>
+</pre>
           </div>
         </div>
         <div id="noise-css">
@@ -533,11 +533,11 @@
       <span class="title-decoration" aria-hidden="true"></span>
     </h2>
     <section id="FAQ">
-      <div class="cart">
-        <div class="cart-header">
-          <div class="cart-title">Privacy Policy</div>
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-title">Privacy Policy</div>
         </div>
-        <div class="cart-content">
+        <div class="accordion-content">
           <p>
             Olexion does not collect, store, process, or transmit any personal user data to any server.
             All processing is performed entirely within the user's browser (client-side).
@@ -546,30 +546,41 @@
           </p>
         </div>
       </div>
-      <div class="cart">
-        <div class="cart-header">
-          <div class="cart-title">How to Prevent Filters From Affecting Page Content ?</div>
+      <div class="accordion">
+        <div class="accordion-header">
+          <div class="accordion-title">How to Prevent Filters From Affecting Page Content ?</div>
         </div>
-        <div class="cart-content">
-          <p>By creating a separate container for the background and applying position: absolute with z-index: -1, the
-            background can be separated from the main content and placed behind it. This approach prevents background
+        <div class="accordion-content">
+          <p>By creating a separate container for the background and applying position: absolute with
+            top,right,bottom,left: 0 the background can be separated from the main content and placed behind it. This approach prevents background
             effects or filters from affecting the main content.</p>
           <pre>
-              <code>  &lt;div class="container"&gt;
-    &lt;div class="gradient-bg" style="z-index:-1;"&gt;
-    &lt;/div&gt;
-    &lt;div&gt;
-      contents ...
-    &lt;/div&gt;
-  &lt;/div&gt;</code>
+              <code>&lt;div class="container"&gt;
+  &lt;div class="background"&gt;&lt;/div&gt;
+  &lt;div&gt;
+    contents ...
+  &lt;/div&gt;
+&lt;/div&gt;</code>
+</pre>
+<p>container</p>
+<pre>
+  <code>position: relative;</code>
+</pre>
+<p>background</p>
+<pre>
+  <code>position: absolute;
+top: 0;
+right: 0;
+bottom: 0;
+left: 0;</code>
 </pre>
         </div>
         </div>
-        <div class="cart">
-          <div class="cart-header">
-            <div class="cart-title">How to Fix Blur Edge Bleeding ?</div>
+        <div class="accordion">
+          <div class="accordion-header">
+            <div class="accordion-title">How to Fix Blur Edge Bleeding ?</div>
           </div>
-          <div class="cart-content">
+          <div class="accordion-content">
             <p>
               When applying a blur filter, the effect may extend beyond the element's boundaries,
               causing unwanted edge bleeding.
@@ -594,11 +605,11 @@
             <img src="./img/edge-fix.webp" alt="Fixed blur edge result">
           </div>
         </div>
-        <div class="cart">
-          <div class="cart-header">
-            <div class="cart-title">Can a gradient background be applied to text?</div>
+        <div class="accordion">
+          <div class="accordion-header">
+            <div class="accordion-title">Can a gradient background be applied to text?</div>
           </div>
-          <div class="cart-content">
+          <div class="accordion-content">
             <p>
               Yes but CSS does not support gradients directly through the color property.
               To create a gradient text effect, you apply a gradient as the background and use text clipping so the gradient is displayed only within the text glyphs.

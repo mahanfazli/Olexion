@@ -32,8 +32,8 @@
   --header-height: 70px;
   --container-max: 1400px;
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
   --radius-full: 999px;
 
   /* Transitions */
@@ -211,7 +211,7 @@ button:active {
   font-weight: 600;
   font-size: 14px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -254,14 +254,8 @@ input:hover {
 
 select {
   cursor: pointer;
-  background: none;
-  border: 1px solid var(--border);
-  color: inherit;
   padding: 3px 6px;
-  border-radius: 8px;
-  font-size: 10px;
-  font-size: .8rem;
-  transition: var(--transition-normal);
+  border-radius: 10px;
 }
 
 option {
@@ -271,7 +265,6 @@ option {
   border-radius: 8px !important;
 }
 
-/* Range Input */
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;

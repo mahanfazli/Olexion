@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('#FAQ .cart').forEach(section => {
+  document.querySelectorAll('#FAQ .accordion').forEach(section => {
 
-    const header = section.querySelector('.cart-header');
-    const content = section.querySelector('.cart-content');
+    const header = section.querySelector('.accordion-header');
+    const content = section.querySelector('.accordion-content');
 
     if (!header || !content) return;
 
