@@ -554,59 +554,6 @@
           </div>
         </div>
       </div>
-      <div class="section" data-id="Background">
-        <div class="section-header">
-          <div class="section-title">Background</div>
-          <button id="bgToggleBtn" class="control-btn animate" title="Toggle background">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
-
-              <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-              <g id="SVGRepo_iconCarrier">
-                <path
-                  d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
-                  stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </g>
-
-            </svg>
-          </button>
-        </div>
-
-        <div class="section-content bg-controls">
-          <!-- Color -->
-          <div class="form-row">
-            <label>Color</label>
-            <div class="color-swatch" id="bgBtn">
-              <div class="color-swatch-inner" id="bgPreview"></div>
-            </div>
-          </div>
-
-          <!-- Blend Mode -->
-          <!-- <div class="form-row">
-        <label>Blend</label>
-        <select id="bgBlendMode" class="blend-select">
-          <option value="normal" selected>Normal</option>
-          <option value="multiply">Multiply</option>
-          <option value="screen">Screen</option>
-          <option value="overlay">Overlay</option>
-          <option value="darken">Darken</option>
-          <option value="lighten">Lighten</option>
-          <option value="color-dodge">Color Dodge</option>
-          <option value="color-burn">Color Burn</option>
-          <option value="hard-light">Hard Light</option>
-          <option value="soft-light">Soft Light</option>
-          <option value="difference">Difference</option>
-          <option value="exclusion">Exclusion</option>
-          <option value="hue">Hue</option>
-          <option value="saturation">Saturation</option>
-          <option value="color">Color</option>
-          <option value="luminosity">Luminosity</option>
-        </select>
-      </div> -->
-        </div>
-      </div>
       <div class="section" data-id="Layers">
         <div class="section-header">
           <div class="section-title">Layers</div>
@@ -615,9 +562,30 @@
             <button id="btnLinear" class="btn gradient-btn">Linear</button>
             <button id="btnConic" class="btn gradient-btn">Conic</button>
           </div>
-          <!-- <button id="btnReset" style="color:var(--danger)">Clear</button> -->
         </div>
-        <div class="section-content" id="list"></div>
+        <div class="section-content">
+          <div class="bg-controls form-group">
+            <!-- Color -->
+            <div class="form-row">
+              <div class="color-swatch" id="bgBtn">
+                <div class="color-swatch-inner" id="bgPreview"></div>
+              </div>
+              <label>Background Color</label>
+            </div>
+        <button id="bgToggleBtn" class="control-btn animate" title="Toggle background">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+          </svg>
+        </button>
+          </div>
+          <div id="list"></div>
+        </div>
       </div>
       <div class="section" data-id="Properties">
         <div class="section-header">

@@ -1038,14 +1038,24 @@ body.dragging-section {
 }
 
 /* ========================================
-  backgraod
+  background
 ======================================== */
 .bg-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+margin-top: 1rem;
+margin-bottom: 10px !important;
 }
 
+.bg-controls .form-row label{
+  color: var(--text-primary);
+}
+
+#list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 5px;
+  border-top: 1px solid var(--border);
+}
 /* ========================================
    gradient
 ======================================== */
@@ -1281,15 +1291,6 @@ button.sm {
   color: var(--text-primary);
   pointer-events: none;
 }
-
-/* ========== LIST STYLES ========== */
-#list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-
 .stop-item:not(.drag-original):not(.drag-clone) {}
 
 /* ========================================
@@ -1452,8 +1453,8 @@ button.sm {
    COLOR SWATCH
 ======================================== */
 .color-swatch {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 38px;
+  height: 38px;
   border-radius: 6px;
   cursor: pointer;
   position: relative;
