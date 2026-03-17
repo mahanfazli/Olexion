@@ -138,7 +138,7 @@
     <div class="aspect-ratio-row">
       <label class="Aspect-Ratio-label">Aspect Ratio</label>
       <div class="aspect-ratio-btns" id="aspectBtns">
-        <button class="aspect-btn active" data-ratio="free" title="Free">
+        <button class="aspect-btn" data-ratio="free" title="Free">
           Free
         </button>
         <button class="aspect-btn" data-ratio="1:1" title="Square">1:1</button>
@@ -153,17 +153,6 @@
       <span class="aspect-separator">:</span>
       <input type="number" id="aspectH" class="aspect-input-num" placeholder="H" min="1" max="100"
         title="Aspect Height">
-      <button class="aspect-lock-btn" id="aspectLockBtn" title="Lock Aspect Ratio (L)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-
-          <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-          
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-          
-          <g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-          
-          </svg>
-      </button>
     </div>
     <div class="resolution-presets">
       <label class="size-label">size</label>
@@ -190,31 +179,41 @@
                   stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
         </svg>
-        
       </button>
-
       <div class="size-input-group">
         <label>H</label>
         <input type="number" id="canvasHeight" class="num-input" min="200" max="2160" value="600">
       </div>
     </div>
-    <!-- Swap Button -->
-    <button class="swap-size-btn" id="swapSizeBtn" title="Swap dimensions (X)">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-        <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-        <g id="SVGRepo_iconCarrier">
-          <path
-            d="M6 19L3 16M3 16L6 13M3 16H11C12.6569 16 14 14.6569 14 13V12M10 12V11C10 9.34315 11.3431 8 13 8H21M21 8L18 11M21 8L18 5"
-            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </g>
-
-      </svg>
-      <span>Swap</span>
-    </button>
+    <div class="DimensionBtn-wrapper">
+      <button class="swap-Dimension-btn" id="swapSizeBtn" title="Swap dimensions (X)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+  
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+  
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M6 19L3 16M3 16L6 13M3 16H11C12.6569 16 14 14.6569 14 13V12M10 12V11C10 9.34315 11.3431 8 13 8H21M21 8L18 11M21 8L18 5"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+  
+        </svg>
+        <span>Swap</span>
+      </button>
+      <button id="toggleDimensionLockBtn" class="dimension-lock-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+    
+          <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+          
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+          
+          </svg>
+      </button>
+    </div>
   </div>
 
   <div class="canvas-wrap">
@@ -327,7 +326,7 @@
         <div class="canvas-noise">
           <canvas id="canvas"></canvas>
         </div>
-        <div class="resize-w">
+        <!-- <div class="resize-w">
           <div id="resizeWidthHandle" class="resize-width"></div>
           <button id="btnLock" class="Handle-btn" title="Lock to Center">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -340,10 +339,10 @@
               
               </svg>
           </button>
-        </div>
-        <div class="resize-h">
+        </div> -->
+        <!-- <div class="resize-h">
           <div id="resizeHeightHandle" class="resize-height"></div>
-        </div>
+        </div> -->
       </div>
     </div>
 

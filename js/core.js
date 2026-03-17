@@ -59,6 +59,7 @@ const state = {
   canvasHeight: 600,
   lockVertical: false,
   showHandles: true,
+  dimensionLock: false,
 };
 
 let picker = { cb: null, h: 0, s: 100, v: 100, a: 100, fmt: "hex" };
@@ -89,7 +90,7 @@ const zoomState = {
   max: 350,
   step: 5,
   dynamicMin: 15,
-  paddingX: 55,
+  paddingX: 10,
   paddingY: 100,
   lastPinchDist: 0,
 };
@@ -400,6 +401,7 @@ const FileManager = {
       canvasHeight: state.canvasHeight,
       lockVertical: state.lockVertical,
       showHandles: state.showHandles,
+      dimensionLock: state.dimensionLock,
       filterState: { ...filterState },
       noiseState: { ...noiseState },
       dimensionState: { ...dimensionState },
@@ -422,11 +424,14 @@ const FileManager = {
       state.canvasHeight = data.canvasHeight || 600;
       state.lockVertical = data.lockVertical ?? false;
       state.showHandles = data.showHandles ?? true;
+      state.dimensionLock = data.dimensionLock ?? true;
       if (data.filterState) Object.assign(filterState, data.filterState);
       if (data.noiseState) Object.assign(noiseState, data.noiseState);
       if (data.dimensionState)
         Object.assign(dimensionState, data.dimensionState);
       if (data.counter !== undefined) counter = data.counter;
+
+      this.syncUI();
       return true;
     } catch (e) {
       console.error("setState error:", e);
@@ -535,8 +540,66 @@ const FileManager = {
     return false;
   },
 
+  syncUI() {
+    if (typeof disableDimensionControls === "function") {
+      disableDimensionControls(state.dimensionLock);
+    }
+    const lockBtn = document.getElementById("toggleDimensionLockBtn");
+    if (lockBtn) {
+      lockBtn.classList.toggle("active", state.dimensionLock);
+      lockBtn.innerHTML = state.dimensionLock
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+
+    <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+              
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+              
+    <g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+              
+    </svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+    
+    <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+    
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+    
+    </svg>`;
+    }
+
+    const cssFormatSelect = document.getElementById("cssFormat");
+    if (cssFormatSelect) cssFormatSelect.value = state.cssFormat;
+
+    if (toggleBtn) {
+      toggleBtn.innerHTML = state.showHandles
+      ? `        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
+              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+        </svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
+
+</svg>`;
+      toggleBtn.classList.toggle("handles-hidden", !state.showHandles);
+    }
+  },
+
   refreshAll() {
-    // چک کردن وجود توابع قبل از اجرا
     if (typeof resize === "function") resize();
     if (typeof draw === "function") draw();
     if (typeof renderList === "function") renderList();
@@ -552,6 +615,12 @@ const FileManager = {
     if (typeof applyNoiseFilter === "function") applyNoiseFilter();
     if (typeof fitToScreen === "function") fitToScreen();
     if (typeof initFiltersFromState === "function") initFiltersFromState();
+    // sync dimensionLock UI
+    if (typeof disableDimensionControls === "function") {
+      disableDimensionControls(state.dimensionLock);
+      const btn = document.getElementById("toggleDimensionLockBtn");
+      if (btn) btn.classList.toggle("locked", state.dimensionLock);
+    }
   },
 };
 
@@ -606,13 +675,11 @@ const History = {
     }
   },
 
-  // ✅ وقتی focus میشه - ذخیره snapshot
   onInputFocus() {
     if (this.isRestoring) return;
     this.inputSnapshot = this.createSnapshot();
   },
 
-  // ✅ وقتی blur میشه - ذخیره تغییرات
   onInputBlur() {
     if (this.isRestoring) return;
     if (!this.inputSnapshot) return;
@@ -630,7 +697,6 @@ const History = {
     this.inputSnapshot = null;
   },
 
-  // ✅ شروع drag
   onDragStart() {
     if (this.isRestoring) return;
     if (!this.dragSnapshot) {
@@ -638,7 +704,6 @@ const History = {
     }
   },
 
-  // ✅ پایان drag
   onDragEnd() {
     if (this.isRestoring) return;
     if (!this.dragSnapshot) return;
@@ -656,7 +721,6 @@ const History = {
     this.dragSnapshot = null;
   },
 
-  // ✅ ذخیره فوری (برای دکمه‌ها)
   saveState() {
     if (this.isRestoring) return;
 
@@ -750,26 +814,43 @@ const History = {
   },
 
   setupGlobalListeners() {
-    // Canvas drag
+
+    if (this._listenersAttached) return;
+    this._listenersAttached = true;
+  
+    // handler ها رو named نگه دار تا بشه remove کرد
+    this._onDragStart = () => this.onDragStart();
+    this._onMouseUp   = () => { if (this.dragSnapshot) setTimeout(() => this.onDragEnd(), 50); };
+    this._onTouchEnd  = () => { if (this.dragSnapshot) setTimeout(() => this.onDragEnd(), 50); };
+  
     if (typeof canvas !== "undefined" && canvas) {
-      canvas.addEventListener("mousedown", () => this.onDragStart());
-      canvas.addEventListener("touchstart", () => this.onDragStart(), {
-        passive: true,
-      });
+      canvas.addEventListener("mousedown",  this._onDragStart);
+      canvas.addEventListener("touchstart", this._onDragStart, { passive: true });
     }
-
-    document.addEventListener("mouseup", () => {
-      if (this.dragSnapshot) {
-        setTimeout(() => this.onDragEnd(), 50);
-      }
-    });
-
-    document.addEventListener("touchend", () => {
-      if (this.dragSnapshot) {
-        setTimeout(() => this.onDragEnd(), 50);
-      }
-    });
+  
+    document.addEventListener("mouseup",   this._onMouseUp);
+    document.addEventListener("touchend",  this._onTouchEnd);
   },
+  
+  destroy() {
+    if (!this._listenersAttached) return;
+  
+    canvas.removeEventListener("mousedown",  this._onDragStart);
+    canvas.removeEventListener("touchstart", this._onDragStart);
+    document.removeEventListener("mouseup",  this._onMouseUp);
+    document.removeEventListener("touchend", this._onTouchEnd);
+  
+    this._listenersAttached = false;
+  },
+  
+  
+  destroy() {
+    canvas.removeEventListener("mousedown", this._onDragStart);
+    document.removeEventListener("mouseup", this._onDragEnd);
+    document.removeEventListener("touchend", this._onDragEnd);
+    this._listenersAttached = false;
+  },
+  
 
   overrideFunctions() {
     const self = this;
@@ -1036,28 +1117,27 @@ History.saveState = function () {
 function initFileManager() {
   console.log("🚀 Initializing FileManager...");
 
-  // اول History رو init کن
-  if (typeof History !== "undefined" && History.init) {
-    History.init();
-  }
+  // فقط snapshot اولیه و listeners — بدون override
+  History.lastSnapshot = History.createSnapshot();
+  History.setupGlobalListeners();
+  History.updateUI();
 
-  // لود داده‌ها - اول session بعد auto-save
+  // لود داده‌ها
   let loaded = FileManager.loadPresetFromSession();
   if (!loaded) {
     loaded = FileManager.loadAutoSave();
   }
 
-  // حالا UI رو آپدیت کن
+  // UI آپدیت
   FileManager.refreshAll();
 
-  // فعال کردن auto-save
+  // حالا که همه توابع تعریف شدن، override کن
+  History.overrideFunctions();
+
   FileManager.initialized = true;
 
-  // auto-save دوره‌ای
   setInterval(() => {
-    if (FileManager.initialized) {
-      FileManager.autoSave();
-    }
+    if (FileManager.initialized) FileManager.autoSave();
   }, 5000);
 
   console.log("✅ FileManager initialized");
@@ -1181,7 +1261,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== MOUSE ==========
     header.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
+      if (e.target.closest("select, input, button, a, .control-btn, svg, span"))
+        return;
       e.preventDefault();
       startPending(section, e.clientX, e.clientY, null);
     });
@@ -1191,7 +1272,10 @@ document.addEventListener("DOMContentLoaded", () => {
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
+        if (
+          e.target.closest("select, input, button, a, .control-btn, svg, span")
+        )
+          return;
 
         const touch = e.touches[0];
         startPending(section, touch.clientX, touch.clientY, touch.identifier);
@@ -1235,7 +1319,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onEnd);
-    document.addEventListener("touchmove", onTouchMovePending, {passive: true});
+    document.addEventListener("touchmove", onTouchMovePending, {
+      passive: true,
+    });
     document.addEventListener("touchend", onEnd);
     document.addEventListener("touchcancel", onEnd);
     window.addEventListener("scroll", onScrollDuringPending, { passive: true });
@@ -1625,7 +1711,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     header.addEventListener("click", (e) => {
-      if (e.target.closest("button, input, select, a, .control-btn, svg, span")) return;
+      if (e.target.closest("button, input, select, a, .control-btn, svg, span"))
+        return;
       toggle();
     });
 
@@ -1634,7 +1721,10 @@ document.addEventListener("DOMContentLoaded", () => {
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("select, input, button, a, .control-btn, svg, span")) return;
+        if (
+          e.target.closest("select, input, button, a, .control-btn, svg, span")
+        )
+          return;
 
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
@@ -1660,7 +1750,10 @@ document.addEventListener("DOMContentLoaded", () => {
     header.addEventListener(
       "touchend",
       (e) => {
-        if (e.target.closest("button, input, select, a, .control-btn, svg, span")) return;
+        if (
+          e.target.closest("button, input, select, a, .control-btn, svg, span")
+        )
+          return;
 
         const touchDuration = Date.now() - touchStartTime;
 
@@ -1690,6 +1783,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========== DIMENSION SYSTEM ==========
+
 const aspectPresets = {
   free: { w: null, h: null },
   "1:1": { w: 1, h: 1 },
@@ -1724,6 +1818,7 @@ function clearAllPresetSelections() {
 }
 
 function setAspectRatio(ratioName) {
+  if (state.dimensionLock) return;
   const preset = aspectPresets[ratioName];
   if (!preset) return;
 
@@ -1750,6 +1845,7 @@ function setAspectRatio(ratioName) {
 }
 
 function setCustomAspectRatio(w, h, applyToCanvas = true) {
+  if (state.dimensionLock) return;
   w = parseInt(w) || 0;
   h = parseInt(h) || 0;
 
@@ -1789,10 +1885,15 @@ function setCustomAspectRatio(w, h, applyToCanvas = true) {
 }
 
 function setResolution(w, h) {
+  if (state.dimensionLock) return;
   dimensionState.activeAspectPreset = null;
 
   state.canvasWidth = clamp(w, CONFIG.canvas.minWidth, CONFIG.canvas.maxWidth);
-  state.canvasHeight = clamp(h,CONFIG.canvas.minHeight, CONFIG.canvas.maxHeight);
+  state.canvasHeight = clamp(
+    h,
+    CONFIG.canvas.minHeight,
+    CONFIG.canvas.maxHeight,
+  );
 
   const simple = simplifyRatio(w, h);
   dimensionState.aspectW = simple.w;
@@ -2034,7 +2135,7 @@ function updateAspectButtonsUI() {
       isActive = true;
     }
 
-    btn.classList.toggle("active", isActive);
+    btn.classList.toggle("selected", isActive);
   });
 }
 
@@ -2080,35 +2181,8 @@ function updateResolutionInputsUI() {
 }
 
 function updateLockButtonUI() {
-  const lockBtn = document.getElementById("aspectLockBtn");
-  const lockIcon = document
-    .getElementById("aspectLockBtn")
-    .querySelector("svg");
   const linkIcon = document.getElementById("sizeLinkBtn").querySelector("svg");
   const linkBtn = document.getElementById("sizeLinkBtn");
-
-  if (lockBtn) {
-    lockBtn.classList.toggle("locked", dimensionState.aspectLocked);
-    lockIcon.innerHTML = dimensionState.aspectLocked
-      ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-          
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-          
-<g id="SVGRepo_iconCarrier"> <path d="M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-          
-</svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M16.584 6C15.8124 4.2341 14.0503 3 12 3C9.23858 3 7 5.23858 7 8V10.0288M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C16.8802 10 17.7202 10 18.362 10.327C18.9265 10.6146 19.3854 11.0735 19.673 11.638C20 12.2798 20 13.1198 20 14.8V16.2C20 17.8802 20 18.7202 19.673 19.362C19.3854 19.9265 18.9265 20.3854 18.362 20.673C17.7202 21 16.8802 21 15.2 21H8.8C7.11984 21 6.27976 21 5.63803 20.673C5.07354 20.3854 4.6146 19.9265 4.32698 19.362C4 18.7202 4 17.8802 4 16.2V14.8C4 13.1198 4 12.2798 4.32698 11.638C4.6146 11.0735 5.07354 10.6146 5.63803 10.327C5.99429 10.1455 6.41168 10.0647 7 10.0288Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`;
-  }
 
   if (linkBtn) {
     linkBtn.classList.toggle("linked", dimensionState.aspectLocked);
@@ -2149,6 +2223,54 @@ function updateSizeDisplay() {
     )}`;
   }
 }
+
+function disableDimensionControls(isDisabled) {
+  document.querySelectorAll(".aspect-btn, .preset-btn").forEach((btn) => {
+    btn.disabled = isDisabled;
+    btn.classList.toggle("disabled", isDisabled);
+  });
+
+  const inputs = ["aspectW", "aspectH", "canvasWidth", "canvasHeight"];
+  inputs.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = isDisabled;
+      el.readOnly = isDisabled;
+      el.classList.toggle("disabled", isDisabled);
+    }
+  });
+
+  const lockButtons = ["sizeLinkBtn", "swapSizeBtn"];
+  lockButtons.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = isDisabled;
+      el.classList.toggle("disabled", isDisabled);
+    }
+  });
+
+  if (isDisabled) {
+    dimensionState.lockedCanvasValues = {
+      width: state.canvasWidth,
+      height: state.canvasHeight,
+    };
+  } else if (dimensionState.lockedCanvasValues) {
+    state.canvasWidth = dimensionState.lockedCanvasValues.width;
+    state.canvasHeight = dimensionState.lockedCanvasValues.height;
+  }
+
+  updateAspectButtonsUI();
+  updateAspectInputsUI();
+  updateResolutionButtonsUI();
+  updateResolutionInputsUI();
+  updateLockButtonUI();
+}
+
+document.getElementById("toggleDimensionLockBtn")?.addEventListener("click", () => {
+  state.dimensionLock = !state.dimensionLock;
+  FileManager.syncUI();
+});
+
 
 // ========== CENTER UI ==========
 const toolbar = document.querySelector(".tool-bar");
@@ -3689,33 +3811,7 @@ function handleToggleClick(e) {
   lastToggleTime = now;
 
   state.showHandles = !state.showHandles;
-
-  if (toggleBtn) {
-    toggleBtn.innerHTML = state.showHandles
-      ? `        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-          <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
-          <g id="SVGRepo_iconCarrier">
-            <path
-              d="M3 14C3 9.02944 7.02944 5 12 5C16.9706 5 21 9.02944 21 14M17 14C17 16.7614 14.7614 19 12 19C9.23858 19 7 16.7614 7 14C7 11.2386 9.23858 9 12 9C14.7614 9 17 11.2386 17 14Z"
-              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </g>
-
-        </svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
-<g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-
-</svg>`;
-    toggleBtn.classList.toggle("handles-hidden", !state.showHandles);
-  }
+  FileManager.syncUI();
   draw();
 }
 
@@ -5434,6 +5530,7 @@ function resetSingleFilter(name) {
   filterState[name] = filterDefaults[name];
   updateFilterDisplay();
 }
+
 function initFiltersFromState() {
   console.log("Initializing filters from state:", filterState);
 
@@ -6501,7 +6598,8 @@ function updateAllStopItems() {
   }
 
   function isValidDragTarget(target) {
-    if (target.closest(".control-btn, button, input, select, svg")) return false;
+    if (target.closest(".control-btn, button, input, select, svg"))
+      return false;
     const handle = target.closest(".drag-handle");
     const preview = target.closest(".stop-preview");
     const info = target.closest(".stop-info");
@@ -6520,7 +6618,8 @@ function renderList() {
   }
 
   el.innerHTML = state.stops
-    .map((s) => `
+    .map(
+      (s) => `
 <div class="stop-item ${state.selected === s.id ? "selected" : ""} ${!s.visible ? "hidden" : ""}" 
   data-id="${s.id}" onclick="state.selected='${s.id}';refresh()">
     <div class="stop-header">
@@ -6531,16 +6630,17 @@ function renderList() {
   <div class="stop-name">${s.name}</div>
   <div class="stop-meta">${s.type} · ${
     s.type === "radial"
-    ? Math.round(s.size) + "px"
-    : s.type === "conic"
-    ? s.startAngle + "°"
-    : s.angle + "°"
-    } · <span class="blend-tag">${s.blendMode || "screen"}</span></div>
+      ? Math.round(s.size) + "px"
+      : s.type === "conic"
+        ? s.startAngle + "°"
+        : s.angle + "°"
+  } · <span class="blend-tag">${s.blendMode || "screen"}</span></div>
   </div>
   <div class="stop-actions">
   <button class="control-btn" onclick="event.stopPropagation();toggleVis('${s.id}')">
-    ${s.visible
-    ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+    ${
+      s.visible
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
           <g id="SVGRepo_bgCarrier" stroke-width="0" />
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
           <g id="SVGRepo_iconCarrier">
@@ -6549,12 +6649,13 @@ function renderList() {
             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </g>
       </svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
         <g id="SVGRepo_bgCarrier" stroke-width="0"/>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
         <g id="SVGRepo_iconCarrier"> <path d="M9.60997 9.60714C8.05503 10.4549 7 12.1043 7 14C7 16.7614 9.23858 19 12 19C13.8966 19 15.5466 17.944 16.3941 16.3878M21 14C21 9.02944 16.9706 5 12 5C11.5582 5 11.1238 5.03184 10.699 5.09334M3 14C3 11.0069 4.46104 8.35513 6.70883 6.71886M3 3L21 21"
             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-      </svg>`}
+      </svg>`
+    }
   </button>
     <button class="control-btn" onclick="event.stopPropagation();dupStop('${s.id}')">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -6580,8 +6681,9 @@ function renderList() {
     </div>
   </div>
 </div>
-  `)
-.join("");
+  `,
+    )
+    .join("");
 }
 
 function updateInspectorInputs(stopId) {
@@ -7653,8 +7755,8 @@ function highlightCSS_DOM(container, doc) {
     )
     .replace(
       /\b(normal|screen|overlay|multiply|darken|lighten|difference|exclusion|color-(?:dodge|burn)|hue|saturation|luminosity|soft-light|hard-light|transparent|absolute|relative|none|brightness|contrast|saturate|hue-rotate|blur|grayscale|sepia|invert)\b/g,
-      '<span class="k">$1</span>'
-    )
+      '<span class="k">$1</span>',
+    );
   container.innerHTML = html;
 }
 
@@ -8010,7 +8112,6 @@ document
     }
     this.value = "";
   });
-
 
 async function exportAsImage(format = "png", quality = 0.92) {
   const width = state.canvasWidth;
@@ -8914,12 +9015,12 @@ function updatePicker() {
   const f = document.getElementById("fields");
   if (f) {
     if (fmt === "hex") {
-      const alphaHex = Math.round(picker.a / 100 * 255)
+      const alphaHex = Math.round((picker.a / 100) * 255)
         .toString(16)
         .padStart(2, "0")
         .toUpperCase(); // ✅ حروف بزرگ
       const fullHex = `${hex}${alphaHex}`.toUpperCase(); // ✅ حروف بزرگ
-    f.innerHTML = `
+      f.innerHTML = `
         <div class="picker-field" style="flex:2">
           <label>HEX</label>
           <input id="fHex" value="${fullHex}">
@@ -8928,7 +9029,7 @@ function updatePicker() {
           <label>A</label>
           <input type="number" id="fA" min="0" max="100" value="${Math.round(picker.a)}">
         </div>`;
-    }else if (fmt === "rgb") {
+    } else if (fmt === "rgb") {
       f.innerHTML = `
         <div class="picker-field"><label>R</label><input type="number" id="fR" min="0" max="255" value="${
           rgb.r
@@ -8979,22 +9080,22 @@ function bindInputs() {
       let v = fHex.value.trim().toUpperCase();
 
       if (!v.startsWith("#")) v = "#" + v;
-  
+
       const hex6 = /^#[0-9A-F]{6}$/.test(v);
       const hex8 = /^#[0-9A-F]{8}$/.test(v);
-  
+
       if (hex6 || hex8) {
         try {
           const r = parseInt(v.substr(1, 2), 16);
           const g = parseInt(v.substr(3, 2), 16);
           const b = parseInt(v.substr(5, 2), 16);
           const a = hex8 ? parseInt(v.substr(7, 2), 16) : 255;
-  
+
           if ([r, g, b, a].some(isNaN)) {
             console.warn("Invalid value");
             return;
           }
-  
+
           const rgb = { r, g, b };
           const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
           picker.h = hsv.h;
@@ -9009,12 +9110,10 @@ function bindInputs() {
         console.warn("Invalid hex format. Expected #RRGGBBAA");
       }
     };
-  
+
     fHex.onfocus = () => fHex.select();
   }
-  
 
-  
   if (fA) {
     fA.oninput = () => {
       picker.a = clamp(+fA.value, 0, 100);
@@ -9293,13 +9392,6 @@ document.getElementById("cssFormat")?.addEventListener("change", (e) => {
   updateCSS();
 });
 
-function syncCSSFormat() {
-  const select = document.getElementById("cssFormat");
-  if (!select) return;
-
-  select.value = state.cssFormat;
-}
-
 document
   .getElementById("btnRadial")
   ?.addEventListener("click", () => addStop("radial"));
@@ -9359,8 +9451,6 @@ function initMobile() {
     { passive: false },
   );
 }
-
-
 // ========== RANDOM GRADIENT GENERATOR ==========
 function rand(min, max) {
   return Math.random() * (max - min) + min;
@@ -9529,21 +9619,24 @@ async function init() {
   updateFilterUI();
   updateBgUI();
   initLayerDragDrop();
-  syncCSSFormat();
 
-  if (typeof History !== "undefined" && History.init) {
-    History.init();
-  }
 
-  const hasAutoSave = localStorage.getItem(
-    History?.autoSaveKey || "gradientEditor_autoSave",
-  );
+  History.lastSnapshot = History.createSnapshot();
+  History.setupGlobalListeners();
+  History.updateUI();
 
-  if (!hasAutoSave) {
+  const loaded =
+    FileManager.loadPresetFromSession() || FileManager.loadAutoSave();
+
+  if (!loaded) {
     generateRandomGradient();
-  } else {
-    refresh();
   }
+
+  History.overrideFunctions();
+
+  FileManager.refreshAll();
+
+  FileManager.initialized = true;
 
   addGenerateButton();
 }
@@ -9764,4 +9857,3 @@ if (document.readyState === "loading") {
     input.style.cursor = "text";
   });
 })();
-

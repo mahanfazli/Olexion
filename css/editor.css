@@ -117,7 +117,7 @@ header h1 {
   transform: scale(.9);
 }
 
-.aspect-btn.active {
+.aspect-btn.selected {
   background: var(--accent-gradient);
   color: #000;
 }
@@ -172,23 +172,6 @@ header h1 {
   filter: invert(1) brightness(0) !important;
 }
 
-.swap-size-btn {
-  width: max-content;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  grid-column: 5/6;
-  gap: 6px;
-  padding: 8px;
-  font-size: 10px;
-  color: var(--text-muted);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-}
-
-/* ========================================
-   ASPECT RATIO CONTROLS
-======================================== */
 .aspect-input-row {
   display: flex;
   align-items: center;
@@ -252,7 +235,6 @@ header h1 {
   color: var(--text-muted);
 }
 
-/* Size Link Button */
 .size-link-btn {
   width: 35px;
   height: 35px;
@@ -324,6 +306,43 @@ header h1 {
   background: var(--accent-gradient);
   color: #000;
 }
+
+.DimensionBtn-wrapper{
+  grid-column: 5/6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dimension-lock-btn{
+  grid-row: 1/2;
+  gap: 6px;
+  padding: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  align-self: center;
+  justify-self: start;
+
+}
+
+.swap-Dimension-btn {
+  gap: 6px;
+  padding: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+}
+
+.aspect-ratio-container button.disabled,
+.aspect-ratio-container input:disabled,
+.aspect-ratio-container input[readonly] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(70%);
+  pointer-events: none;
+}
+
 
 /* ========================================
    file
@@ -539,6 +558,10 @@ header h1 {
 .active {
   background: rgba(80, 40, 40, 0.5);
   border-color: rgba(255, 100, 100, 0.3);
+}
+
+.active:hover{
+  background: rgba(80, 40, 40, 0.5);
 }
 
 /* ========================================
@@ -1961,20 +1984,21 @@ button.sm {
     grid-row: 2/3;
   }
 
-  .swap-size-btn {
+  .DimensionBtn-wrapper {
     grid-column: 3/4;
     grid-row: 1/3;
-    width: 100%;
   }
+
   .zoom-indicator{
     left: 50%;
   }
+
   .canvas-wrap{
     height: 56rem !important;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 554px) {
   .aspect-ratio-container {
     justify-content: stretch;
   }
@@ -2004,12 +2028,19 @@ button.sm {
     grid-row: 5/6;
   }
 
-  .swap-size-btn {
+  .DimensionBtn-wrapper {
     grid-column: 1/2;
     grid-row: 6/7;
     width: 100%;
   }
 
+  .DimensionBtn-wrapper .swap-Dimension-btn{
+    width: 100%;
+  }
+
+  .swap-Dimension-btn:active{
+    transform: scale(.98);
+  }
   .canvas-wrap{
     height: 42rem !important;
   }
