@@ -7,7 +7,6 @@
   const Gallery = {
     presets: [],
     currentCategory: "all",
-
     async init() {
       await this.loadPresets();
       this.renderFilters();

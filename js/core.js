@@ -385,7 +385,8 @@ const FileManager = {
   AUTO_SAVE_DELAY: 1000,
   autoSaveTimer: null,
   initialized: false,
-
+  isLoading: false,
+  
   getState() {
     return {
       timestamp: Date.now(),
@@ -440,7 +441,8 @@ const FileManager = {
   },
 
   scheduleAutoSave() {
-    if (!this.initialized) return;
+    if (!this.initialized || this.isLoading) return;
+  
     clearTimeout(this.autoSaveTimer);
     this.autoSaveTimer = setTimeout(() => {
       this.autoSave();
@@ -448,11 +450,12 @@ const FileManager = {
   },
 
   autoSave() {
-    if (!this.initialized) return;
+    if (!this.initialized || this.isLoading) return;
+  
     try {
       const data = this.getState();
       localStorage.setItem(this.AUTO_SAVE_KEY, JSON.stringify(data));
-      console.log("✅ Auto-saved at", new Date().toLocaleTimeString());
+      console.log("✅ Auto-saved");
     } catch (e) {
       console.warn("Auto-save failed:", e);
     }
@@ -461,27 +464,31 @@ const FileManager = {
   loadAutoSave() {
     try {
       const saved = localStorage.getItem(this.AUTO_SAVE_KEY);
-      if (!saved) {
-        console.log("ℹ️ No auto-save found");
-        return false;
-      }
-
+      if (!saved) return false;
+  
       const data = JSON.parse(saved);
-      console.log(
-        "📂 Found auto-save from:",
-        new Date(data.timestamp).toLocaleString(),
-      );
-
-      if (this.setState(data)) {
+  
+      this.isLoading = true;
+      History.isRestoring = true;
+  
+      const ok = this.setState(data);
+  
+      if (ok) {
         counter = state.stops.length;
-        console.log("✅ Auto-save loaded, stops:", state.stops.length);
-        return true;
+        History.clear();
+        this.refreshAll();
       }
+  
+      History.isRestoring = false;
+      this.isLoading = false;
+  
+      return ok;
     } catch (e) {
-      console.error("Failed to load auto-save:", e);
+      this.isLoading = false;
+      History.isRestoring = false;
       localStorage.removeItem(this.AUTO_SAVE_KEY);
+      return false;
     }
-    return false;
   },
 
   clearAutoSave() {
@@ -526,19 +533,42 @@ const FileManager = {
   loadPresetFromSession() {
     const json = sessionStorage.getItem("loadPreset");
     if (!json) return false;
+  
     sessionStorage.removeItem("loadPreset");
+  
     try {
       const preset = JSON.parse(json);
-      if (this.setState(preset.data)) {
+  
+      this.isLoading = true;          // ⛔ توقف AutoSave + History
+      History.isRestoring = true;
+  
+      const ok = this.setState(preset.data);
+  
+      if (ok) {
         counter = state.stops.length;
-        console.log("✅ Session preset loaded");
-        return true;
+  
+        // ✅ این پریست شروع جدید است
+        this.clearAutoSave();
+        History.clear();
+  
+        this.refreshAll();
       }
+  
+      History.isRestoring = false;
+      this.isLoading = false;
+      this.autoSave();   
+  
+      console.log("✅ Session preset loaded (safe)");
+  
+      return ok;
     } catch (e) {
+      this.isLoading = false;
+      History.isRestoring = false;
       console.error("Session preset load failed:", e);
+      return false;
     }
-    return false;
-  },
+  }
+  ,
 
   syncUI() {
     if (typeof disableDimensionControls === "function") {
@@ -1109,9 +1139,11 @@ document.addEventListener("keydown", (e) => {
 // ------ AUTO SAVE TRIGGER ------
 const originalHistorySaveState = History.saveState;
 History.saveState = function () {
+  if (FileManager.isLoading) return;
   originalHistorySaveState.call(this);
   FileManager.scheduleAutoSave();
 };
+
 
 // ------ INIT ------
 function initFileManager() {
@@ -1793,6 +1825,7 @@ const aspectPresets = {
 };
 
 const resolutionPresets = {
+  "720x480": { w: 720, h: 480, name: "SD" },
   "1280x720": { w: 1280, h: 720, name: "HD" },
   "1920x1080": { w: 1920, h: 1080, name: "FHD" },
   "2560x1440": { w: 2560, h: 1440, name: "2K" },
@@ -2626,16 +2659,28 @@ function throttledDraw() {
 }
 
 // ------ MAIN DRAW ------
-function draw() {
-  const dpr = canvas.width / W;
+// ===== FLAG جهانی =====
+let _isFullscreenRendering = false;
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// ===== تابع draw اصلاح‌شده =====
+function draw(targetCanvas, targetCtx, targetW, targetH) {
+  // اگر target مشخص نشده، از canvas اصلی استفاده کن
+  const _canvas = targetCanvas || canvas;
+  const _ctx = targetCtx || ctx;
+  const _W = targetW || W;
+  const _H = targetH || H;
 
-  updateScale();
+  const dpr = _canvas.width / _W;
 
-  const canvasW = canvas.width;
-  const canvasH = canvas.height;
+  _ctx.setTransform(1, 0, 0, 1, 0, 0);
+  _ctx.clearRect(0, 0, _canvas.width, _canvas.height);
+
+  if (!targetCanvas) {
+    updateScale();
+  }
+
+  const canvasW = _canvas.width;
+  const canvasH = _canvas.height;
 
   const { canvas: sceneCanvas, ctx: sceneCtx } = getSceneCanvas(
     canvasW,
@@ -2644,7 +2689,7 @@ function draw() {
 
   sceneCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  drawSceneContent(sceneCtx, W, H);
+  drawSceneContent(sceneCtx, _W, _H);
 
   if (hasActiveFilters()) {
     applyCanvasFilters(sceneCanvas, sceneCtx, dpr);
@@ -2654,25 +2699,29 @@ function draw() {
     applyNoiseLayerSync(sceneCtx, canvasW, canvasH);
   }
 
-  ctx.drawImage(sceneCanvas, 0, 0);
+  _ctx.drawImage(sceneCanvas, 0, 0);
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  _ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  if (state.lockVertical && state.showHandles) {
-    ctx.strokeStyle = "rgba(255,255,255,0.5)";
-    ctx.lineWidth = 2 * _scale;
-    ctx.setLineDash([10 * _scale, 5 * _scale]);
-    ctx.beginPath();
-    ctx.moveTo(0, H / 2);
-    ctx.lineTo(W, H / 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
+  // ✅ در حالت fullscreen هیچ handle یا خط راهنمایی رسم نشود
+  if (!_isFullscreenRendering) {
+    if (state.lockVertical && state.showHandles) {
+      _ctx.strokeStyle = "rgba(255,255,255,0.5)";
+      _ctx.lineWidth = 2 * _scale;
+      _ctx.setLineDash([10 * _scale, 5 * _scale]);
+      _ctx.beginPath();
+      _ctx.moveTo(0, _H / 2);
+      _ctx.lineTo(_W, _H / 2);
+      _ctx.stroke();
+      _ctx.setLineDash([]);
+    }
 
-  if (state.showHandles) {
-    state.stops.filter((s) => s.visible).forEach(drawHandle);
+    if (state.showHandles) {
+      state.stops.filter((s) => s.visible).forEach(drawHandle);
+    }
   }
 }
+
 
 function drawSceneContent(tCtx, w, h) {
   const visible = state.stops.filter((s) => s.visible);
@@ -2711,10 +2760,29 @@ function drawSceneContent(tCtx, w, h) {
 }
 
 // ------ APPLY FILTERS ------
+let _filterCanvas = null;
+let _filterCtx = null;
+
+function getFilterCanvas(w, h) {
+  if (!_filterCanvas) {
+    _filterCanvas = document.createElement("canvas");
+    _filterCtx = _filterCanvas.getContext("2d");
+  }
+  if (_filterCanvas.width !== w || _filterCanvas.height !== h) {
+    _filterCanvas.width = w;
+    _filterCanvas.height = h;
+  } else {
+    _filterCtx.clearRect(0, 0, w, h);
+  }
+  _filterCtx.filter = "none";
+  return { canvas: _filterCanvas, ctx: _filterCtx };
+}
+
 function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
   const w = targetCanvas.width;
   const h = targetCanvas.height;
 
+  // ===== مرحله ۱: بلور (بدون تغییر) =====
   if (filterState.blur > 0) {
     const blurPx = filterState.blur * dpr;
     const padding = Math.ceil(blurPx * 3);
@@ -2727,124 +2795,62 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
     padded.height = paddedH;
     const pCtx = padded.getContext("2d");
 
-    // مرکز - تصویر اصلی
     pCtx.drawImage(targetCanvas, padding, padding);
 
-    // لبه بالا (flip vertical)
+    // لبه بالا
     pCtx.save();
     pCtx.translate(padding, padding);
     pCtx.scale(1, -1);
     pCtx.drawImage(targetCanvas, 0, 0, w, padding, 0, 0, w, padding);
     pCtx.restore();
 
-    // لبه پایین (flip vertical)
+    // لبه پایین
     pCtx.save();
     pCtx.translate(padding, h + padding);
     pCtx.scale(1, -1);
-    pCtx.drawImage(
-      targetCanvas,
-      0,
-      h - padding,
-      w,
-      padding,
-      0,
-      -padding,
-      w,
-      padding,
-    );
+    pCtx.drawImage(targetCanvas, 0, h - padding, w, padding, 0, -padding, w, padding);
     pCtx.restore();
 
-    // لبه چپ (flip horizontal)
+    // لبه چپ
     pCtx.save();
     pCtx.translate(padding, padding);
     pCtx.scale(-1, 1);
     pCtx.drawImage(targetCanvas, 0, 0, padding, h, 0, 0, padding, h);
     pCtx.restore();
 
-    // لبه راست (flip horizontal)
+    // لبه راست
     pCtx.save();
     pCtx.translate(w + padding, padding);
     pCtx.scale(-1, 1);
-    pCtx.drawImage(
-      targetCanvas,
-      w - padding,
-      0,
-      padding,
-      h,
-      -padding,
-      0,
-      padding,
-      h,
-    );
+    pCtx.drawImage(targetCanvas, w - padding, 0, padding, h, -padding, 0, padding, h);
     pCtx.restore();
 
-    // گوشه‌ها (flip both)
-    // بالا-چپ
+    // گوشه بالا-چپ
     pCtx.save();
     pCtx.translate(padding, padding);
     pCtx.scale(-1, -1);
-    pCtx.drawImage(
-      targetCanvas,
-      0,
-      0,
-      padding,
-      padding,
-      0,
-      0,
-      padding,
-      padding,
-    );
+    pCtx.drawImage(targetCanvas, 0, 0, padding, padding, 0, 0, padding, padding);
     pCtx.restore();
 
-    // بالا-راست
+    // گوشه بالا-راست
     pCtx.save();
     pCtx.translate(w + padding, padding);
     pCtx.scale(-1, -1);
-    pCtx.drawImage(
-      targetCanvas,
-      w - padding,
-      0,
-      padding,
-      padding,
-      -padding,
-      0,
-      padding,
-      padding,
-    );
+    pCtx.drawImage(targetCanvas, w - padding, 0, padding, padding, -padding, 0, padding, padding);
     pCtx.restore();
 
-    // پایین-چپ
+    // گوشه پایین-چپ
     pCtx.save();
     pCtx.translate(padding, h + padding);
     pCtx.scale(-1, -1);
-    pCtx.drawImage(
-      targetCanvas,
-      0,
-      h - padding,
-      padding,
-      padding,
-      0,
-      -padding,
-      padding,
-      padding,
-    );
+    pCtx.drawImage(targetCanvas, 0, h - padding, padding, padding, 0, -padding, padding, padding);
     pCtx.restore();
 
-    // پایین-راست
+    // گوشه پایین-راست
     pCtx.save();
     pCtx.translate(w + padding, h + padding);
     pCtx.scale(-1, -1);
-    pCtx.drawImage(
-      targetCanvas,
-      w - padding,
-      h - padding,
-      padding,
-      padding,
-      -padding,
-      -padding,
-      padding,
-      padding,
-    );
+    pCtx.drawImage(targetCanvas, w - padding, h - padding, padding, padding, -padding, -padding, padding, padding);
     pCtx.restore();
 
     // اعمال blur
@@ -2852,19 +2858,41 @@ function applyCanvasFilters(targetCanvas, targetCtx, dpr) {
     bCtx.filter = `blur(${blurPx}px)`;
     bCtx.drawImage(padded, 0, 0);
 
-    // برش و برگرداندن به سایز اصلی
     targetCtx.setTransform(1, 0, 0, 1, 0, 0);
     targetCtx.clearRect(0, 0, w, h);
     targetCtx.drawImage(blurred, padding, padding, w, h, 0, 0, w, h);
   }
 
-  // ========== سایر فیلترها با ImageData ==========
+  // ===== مرحله ۲: فیلترهای غیربلور با ctx.filter (GPU-accelerated) =====
   if (hasNonBlurFilters()) {
+    const cssStr = buildCSSFilterString();
+
+    const { canvas: fCvs, ctx: fCtx } = getFilterCanvas(w, h);
+    fCtx.filter = cssStr;
+    fCtx.drawImage(targetCanvas, 0, 0);
+
     targetCtx.setTransform(1, 0, 0, 1, 0, 0);
-    const imageData = targetCtx.getImageData(0, 0, w, h);
-    applyFiltersToImageData(imageData);
-    targetCtx.putImageData(imageData, 0, 0);
+    targetCtx.clearRect(0, 0, w, h);
+    targetCtx.filter = "none";
+    targetCtx.drawImage(fCvs, 0, 0);
   }
+
+}
+
+// ------ ساخت رشته CSS Filter ------
+function buildCSSFilterString() {
+  const f = filterState;
+  const parts = [];
+
+  if (f.brightness !== 100) parts.push(`brightness(${f.brightness}%)`);
+  if (f.contrast   !== 100) parts.push(`contrast(${f.contrast}%)`);
+  if (f.saturate   !== 100) parts.push(`saturate(${f.saturate}%)`);
+  if (f.hue        !== 0)   parts.push(`hue-rotate(${f.hue}deg)`);
+  if (f.grayscale  > 0)     parts.push(`grayscale(${f.grayscale}%)`);
+  if (f.sepia      > 0)     parts.push(`sepia(${f.sepia}%)`);
+  if (f.invert     > 0)     parts.push(`invert(${f.invert}%)`);
+
+  return parts.length > 0 ? parts.join(" ") : "none";
 }
 
 // ------ NOISE LAYER ------
@@ -4068,6 +4096,7 @@ function handleFullscreenKeys(e) {
   }
 }
 
+// ===== renderFullscreenCanvas اصلاح‌شده =====
 async function renderFullscreenCanvas() {
   if (!fullscreenCanvas) return;
 
@@ -4083,7 +4112,7 @@ async function renderFullscreenCanvas() {
   const vpH = window.innerHeight;
   const scaleX = vpW / sourceW;
   const scaleY = vpH / sourceH;
-  const fitScale = Math.min(scaleX, scaleY, 1); // max 100%
+  const fitScale = Math.min(scaleX, scaleY, 1);
 
   const dispW = sourceW * fitScale;
   const dispH = sourceH * fitScale;
@@ -4096,45 +4125,50 @@ async function renderFullscreenCanvas() {
   fullscreenCanvas.style.width = dispW + "px";
   fullscreenCanvas.style.height = dispH + "px";
 
-  // رندر در ابعاد اصلی (بدون چرخش)
+  // ✅ ساخت canvas موقت با ابعاد اصلی
   const workCanvas = document.createElement("canvas");
   workCanvas.width = originalW;
   workCanvas.height = originalH;
   const workCtx = workCanvas.getContext("2d");
 
-  //  پاس دادن true برای isFullscreen
-  await renderSceneToContext(workCtx, originalW, originalH, true);
-
-  // انتقال به canvas نمایش با چرخش
-  const ctx = fullscreenCanvas.getContext("2d");
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, fullscreenCanvas.width, fullscreenCanvas.height);
-
-  ctx.save();
-
-  // چرخش و مقیاس
-  if (fullscreenRotation === 0) {
-    ctx.scale((dispW / originalW) * dpr, (dispH / originalH) * dpr);
-    ctx.drawImage(workCanvas, 0, 0);
-  } else if (fullscreenRotation === 90) {
-    ctx.translate(dispW * dpr, 0);
-    ctx.rotate(Math.PI / 2);
-    ctx.scale((dispH / originalW) * dpr, (dispW / originalH) * dpr);
-    ctx.drawImage(workCanvas, 0, 0);
-  } else if (fullscreenRotation === 180) {
-    ctx.translate(dispW * dpr, dispH * dpr);
-    ctx.rotate(Math.PI);
-    ctx.scale((dispW / originalW) * dpr, (dispH / originalH) * dpr);
-    ctx.drawImage(workCanvas, 0, 0);
-  } else if (fullscreenRotation === 270) {
-    ctx.translate(0, dispH * dpr);
-    ctx.rotate(-Math.PI / 2);
-    ctx.scale((dispH / originalW) * dpr, (dispW / originalH) * dpr);
-    ctx.drawImage(workCanvas, 0, 0);
+  // ✅ فعال کردن flag و رندر با پاس دادن پارامتر
+  _isFullscreenRendering = true;
+  try {
+    draw(workCanvas, workCtx, originalW, originalH);
+  } finally {
+    _isFullscreenRendering = false;
   }
 
-  ctx.restore();
+  // انتقال به canvas نمایش با چرخش
+  const fsCtx = fullscreenCanvas.getContext("2d");
+  fsCtx.setTransform(1, 0, 0, 1, 0, 0);
+  fsCtx.clearRect(0, 0, fullscreenCanvas.width, fullscreenCanvas.height);
+
+  fsCtx.save();
+
+  if (fullscreenRotation === 0) {
+    fsCtx.scale((dispW / originalW) * dpr, (dispH / originalH) * dpr);
+    fsCtx.drawImage(workCanvas, 0, 0);
+  } else if (fullscreenRotation === 90) {
+    fsCtx.translate(dispW * dpr, 0);
+    fsCtx.rotate(Math.PI / 2);
+    fsCtx.scale((dispH / originalW) * dpr, (dispW / originalH) * dpr);
+    fsCtx.drawImage(workCanvas, 0, 0);
+  } else if (fullscreenRotation === 180) {
+    fsCtx.translate(dispW * dpr, dispH * dpr);
+    fsCtx.rotate(Math.PI);
+    fsCtx.scale((dispW / originalW) * dpr, (dispH / originalH) * dpr);
+    fsCtx.drawImage(workCanvas, 0, 0);
+  } else if (fullscreenRotation === 270) {
+    fsCtx.translate(0, dispH * dpr);
+    fsCtx.rotate(-Math.PI / 2);
+    fsCtx.scale((dispH / originalW) * dpr, (dispW / originalH) * dpr);
+    fsCtx.drawImage(workCanvas, 0, 0);
+  }
+
+  fsCtx.restore();
 }
+
 
 // ------ تابع اصلی رندر - مشترک بین canvas و fullscreen ------
 async function renderSceneToContext(
@@ -8104,12 +8138,7 @@ document
   ?.addEventListener("change", function (e) {
     const format = e.target.value;
     if (!format) return;
-
-    if (format === "svg") {
-      exportAsSVG();
-    } else {
       exportAsImage(format);
-    }
     this.value = "";
   });
 
@@ -8355,426 +8384,7 @@ function drawGradForExport(s, ctx, width, height) {
   }
 }
 
-// ------ EXPORT AS SVG ------
-// ========== EXPORT AS SVG - PIXEL PERFECT ==========
-// ========== RASTER SVG EXPORT (بهینه‌شده) ==========
-async function exportAsSVG() {
-  const width = state.canvasWidth;
-  const height = state.canvasHeight;
-
-  const exportCanvas = document.createElement("canvas");
-  exportCanvas.width = width;
-  exportCanvas.height = height;
-  const exportCtx = exportCanvas.getContext("2d");
-
-  await renderSceneToContext(exportCtx, width, height);
-
-  // ✅ انتخاب هوشمند فرمت تصویر
-  const needsAlpha = !state.bgEnabled || state.bgAlpha < 100;
-  let imageData;
-
-  if (needsAlpha) {
-    // فقط وقتی شفافیت لازمه PNG بزن
-    imageData = exportCanvas.toDataURL("image/png");
-  } else {
-    // ✅ اول WebP رو تست کن (کوچکترین)
-    const webp = exportCanvas.toDataURL("image/webp", 0.88);
-    const jpeg = exportCanvas.toDataURL("image/jpeg", 0.9);
-
-    if (webp.startsWith("data:image/webp") && webp.length < jpeg.length) {
-      imageData = webp;
-    } else {
-      imageData = jpeg;
-    }
-  }
-
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-<image width="${width}" height="${height}" xlink:href="${imageData}"/>
-</svg>`;
-
-  downloadFile(
-    svg,
-    "image/svg+xml;charset=utf-8",
-    `gradient-${width}x${height}.svg`,
-  );
-}
-
-function renderGradient(s, ctx, width, height) {
-  const cx = s.x * width;
-  const cy = s.y * height;
-
-  if (s.type === "radial") {
-    const solidEnd = 1 - (s.feather ?? 60) / 100;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, s.size);
-    const color = rgba(s.color, s.opacity / 100);
-
-    addRadialGradientStops(grad, color, s.color, solidEnd);
-
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, s.size, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (s.type === "linear") {
-    const angleRad = ((s.angle - 90) * Math.PI) / 180;
-    const diagonal = Math.hypot(width, height);
-    const mx = width / 2;
-    const my = height / 2;
-    const dx = (Math.cos(angleRad) * diagonal) / 2;
-    const dy = (Math.sin(angleRad) * diagonal) / 2;
-
-    const grad = ctx.createLinearGradient(mx - dx, my - dy, mx + dx, my + dy);
-    const fixedStops = s.stops;
-    fixedStops.forEach((cs) => {
-      grad.addColorStop(
-        clamp(cs.pos / 100, 0, 1),
-        rgba(cs.color, cs.opacity / 100),
-      );
-    });
-
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, width, height);
-  } else if (s.type === "conic") {
-    const startAngle = ((s.startAngle - 90) * Math.PI) / 180;
-    const grad = ctx.createConicGradient(startAngle, cx, cy);
-    const fixedStops = s.stops;
-    fixedStops.forEach((cs) => {
-      grad.addColorStop(
-        clamp(cs.pos / 100, 0, 1),
-        rgba(cs.color, cs.opacity / 100),
-      );
-    });
-
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, width, height);
-  }
-}
-
-function getCanvasBlendMode(cssBlendMode) {
-  if (!cssBlendMode || cssBlendMode === "normal") return "source-over";
-  return cssBlendMode;
-}
-
-function downloadFile(content, mimeType, filename) {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function n(val, decimals = 2) {
-  const num = +parseFloat(val).toFixed(decimals);
-  return String(num);
-}
-
-function exportAsVectorSVG() {
-  const width = state.canvasWidth;
-  const height = state.canvasHeight;
-  const visibleStops = state.stops.filter((s) => s.visible);
-  const reversedStops = [...visibleStops].reverse();
-
-  let defs = "";
-  let content = "";
-
-  // ========== 1. تعریف گرادینت‌ها ==========
-  reversedStops.forEach((s, i) => {
-    const id = `g${i}`;
-
-    if (s.type === "radial") {
-      const cx = n(s.x * width);
-      const cy = n(s.y * height);
-      const rgb = hexToRgb(s.color);
-      const op = n(s.opacity / 100, 3);
-      const c = `${rgb.r},${rgb.g},${rgb.b}`;
-      const solidEnd = Math.max(0, Math.min(1, 1 - (s.feather ?? 60) / 100));
-
-      // و بخش stops:
-      defs += `<stop offset="0" stop-color="rgb(${c})" stop-opacity="${op}"/>`;
-      if (solidEnd >= 0.99) {
-        defs += `<stop offset="1" stop-color="rgb(${c})" stop-opacity="${op}"/>`;
-      } else {
-        if (solidEnd > 0.01) {
-          defs += `<stop offset="${n(solidEnd, 3)}" stop-color="rgb(${c})" stop-opacity="${op}"/>`;
-        }
-        defs += `<stop offset="1" stop-color="rgb(${c})" stop-opacity="0"/>`;
-      }
-
-      defs += `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${cx}" cy="${cy}" r="${s.size}">`;
-      defs += `<stop offset="0" stop-color="rgb(${c})" stop-opacity="${op}"/>`;
-      if (solidEnd > 0.01 && solidEnd < 0.99) {
-        defs += `<stop offset="${n(solidEnd, 3)}" stop-color="rgb(${c})" stop-opacity="${op}"/>`;
-      }
-      defs += `<stop offset="1" stop-color="rgb(${c})" stop-opacity="0"/>`;
-      defs += `</radialGradient>`;
-    } else if (s.type === "linear") {
-      const angleRad = ((s.angle - 90) * Math.PI) / 180;
-      const cos = Math.cos(angleRad);
-      const sin = Math.sin(angleRad);
-
-      defs += `<linearGradient id="${id}" x1="${n(50 - cos * 50)}%" y1="${n(50 - sin * 50)}%" x2="${n(50 + cos * 50)}%" y2="${n(50 + sin * 50)}%">`;
-
-      s.stops.forEach((cs) => {
-        const c = hexToRgb(cs.color);
-        defs += `<stop offset="${cs.pos}%" stop-color="rgb(${c.r},${c.g},${c.b})" stop-opacity="${n(cs.opacity / 100, 3)}"/>`;
-      });
-      defs += `</linearGradient>`;
-    }
-  });
-
-  // ========== 2. Noise Filter ==========
-  if (noiseState.enabled && noiseState.opacity > 0) {
-    defs +=
-      `<filter id="noise" x="0%" y="0%" width="100%" height="100%">` +
-      `<feTurbulence type="fractalNoise" baseFrequency="${noiseState.frequency}" numOctaves="4" stitchTiles="stitch"/>` +
-      `<feColorMatrix type="saturate" values="0"/>` +
-      `</filter>`;
-  }
-
-  // ========== 3. فیلتر CSS ==========
-  if (hasActiveFilters()) {
-    defs += generateSVGFilterFromCSS();
-  }
-
-  // ========== 4. پس‌زمینه ==========
-  if (state.bgEnabled) {
-    const bg = hexToRgb(state.bgColor);
-    content += `<rect width="100%" height="100%" fill="rgb(${bg.r},${bg.g},${bg.b})" fill-opacity="${n(state.bgAlpha / 100, 3)}"/>`;
-  }
-
-  // ========== 5. گرادینت‌ها ==========
-  const hasBgBlend =
-    state.bgEnabled && state.bgBlendMode && state.bgBlendMode !== "normal";
-  const wrapFilter = hasActiveFilters();
-
-  if (hasBgBlend || wrapFilter) {
-    const styles = [];
-    if (hasBgBlend) styles.push(`mix-blend-mode:${state.bgBlendMode}`);
-    const filterAttr = wrapFilter ? ' filter="url(#cssFilter)"' : "";
-    content += `<g style="${styles.join(";")}"${filterAttr}>`;
-  }
-
-  reversedStops.forEach((s, i) => {
-    const id = `g${i}`;
-    const blend = s.blendMode || "screen";
-
-    if (s.type === "radial") {
-      content += `<circle cx="${n(s.x * width)}" cy="${n(s.y * height)}" r="${s.size}" fill="url(#${id})" style="mix-blend-mode:${blend}"/>`;
-    } else if (s.type === "linear") {
-      content += `<rect width="100%" height="100%" fill="url(#${id})" style="mix-blend-mode:${blend}"/>`;
-    } else if (s.type === "conic") {
-      const x = n(s.x * 100);
-      const y = n(s.y * 100);
-      const stopsCSS = s.stops
-        .map((cs) => {
-          const c = hexToRgb(cs.color);
-          return `rgba(${c.r},${c.g},${c.b},${n(cs.opacity / 100, 3)}) ${cs.pos}%`;
-        })
-        .join(",");
-
-      content +=
-        `<foreignObject width="100%" height="100%">` +
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;background:conic-gradient(from ${s.startAngle}deg at ${x}% ${y}%,${stopsCSS});mix-blend-mode:${blend}"></div>` +
-        `</foreignObject>`;
-    }
-  });
-
-  if (hasBgBlend || wrapFilter) {
-    content += `</g>`;
-  }
-
-  // ========== 6. نویز ==========
-  if (noiseState.enabled && noiseState.opacity > 0) {
-    content += `<rect width="100%" height="100%" fill="#fff" filter="url(#noise)" opacity="${n(noiseState.opacity / 100, 3)}" style="mix-blend-mode:${noiseState.blend}"/>`;
-  }
-
-  // ========== 7. SVG نهایی ==========
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-<defs>${defs}</defs>
-${content}
-</svg>`;
-
-  downloadFile(
-    svg,
-    "image/svg+xml;charset=utf-8",
-    `gradient-${width}x${height}.svg`,
-  );
-}
-
-function generateSVGFilterFromCSS() {
-  if (!hasActiveFilters()) return "";
-
-  let parts = [];
-  let last = "SourceGraphic";
-  let idx = 0;
-
-  function nextResult(prefix) {
-    const r = `${prefix}${idx++}`;
-    return r;
-  }
-
-  // 1. Brightness
-  if (filterState.brightness !== 100) {
-    const v = n(filterState.brightness / 100, 3);
-    const r = nextResult("b");
-    parts.push(
-      `<feComponentTransfer in="${last}" result="${r}">` +
-        `<feFuncR type="linear" slope="${v}" intercept="0"/>` +
-        `<feFuncG type="linear" slope="${v}" intercept="0"/>` +
-        `<feFuncB type="linear" slope="${v}" intercept="0"/>` +
-        `</feComponentTransfer>`,
-    );
-    last = r;
-  }
-
-  // 2. Contrast
-  if (filterState.contrast !== 100) {
-    const slope = n(filterState.contrast / 100, 3);
-    const intercept = n(0.5 - (0.5 * filterState.contrast) / 100, 3);
-    const r = nextResult("c");
-    parts.push(
-      `<feComponentTransfer in="${last}" result="${r}">` +
-        `<feFuncR type="linear" slope="${slope}" intercept="${intercept}"/>` +
-        `<feFuncG type="linear" slope="${slope}" intercept="${intercept}"/>` +
-        `<feFuncB type="linear" slope="${slope}" intercept="${intercept}"/>` +
-        `</feComponentTransfer>`,
-    );
-    last = r;
-  }
-
-  // 3. Saturate
-  if (filterState.saturate !== 100) {
-    const r = nextResult("s");
-    parts.push(
-      `<feColorMatrix type="saturate" values="${n(filterState.saturate / 100, 3)}" in="${last}" result="${r}"/>`,
-    );
-    last = r;
-  }
-
-  // 4. Hue-rotate
-  if (filterState.hue !== 0) {
-    const r = nextResult("h");
-    parts.push(
-      `<feColorMatrix type="hueRotate" values="${filterState.hue}" in="${last}" result="${r}"/>`,
-    );
-    last = r;
-  }
-
-  // 5. Grayscale
-  if (filterState.grayscale > 0) {
-    const g = 1 - filterState.grayscale / 100;
-    const m = [
-      0.2126 + 0.7874 * g,
-      0.7152 - 0.7152 * g,
-      0.0722 - 0.0722 * g,
-      0,
-      0,
-      0.2126 - 0.2126 * g,
-      0.7152 + 0.2848 * g,
-      0.0722 - 0.0722 * g,
-      0,
-      0,
-      0.2126 - 0.2126 * g,
-      0.7152 - 0.7152 * g,
-      0.0722 + 0.9278 * g,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-    ]
-      .map((v) => n(v, 3))
-      .join(" ");
-    const r = nextResult("gr");
-    parts.push(
-      `<feColorMatrix type="matrix" values="${m}" in="${last}" result="${r}"/>`,
-    );
-    last = r;
-  }
-
-  // 6. Sepia
-  if (filterState.sepia > 0) {
-    const s = 1 - filterState.sepia / 100;
-    const m = [
-      0.393 + 0.607 * s,
-      0.769 - 0.769 * s,
-      0.189 - 0.189 * s,
-      0,
-      0,
-      0.349 - 0.349 * s,
-      0.686 + 0.314 * s,
-      0.168 - 0.168 * s,
-      0,
-      0,
-      0.272 - 0.272 * s,
-      0.534 - 0.534 * s,
-      0.131 + 0.869 * s,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-    ]
-      .map((v) => n(v, 3))
-      .join(" ");
-    const r = nextResult("sp");
-    parts.push(
-      `<feColorMatrix type="matrix" values="${m}" in="${last}" result="${r}"/>`,
-    );
-    last = r;
-  }
-
-  // 7. Invert
-  if (filterState.invert > 0) {
-    const i = filterState.invert / 100;
-    const r = nextResult("i");
-    parts.push(
-      `<feComponentTransfer in="${last}" result="${r}">` +
-        `<feFuncR type="table" tableValues="${n(1 - i, 3)} ${n(i, 3)}"/>` +
-        `<feFuncG type="table" tableValues="${n(1 - i, 3)} ${n(i, 3)}"/>` +
-        `<feFuncB type="table" tableValues="${n(1 - i, 3)} ${n(i, 3)}"/>` +
-        `</feComponentTransfer>`,
-    );
-    last = r;
-  }
-
-  // 8. Blur
-  if (filterState.blur > 0) {
-    const r = nextResult("bl");
-    parts.push(
-      `<feGaussianBlur stdDeviation="${filterState.blur}" in="${last}" result="${r}"/>`,
-    );
-    last = r;
-  }
-
-  const pad = filterState.blur > 0 ? Math.ceil(filterState.blur * 3) + 10 : 0;
-
-  return `<filter id="cssFilter" x="-${pad}%" y="-${pad}%" width="${100 + pad * 2}%" height="${100 + pad * 2}%">${parts.join("")}</filter>`;
-}
-
-function hasNonBlurFilters() {
-  return (
-    filterState.enabled &&
-    (filterState.brightness !== 100 ||
-      filterState.contrast !== 100 ||
-      filterState.saturate !== 100 ||
-      filterState.hue !== 0 ||
-      filterState.grayscale > 0 ||
-      filterState.sepia > 0 ||
-      filterState.invert > 0)
-  );
-}
-
-// ------ DIMENSION EVENT LISTENERS ------
+// ========== DIMENSION EVENT LISTENERS ==========
 function initDimensionEvents() {
   // Aspect ratio buttons
   document.querySelectorAll(".aspect-btn").forEach((btn) => {
@@ -9370,7 +8980,6 @@ window.startConicAngleDrag = startConicAngleDrag;
 window.updateConicAngleFromInput = updateConicAngleFromInput;
 window.copyCSS = copyCSS;
 window.exportAsImage = exportAsImage;
-window.exportAsSVG = exportAsSVG;
 window.setAspectRatio = setAspectRatio;
 window.setCustomAspectRatio = setCustomAspectRatio;
 window.toggleAspectLock = toggleAspectLock;

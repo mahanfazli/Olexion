@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,7 +93,6 @@
     ]
   }
   </script>
-</head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -195,298 +195,299 @@
     ]
   }
   </script>
-  </head>
+</head>
 
-  <body>
-    <!-- Header -->
-    <header class="header" role="banner">
-      <div class="header-left">
-        <a href="./editor.html" class="header-brand" aria-label="Olexion Home">
-          <img class="header-logo" src="./LOGO.svg" alt="Olexion Logo" width="48" height="48">
-          <h3 class="header-name">Olexion</h3>
-        </a>
+<body>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="header-left">
+      <a href="./editor.html" class="header-brand" aria-label="Olexion Home">
+        <img class="header-logo" src="./LOGO.svg" alt="Olexion Logo" width="48" height="48">
+        <h3 class="header-name">Olexion</h3>
+      </a>
+    </div>
+
+    <nav class="header-nav" role="navigation" aria-label="Main navigation">
+      <ul class="nav-list">
+        <li><a class="nav-link" href="./index.html">Home</a></li>
+        <li><a class="nav-link" href="#FAQ">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-right">
+      <div class="theme-select">
+        <label for="themeSelect" class="visually-hidden">Choose theme</label>
+        <select id="themeSelect" aria-label="Theme selector">
+          <option value="auto">Auto</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="deep-dark">Deep Dark</option>
+          <option value="midnight">Midnight</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main role="main">
+    <h1>Quick Guide</h1>
+    <p class="guide-intro">
+      Unlock the full potential of Olexion. Discover gradient types, blend modes, noise textures, fine-tuning
+      controls, and seamless export options to create visually striking backgrounds in minutes.
+    </p>
+
+    <!-- Gradient Types Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      Gradient Types
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container Gradient">
+      <div>
+        <img src="./img/conic-gradient.webp" alt="Conic gradient example" loading="lazy">
+        <h3 class="gradient-text">A conic gradient rotates colors around a central point.</h3>
+      </div>
+      <div>
+        <img src="./img/radial-gradient.webp" alt="Radial gradient example" loading="lazy">
+        <h3 class="gradient-text">A radial gradient spreads colors outward from a central point.</h3>
+      </div>
+      <div>
+        <img src="./img/linear-gradient.webp" alt="Linear gradient example" loading="lazy">
+        <h3 class="gradient-text">A linear gradient transitions colors smoothly in a single direction.</h3>
+      </div>
+    </section>
+
+    <!-- Noise & Grain Effects Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      Noise & Grain Effects
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container">
+      <img src="./img/noise.webp" alt="Noise texture" loading="lazy">
+      <img src="./img/gradient-noise.webp" alt="Gradient with noise effect" loading="lazy">
+      <div class="description-box">
+        <h3>What is Noise?</h3>
+        <p>Noise is a subtle layer of random texture added to gradients to reduce banding and make color
+          transitions feel more natural. It helps gradients look smoother, deeper, and more professional.</p>
+      </div>
+    </section>
+
+    <!-- CSS Filters Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      CSS Filters
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container Filter">
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/brightness.webm" type="video/webm">
+        </video>
+        <h3>Brightness</h3>
+        <h4>Adjusts the overall lightness of the gradient without changing colors.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/contrast.webm" type="video/webm">
+        </video>
+        <h3>Contrast</h3>
+        <h4>Adjusts the difference between light and dark areas to add depth.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/saturate.webm" type="video/webm">
+        </video>
+        <h3>Saturate</h3>
+        <h4>Controls color intensity. Lower values make colors muted, higher values make them more vivid.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/hue.webm" type="video/webm">
+        </video>
+        <h3>Hue</h3>
+        <h4>Rotates colors along the color wheel without affecting brightness or saturation.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/blur.webm" type="video/webm">
+        </video>
+        <h3>Blur</h3>
+        <h4>Softens the gradient by reducing sharp edges and blending color transitions for a smoother, dreamy effect.
+        </h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/graystyle.webm" type="video/webm">
+        </video>
+        <h3>Gray Style</h3>
+        <h4>Converts all colors into shades of gray.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/sepia.webm" type="video/webm">
+        </video>
+        <h3>Sepia</h3>
+        <h4>Adds a warm, vintage tone inspired by classic photography.</h4>
+      </div>
+      <div class="Filter-box">
+        <video autoplay loop muted playsinline>
+          <source src="./video/invert.webm" type="video/webm">
+        </video>
+        <h3>Invert</h3>
+        <h4>Inverts all colors for creative and experimental effects.</h4>
+      </div>
+    </section>
+
+    <!-- CSS Blend Modes Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      CSS Blend Modes
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container blend">
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/normal.webp" alt="Normal blend mode" loading="lazy">
+        <h3>Normal</h3>
+        <h4>No blending is applied. The gradient appears exactly as it is.</h4>
       </div>
 
-      <nav class="header-nav" role="navigation" aria-label="Main navigation">
-        <ul class="nav-list">
-          <li><a class="nav-link" href="./index.html">Home</a></li>
-          <li><a class="nav-link" href="#FAQ">FAQ</a></li>
-        </ul>
-      </nav>
-
-      <div class="header-right">
-        <div class="theme-select">
-          <label for="themeSelect" class="visually-hidden">Choose theme</label>
-          <select id="themeSelect" aria-label="Theme selector">
-            <option value="auto">Auto</option>
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="deep-dark">Deep Dark</option>
-            <option value="midnight">Midnight</option>
-          </select>
-        </div>
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/multiply.webp" alt="Multiply blend mode" loading="lazy">
+        <h3>Multiply</h3>
+        <h4>Darkens the gradient by multiplying it with layers below. Great for shadows and depth.</h4>
       </div>
-    </header>
 
-    <main role="main">
-      <h1>Quick Guide</h1>
-      <p class="guide-intro">
-        Unlock the full potential of Olexion. Discover gradient types, blend modes, noise textures, fine-tuning
-        controls, and seamless export options to create visually striking backgrounds in minutes.
-      </p>
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/screen.webp" alt="Screen blend mode" loading="lazy">
+        <h3>Screen</h3>
+        <h4>Lightens the gradient by inverting and combining it with layers below. Perfect for glow effects.</h4>
+      </div>
 
-      <!-- Gradient Types Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        Gradient Types
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container Gradient">
-        <div>
-          <img src="./img/conic-gradient.webp" alt="Conic gradient example" loading="lazy">
-          <h3 class="gradient-text">A conic gradient rotates colors around a central point.</h3>
-        </div>
-        <div>
-          <img src="./img/radial-gradient.webp" alt="Radial gradient example" loading="lazy">
-          <h3 class="gradient-text">A radial gradient spreads colors outward from a central point.</h3>
-        </div>
-        <div>
-          <img src="./img/linear-gradient.webp" alt="Linear gradient example" loading="lazy">
-          <h3 class="gradient-text">A linear gradient transitions colors smoothly in a single direction.</h3>
-        </div>
-      </section>
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/overlay.webp" alt="Overlay blend mode" loading="lazy">
+        <h3>Overlay</h3>
+        <h4>Combines Multiply and Screen for higher contrast. Enhances highlights and shadows simultaneously.</h4>
+      </div>
 
-      <!-- Noise & Grain Effects Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        Noise & Grain Effects
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container">
-        <img src="./img/noise.webp" alt="Noise texture" loading="lazy">
-        <img src="./img/gradient-noise.webp" alt="Gradient with noise effect" loading="lazy">
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/darken.webp" alt="Darken blend mode" loading="lazy">
+        <h3>Darken</h3>
+        <h4>Keeps the darker values between this gradient and layers below. Useful for dark tones.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/lighten.webp" alt="Lighten blend mode" loading="lazy">
+        <h3>Lighten</h3>
+        <h4>Keeps the lighter values between this gradient and layers below. Best for bright overlays.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/color-dodge.webp" alt="Color Dodge blend mode" loading="lazy">
+        <h3>Color Dodge</h3>
+        <h4>Brightens and intensifies colors of layers below. Creates strong highlight effects.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/color-burn.webp" alt="Color Burn blend mode" loading="lazy">
+        <h3>Color Burn</h3>
+        <h4>Darkens and deepens colors of layers below. Great for dramatic effects.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/hard-light.webp" alt="Hard Light blend mode" loading="lazy">
+        <h3>Hard Light</h3>
+        <h4>A stronger version of Overlay.. Produces bold and high-contrast results.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/soft-light.webp" alt="Soft Light blend mode" loading="lazy">
+        <h3>Soft Light</h3>
+        <h4>A milder version of Hard Light. Creates subtle and natural lighting.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/difference.webp" alt="Difference blend mode" loading="lazy">
+        <h3>Difference</h3>
+        <h4>Shows the difference between this gradient and layers below. Creates high-contrast, experimental effects.
+        </h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/exclusion.webp" alt="Exclusion blend mode" loading="lazy">
+        <h3>Exclusion</h3>
+        <h4>Similar to Difference but softer. Produces subtle color interactions.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/hue.webp" alt="Hue blend mode" loading="lazy">
+        <h3>Hue</h3>
+        <h4>Applies the gradient's hue to layers below while keeping brightness and saturation unchanged.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/saturation.webp" alt="Saturation blend mode" loading="lazy">
+        <h3>Saturation</h3>
+        <h4>Applies the gradient's color intensity to layers below while preserving brightness and hue.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/color.webp" alt="Color blend mode" loading="lazy">
+        <h3>Color</h3>
+        <h4>Applies the gradient's color and saturation to layers below while preserving brightness.</h4>
+      </div>
+
+      <div class="Blend-box">
+        <img class="blend-img" src="./img/blend-modes/luminosity.webp" alt="Luminosity blend mode" loading="lazy">
+        <h3>Luminosity</h3>
+        <h4>Applies the gradient's brightness to layers below while preserving color and saturation.</h4>
+      </div>
+    </section>
+
+    <!-- Layer Order & Stacking Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      Layer Order
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container layer">
+      <div class="layer-img">
+        <img src="./img/radial-down.webp" alt="Layer order example - bottom" loading="lazy">
+        <img src="./img/radial-up.webp" alt="Layer order example - top" loading="lazy">
         <div class="description-box">
-          <h3>What is Noise?</h3>
-          <p>Noise Grain is a subtle layer of random texture added to gradients to reduce banding and make color
-            transitions feel more natural. It helps gradients look smoother, deeper, and more professional.</p>
+          <h3>How Layers Work?</h3>
+          <p>Layer order controls visual priority. Changing the stacking order alters how gradients overlap, while
+            blend modes determine how colors blend with underlying layers.</p>
         </div>
-      </section>
+      </div>
+      <div class="layer-code-img">
+        <img src="./img/radial-down-code.webp" alt="CSS code for bottom layer" loading="lazy">
+        <img src="./img/radial-up-code.webp" alt="CSS code for top layer" loading="lazy">
+      </div>
+    </section>
 
-      <!-- CSS Filters Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        CSS Filters
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container Filter">
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/brightness.webm" type="video/webm">
-          </video>
-          <h3>Brightness</h3>
-          <h4>Adjusts the overall lightness of the gradient without changing colors.</h4>
+    <!-- Export & Output Options Section -->
+    <h2 class="section-title">
+      <span class="title-decoration" aria-hidden="true"></span>
+      Export & Output
+      <span class="title-decoration" aria-hidden="true"></span>
+    </h2>
+    <section class="container Output">
+      <div id="css-output">
+        <img src="./img/css.webp" alt="CSS export preview" loading="lazy">
+        <div class="description-box">
+          <h3>CSS Export</h3>
+          <p>Copy the generated CSS and apply it directly to the target element. The result will match the preview
+            exactly and adapt to the element's size.</p>
+          <code>.element { background-image: gradient(); }</code>
         </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/contrast.webm" type="video/webm">
-          </video>
-          <h3>Contrast</h3>
-          <h4>Adjusts the difference between light and dark areas to add depth.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/saturate.webm" type="video/webm">
-          </video>
-          <h3>Saturate</h3>
-          <h4>Controls color intensity. Lower values make colors muted, higher values make them more vivid.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/hue.webm" type="video/webm">
-          </video>
-          <h3>Hue</h3>
-          <h4>Rotates colors along the color wheel without affecting brightness or saturation.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/blur.webm" type="video/webm">
-          </video>
-          <h3>Blur</h3>
-          <h4>Softens the gradient by reducing sharp edges and blending color transitions for a smoother, dreamy effect.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/graystyle.webm" type="video/webm">
-          </video>
-          <h3>Gray Style</h3>
-          <h4>Converts all colors into shades of gray.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/sepia.webm" type="video/webm">
-          </video>
-          <h3>Sepia</h3>
-          <h4>Adds a warm, vintage tone inspired by classic photography.</h4>
-        </div>
-        <div class="Filter-box">
-          <video autoplay loop muted playsinline>
-            <source src="./video/invert.webm" type="video/webm">
-          </video>
-          <h3>Invert</h3>
-          <h4>Inverts all colors for creative and experimental effects.</h4>
-        </div>
-      </section>
-
-      <!-- CSS Blend Modes Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        CSS Blend Modes
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container blend">
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/normal.webp" alt="Normal blend mode" loading="lazy">
-          <h3>Normal</h3>
-          <h4>No blending is applied. The gradient appears exactly as it is.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/multiply.webp" alt="Multiply blend mode" loading="lazy">
-          <h3>Multiply</h3>
-          <h4>Darkens the gradient by multiplying it with layers below. Great for shadows and depth.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/screen.webp" alt="Screen blend mode" loading="lazy">
-          <h3>Screen</h3>
-          <h4>Lightens the gradient by inverting and combining it with layers below. Perfect for glow effects.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/overlay.webp" alt="Overlay blend mode" loading="lazy">
-          <h3>Overlay</h3>
-          <h4>Combines Multiply and Screen for higher contrast. Enhances highlights and shadows simultaneously.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/darken.webp" alt="Darken blend mode" loading="lazy">
-          <h3>Darken</h3>
-          <h4>Keeps the darker values between this gradient and layers below. Useful for dark tones.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/lighten.webp" alt="Lighten blend mode" loading="lazy">
-          <h3>Lighten</h3>
-          <h4>Keeps the lighter values between this gradient and layers below. Best for bright overlays.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/color-dodge.webp" alt="Color Dodge blend mode" loading="lazy">
-          <h3>Color Dodge</h3>
-          <h4>Brightens and intensifies colors of layers below. Creates strong highlight effects.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/color-burn.webp" alt="Color Burn blend mode" loading="lazy">
-          <h3>Color Burn</h3>
-          <h4>Darkens and deepens colors of layers below. Great for dramatic effects.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/hard-light.webp" alt="Hard Light blend mode" loading="lazy">
-          <h3>Hard Light</h3>
-          <h4>A strong combination of Overlay. Produces bold and high-contrast results.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/soft-light.webp" alt="Soft Light blend mode" loading="lazy">
-          <h3>Soft Light</h3>
-          <h4>A milder version of Hard Light. Creates subtle and natural lighting.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/difference.webp" alt="Difference blend mode" loading="lazy">
-          <h3>Difference</h3>
-          <h4>Shows the difference between this gradient and layers below. Creates high-contrast, experimental effects.
-          </h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/exclusion.webp" alt="Exclusion blend mode" loading="lazy">
-          <h3>Exclusion</h3>
-          <h4>Similar to Difference but softer. Produces subtle color interactions.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/hue.webp" alt="Hue blend mode" loading="lazy">
-          <h3>Hue</h3>
-          <h4>Applies the gradient's hue to layers below while keeping brightness and saturation unchanged.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/saturation.webp" alt="Saturation blend mode" loading="lazy">
-          <h3>Saturation</h3>
-          <h4>Applies the gradient's color intensity to layers below while preserving brightness and hue.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/color.webp" alt="Color blend mode" loading="lazy">
-          <h3>Color</h3>
-          <h4>Applies the gradient's color and saturation to layers below while preserving brightness.</h4>
-        </div>
-
-        <div class="Blend-box">
-          <img class="blend-img" src="./img/blend-modes/luminosity.webp" alt="Luminosity blend mode" loading="lazy">
-          <h3>Luminosity</h3>
-          <h4>Applies the gradient's brightness to layers below while preserving color and saturation.</h4>
-        </div>
-      </section>
-
-      <!-- Layer Order & Stacking Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        Layer Order
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container layer">
-        <div class="layer-img">
-          <img src="./img/radial-down.webp" alt="Layer order example - bottom" loading="lazy">
-          <img src="./img/radial-up.webp" alt="Layer order example - top" loading="lazy">
-          <div class="description-box">
-            <h3>How Layers Work?</h3>
-            <p>Layer order controls visual priority. Changing the stacking order alters how gradients overlap, while
-              blend modes determine how colors blend with underlying layers.</p>
-          </div>
-        </div>
-        <div class="layer-code-img">
-          <img src="./img/radial-down-code.webp" alt="CSS code for bottom layer" loading="lazy">
-          <img src="./img/radial-up-code.webp" alt="CSS code for top layer" loading="lazy">
-        </div>
-      </section>
-
-      <!-- Export & Output Options Section -->
-      <h2 class="section-title">
-        <span class="title-decoration" aria-hidden="true"></span>
-        Export & Output
-        <span class="title-decoration" aria-hidden="true"></span>
-      </h2>
-      <section class="container Output">
-        <div id="css-output">
-          <img src="./img/css.webp" alt="CSS export preview" loading="lazy">
-          <div class="description-box">
-            <h3>CSS Export</h3>
-            <p>Copy the generated CSS and apply it directly to the target element. The result will match the preview
-              exactly and adapt to the element's size.</p>
-            <code>.element { background-image: gradient(); }</code>
-          </div>
-        </div>
-        <div id="noise-svg">
-          <img src="./img/noise-svg.webp" alt="Noise SVG export" loading="lazy">
-          <div class="description-box">
-            <h3>Noise SVG</h3>
-            <p>The Noise SVG is generated as a standalone filter. Simply add it to the SVG document and apply the effect
-              to elements via CSS.</p>
-<pre>
+      </div>
+      <div id="noise-svg">
+        <img src="./img/noise-svg.webp" alt="Noise SVG export" loading="lazy">
+        <div class="description-box">
+          <h3>Noise SVG</h3>
+          <p>The Noise SVG is generated as a standalone filter. Simply add it to the SVG document and apply the effect
+            to elements via CSS.</p>
+          <pre>
   <code>&lt;body&gt;
   &lt;div&gt;&lt;/div&gt;
     &lt;svg&gt;
@@ -496,65 +497,66 @@
   &lt;/svg&gt;
 &lt;/body&gt;</code>
 </pre>
-          </div>
-        </div>
-        <div id="noise-css">
-          <img src="./img/noise-css.webp" alt="Noise CSS export" loading="lazy">
-          <div class="description-box">
-            <h3>Noise CSS</h3>
-            <p>The Noise effect is generated as a separate layer and is best applied to ::before, ::after, or a child
-              element to achieve a clean and fully controllable result.</p>
-            <code>.element::before { filter: url(#noiseFilter); }</code>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <section class="nav">
-      <a href="./index.html">
-        Back To Home
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          aria-hidden="true">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </a>
-      <a href="./editor.html">
-        Continue To Olexion
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          aria-hidden="true">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </a>
-    </section>
-
-    <h2 class="section-title">
-      <span class="title-decoration" aria-hidden="true"></span>
-      FAQ
-      <span class="title-decoration" aria-hidden="true"></span>
-    </h2>
-    <section id="FAQ">
-      <div class="accordion">
-        <div class="accordion-header">
-          <div class="accordion-title">Privacy Policy</div>
-        </div>
-        <div class="accordion-content">
-          <p>
-            Olexion does not collect, store, process, or transmit any personal user data to any server.
-            All processing is performed entirely within the user's browser (client-side).
-            We do not use tracking cookies, analytics systems, or any mechanisms for collecting personal information.
-            Your privacy is important to us, and your data remains completely under your control.
-          </p>
         </div>
       </div>
-      <div class="accordion">
-        <div class="accordion-header">
-          <div class="accordion-title">How to Prevent Filters From Affecting Page Content ?</div>
+      <div id="noise-css">
+        <img src="./img/noise-css.webp" alt="Noise CSS export" loading="lazy">
+        <div class="description-box">
+          <h3>Noise CSS</h3>
+          <p>The Noise effect is generated as a separate layer and is best applied to ::before, ::after, or a child
+            element to achieve a clean and fully controllable result.</p>
+          <code>.element::before { filter: url(#noiseFilter); }</code>
         </div>
-        <div class="accordion-content">
-          <p>By creating a separate container for the background and applying position: absolute with
-            top,right,bottom,left: 0 the background can be separated from the main content and placed behind it. This approach prevents background
-            effects or filters from affecting the main content.</p>
-          <pre>
+      </div>
+    </section>
+  </main>
+
+  <section class="nav">
+    <a href="./index.html">
+      Back To Home
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </a>
+    <a href="./editor.html">
+      Continue To Olexion
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </a>
+  </section>
+
+  <h2 class="section-title">
+    <span class="title-decoration" aria-hidden="true"></span>
+    FAQ
+    <span class="title-decoration" aria-hidden="true"></span>
+  </h2>
+  <section id="FAQ">
+    <div class="accordion">
+      <div class="accordion-header">
+        <div class="accordion-title">Privacy Policy</div>
+      </div>
+      <div class="accordion-content">
+        <p>
+          Olexion does not collect, store, process, or transmit any personal user data to any server.
+          All processing is performed entirely within the user's browser (client-side).
+          We do not use tracking cookies, analytics systems, or any mechanisms for collecting personal information.
+          Your privacy is important to us, and your data remains completely under your control.
+        </p>
+      </div>
+    </div>
+    <div class="accordion">
+      <div class="accordion-header">
+        <div class="accordion-title">How to Prevent Filters From Affecting Page Content ?</div>
+      </div>
+      <div class="accordion-content">
+        <p>By creating a separate container for the background and applying position: absolute with top, right, bottom,
+          and left: 0, the background can be separated from the main content and placed behind it. This approach
+          prevents background effects or filters from affecting the main content. The container must also have a defined
+          width and height.</p>
+        <pre>
               <code>&lt;div class="container"&gt;
   &lt;div class="background"&gt;&lt;/div&gt;
   &lt;div&gt;
@@ -562,78 +564,80 @@
   &lt;/div&gt;
 &lt;/div&gt;</code>
 </pre>
-<p>container</p>
-<pre>
+        <p>container</p>
+        <pre>
   <code>position: relative;</code>
 </pre>
-<p>background</p>
-<pre>
+        <p>background</p>
+        <pre>
   <code>position: absolute;
 top: 0;
 right: 0;
 bottom: 0;
 left: 0;</code>
 </pre>
-        </div>
-        </div>
-        <div class="accordion">
-          <div class="accordion-header">
-            <div class="accordion-title">How to Fix Blur Edge Bleeding ?</div>
-          </div>
-          <div class="accordion-content">
-            <p>
-              When applying a blur filter, the effect may extend beyond the element's boundaries,
-              causing unwanted edge bleeding.
-            </p>
-        
-            <p>
-              To prevent the blur from overflowing outside the container, set
-              <code>overflow: hidden;</code> on the parent element.
-            </p>
-              <img src="./img/edge-blur.webp" alt="Blur overflow example">
-              
-            <p>
-              Additionally, edge blending artifacts can be reduced by slightly increasing
-              the scale of the blurred element using
-              <code>transform: scale(1.05);</code>
-            </p>
-              <img src="./img/edge-shadow.webp" alt="Blur edge artifact example">
-        
-            <p>
-              This technique ensures smoother edges while keeping the blur visually contained.
-            </p>
-            <img src="./img/edge-fix.webp" alt="Fixed blur edge result">
-          </div>
-        </div>
-        <div class="accordion">
-          <div class="accordion-header">
-            <div class="accordion-title">Can a gradient background be applied to text?</div>
-          </div>
-          <div class="accordion-content">
-            <p>
-              Yes but CSS does not support gradients directly through the color property.
-              To create a gradient text effect, you apply a gradient as the background and use text clipping so the gradient is displayed only within the text glyphs.
-            </p>
-            <img src="./img/gradient-text.webp" alt="gradient text">
-            <pre>
+      </div>
+    </div>
+    <div class="accordion">
+      <div class="accordion-header">
+        <div class="accordion-title">How to Fix Blur Edge Blending ?</div>
+      </div>
+      <div class="accordion-content">
+        <p>
+          When applying a blur filter, the effect may extend beyond the element's boundaries,
+          causing unwanted edge bleeding.
+        </p>
+
+        <p>
+          To prevent the blur from overflowing outside the container, set
+          <code>overflow: hidden;</code> on the parent element.
+        </p>
+        <img src="./img/edge-blur.webp" alt="Blur overflow example">
+
+        <p>
+          Additionally, edge blending artifacts can be reduced by slightly increasing
+          the scale of the blurred element using
+          <code>transform: scale(1.05);</code>
+        </p>
+        <img src="./img/edge-shadow.webp" alt="Blur edge artifact example">
+
+        <p>
+          This technique ensures smoother edges while keeping the blur visually contained.
+        </p>
+        <img src="./img/edge-fix.webp" alt="Fixed blur edge result">
+      </div>
+    </div>
+    <div class="accordion">
+      <div class="accordion-header">
+        <div class="accordion-title">Can a gradient background be applied to text?</div>
+      </div>
+      <div class="accordion-content">
+        <p>
+          Yes, but CSS does not support gradients directly through the color property.
+          To create a gradient text effect, you apply a gradient as the background and use text clipping so the gradient
+          is displayed only within the text glyphs.
+        </p>
+        <img src="./img/gradient.webp" alt="gradient">
+        <img src="./img/gradient-text.webp" alt="gradient text">
+        <pre>
               <code>-webkit-background-clip: text;
 -webkit-text-fill-color: transparent;</code>
             </pre>
-            <img src="./img/gradient.webp" alt="gradient">
-          </div>
-        </div>
-
       </div>
-      <a href="mailto:support@olexion.com">
-        Need More Help ?
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </a>
-    </section>
-    <script src="./js/script.js"></script>
-    <script src="./js/guide.js"></script>
-  </body>
+    </div>
+
+    </div>
+    <a href="mailto:support@olexion.com">
+      Need More Help?
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </a>
+  </section>
+  <script src="./js/script.js"></script>
+  <script src="./js/guide.js"></script>
+</body>
+
 </html>
